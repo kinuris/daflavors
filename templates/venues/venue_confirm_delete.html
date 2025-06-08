@@ -65,7 +65,7 @@
     <form method="post" class="flex justify-end space-x-4">
         {% csrf_token %}
         
-        <a href="{% url 'venues:venue_detail' venue.id %}" class="px-6 py-3 bg-white border border-gray-300 rounded-md font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+        <a href="{% url 'venues:detail' venue.id %}" class="px-6 py-3 bg-white border border-gray-300 rounded-md font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
             Cancel
         </a>
         

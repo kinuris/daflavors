@@ -1,4 +1,4 @@
-{% extends 'core/base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
 {% block title %}Delete {{ caterer.name }} - Caterer Profile{% endblock %}
@@ -25,7 +25,7 @@
             
             <div class="mt-6 border-t border-gray-200 pt-5">
                 <div class="flex justify-end">
-                    <a href="{% url 'caterers:caterer_detail' caterer.id %}" class="mr-3 inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <a href="{% url 'caterers:detail' caterer.id %}" class="mr-3 inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                         Cancel
                     </a>
                     <form method="post">

@@ -253,7 +253,7 @@
             <p class="text-sm mb-4">{{ venue.provider.business_description|truncatewords:30 }}</p>
             
             <!-- View more venues from this provider -->
-            <a href="{% url 'venues:venue_list' %}?provider={{ venue.provider.id }}" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center">
+            <a href="{% url 'venues:list' %}?provider={{ venue.provider.id }}" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center">
                 View more venues from this provider
                 <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
@@ -280,10 +280,10 @@
                 <div class="border-t mt-4 pt-4">
                     <p class="font-medium text-gray-700 mb-2">Venue Owner Actions:</p>
                     <div class="flex space-x-2">
-                        <a href="{% url 'venues:venue_update' venue.id %}" class="flex-1 bg-green-600 hover:bg-green-700 text-white text-center font-medium py-2 px-4 rounded-md">
+                        <a href="{% url 'venues:update' venue.id %}" class="flex-1 bg-green-600 hover:bg-green-700 text-white text-center font-medium py-2 px-4 rounded-md">
                             Edit
                         </a>
-                        <a href="{% url 'venues:venue_delete' venue.id %}" class="flex-1 bg-red-600 hover:bg-red-700 text-white text-center font-medium py-2 px-4 rounded-md">
+                        <a href="{% url 'venues:delete' venue.id %}" class="flex-1 bg-red-600 hover:bg-red-700 text-white text-center font-medium py-2 px-4 rounded-md">
                             Delete
                         </a>
                     </div>

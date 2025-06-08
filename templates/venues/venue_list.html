@@ -45,7 +45,7 @@
                     
                     <!-- Reset Button -->
                     <div>
-                        <a href="{% url 'venues:venue_list' %}" class="block text-center w-full text-indigo-600 hover:text-indigo-800 font-medium py-2 px-4 rounded-md border border-indigo-600">
+                        <a href="{% url 'venues:list' %}" class="block text-center w-full text-indigo-600 hover:text-indigo-800 font-medium py-2 px-4 rounded-md border border-indigo-600">
                             Reset All Filters
                         </a>
                     </div>
@@ -131,7 +131,7 @@
                                 {% endif %}
                                 
                                 <!-- View Button -->
-                                <a href="{% url 'venues:venue_detail' venue.id %}" class="block w-full text-center bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-200">
+                                <a href="{% url 'venues:detail' venue.id %}" class="block w-full text-center bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-200">
                                     View Details
                                 </a>
                             </div>
@@ -145,7 +145,7 @@
                 <div class="bg-white p-8 rounded-lg shadow text-center">
                     <h3 class="text-xl font-semibold text-gray-700 mb-4">No venues found</h3>
                     <p class="text-gray-600 mb-6">There are no venues matching your search criteria.</p>
-                    <a href="{% url 'venues:venue_list' %}" class="text-indigo-600 hover:text-indigo-800 font-medium">Reset all filters</a>
+                    <a href="{% url 'venues:list' %}" class="text-indigo-600 hover:text-indigo-800 font-medium">Reset all filters</a>
                 </div>
             {% endif %}
         </div>

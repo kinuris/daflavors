@@ -45,20 +45,142 @@ def venue_detail(request, venue_id):
     """
     venue = get_object_or_404(Venue, id=venue_id)
     
+    # Get all venue rooms and features
+    rooms = venue.rooms.all()
+    features = venue.features.all()
+    
     # Check if the current user is the owner of this venue
     is_owner = False
-    if request.user.is_authenticated:
-        try:
-            provider_profile = request.user.provider_profile
-            is_owner = (venue.provider == provider_profile)
-        except:
-            pass
+    if request.user.is_authenticated and hasattr(request.user, 'provider_profile'):
+        is_owner = venue.provider == request.user.provider_profile
     
     context = {
         'venue': venue,
-        'is_owner': is_owner
+        'rooms': rooms,
+        'features': features,
+        'is_owner': is_owner,
     }
     return render(request, 'venues/venue_detail.html', context)
+
+@login_required
+def venue_create(request):
+    """
+    Create a new venue
+    """
+    if not hasattr(request.user, 'provider_profile'):
+        messages.error(request, "You must be registered as a provider to create venues.")
+        return redirect('accounts:become_provider')
+    
+    VenueImageFormSet = inlineformset_factory(Venue, VenueImage, form=VenueImageForm, extra=3, can_delete=True)
+    VenueRoomFormSet = inlineformset_factory(Venue, VenueRoom, form=VenueRoomForm, extra=2, can_delete=True)
+    VenueFeatureFormSet = inlineformset_factory(Venue, VenueFeature, form=VenueFeatureForm, extra=3, can_delete=True)
+    
+    if request.method == 'POST':
+        form = VenueForm(request.POST)
+        image_formset = VenueImageFormSet(request.POST, request.FILES)
+        room_formset = VenueRoomFormSet(request.POST)
+        feature_formset = VenueFeatureFormSet(request.POST)
+        
+        if form.is_valid() and image_formset.is_valid() and room_formset.is_valid() and feature_formset.is_valid():
+            with transaction.atomic():
+                venue = form.save(commit=False)
+                venue.provider = request.user.provider_profile
+                venue.save()
+                
+                image_formset.instance = venue
+                image_formset.save()
+                
+                room_formset.instance = venue
+                room_formset.save()
+                
+                feature_formset.instance = venue
+                feature_formset.save()
+                
+            messages.success(request, "Venue created successfully!")
+            return redirect('venues:venue_detail', venue_id=venue.id)
+    else:
+        form = VenueForm()
+        image_formset = VenueImageFormSet()
+        room_formset = VenueRoomFormSet()
+        feature_formset = VenueFeatureFormSet()
+    
+    context = {
+        'form': form,
+        'image_formset': image_formset,
+        'room_formset': room_formset,
+        'feature_formset': feature_formset,
+        'action': 'Create'
+    }
+    return render(request, 'venues/venue_form.html', context)
+
+@login_required
+def venue_update(request, venue_id):
+    """
+    Update an existing venue
+    """
+    venue = get_object_or_404(Venue, id=venue_id)
+    
+    # Check if user has permission to edit this venue
+    if not request.user.provider_profile == venue.provider:
+        messages.error(request, "You don't have permission to edit this venue.")
+        return redirect('venues:venue_detail', venue_id=venue.id)
+    
+    VenueImageFormSet = inlineformset_factory(Venue, VenueImage, form=VenueImageForm, extra=1, can_delete=True)
+    VenueRoomFormSet = inlineformset_factory(Venue, VenueRoom, form=VenueRoomForm, extra=1, can_delete=True)
+    VenueFeatureFormSet = inlineformset_factory(Venue, VenueFeature, form=VenueFeatureForm, extra=1, can_delete=True)
+    
+    if request.method == 'POST':
+        form = VenueForm(request.POST, instance=venue)
+        image_formset = VenueImageFormSet(request.POST, request.FILES, instance=venue)
+        room_formset = VenueRoomFormSet(request.POST, instance=venue)
+        feature_formset = VenueFeatureFormSet(request.POST, instance=venue)
+        
+        if form.is_valid() and image_formset.is_valid() and room_formset.is_valid() and feature_formset.is_valid():
+            with transaction.atomic():
+                venue = form.save()
+                image_formset.save()
+                room_formset.save()
+                feature_formset.save()
+                
+            messages.success(request, "Venue updated successfully!")
+            return redirect('venues:venue_detail', venue_id=venue.id)
+    else:
+        form = VenueForm(instance=venue)
+        image_formset = VenueImageFormSet(instance=venue)
+        room_formset = VenueRoomFormSet(instance=venue)
+        feature_formset = VenueFeatureFormSet(instance=venue)
+    
+    context = {
+        'form': form,
+        'image_formset': image_formset,
+        'room_formset': room_formset,
+        'feature_formset': feature_formset,
+        'venue': venue,
+        'action': 'Update'
+    }
+    return render(request, 'venues/venue_form.html', context)
+
+@login_required
+def venue_delete(request, venue_id):
+    """
+    Delete a venue
+    """
+    venue = get_object_or_404(Venue, id=venue_id)
+    
+    # Check if user has permission to delete this venue
+    if not request.user.provider_profile == venue.provider:
+        messages.error(request, "You don't have permission to delete this venue.")
+        return redirect('venues:detail', venue_id=venue.id)
+    
+    if request.method == 'POST':
+        venue.delete()
+        messages.success(request, "Venue deleted successfully!")
+        return redirect('venues:list')
+    
+    context = {
+        'venue': venue
+    }
+    return render(request, 'venues/venue_confirm_delete.html', context)
 
 @login_required
 def venue_create(request):

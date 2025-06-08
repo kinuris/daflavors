@@ -368,7 +368,7 @@
                     <a href="{% url 'accounts:provider_dashboard' %}" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">Cancel</a>
                     <button type="submit" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md">Create Venue</button>
                 {% else %}
-                    <a href="{% url 'venues:venue_detail' venue.id %}" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">Cancel</a>
+                    <a href="{% url 'venues:detail' venue.id %}" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">Cancel</a>
                     <button type="submit" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md">Save Changes</button>
                 {% endif %}
             </div>

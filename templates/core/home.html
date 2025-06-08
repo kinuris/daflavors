@@ -63,14 +63,14 @@
                         <p class="text-gray-600 mb-3 line-clamp-2">{{ venue.description|truncatewords:15 }}</p>
                         <div class="flex justify-between items-center">
                             <span class="text-indigo-600 font-semibold">₱{{ venue.base_price }}</span>
-                            <a href="{% url 'venues:venue_detail' venue.id %}" class="text-indigo-600 hover:text-indigo-800 font-medium">View Details</a>
+                            <a href="{% url 'venues:detail' venue.id %}" class="text-indigo-600 hover:text-indigo-800 font-medium">View Details</a>
                         </div>
                     </div>
                 </div>
                 {% endfor %}
             </div>
             <div class="mt-6 text-center">
-                <a href="{% url 'venues:venue_list' %}" class="text-indigo-600 hover:text-indigo-800 font-medium">View All Venues &rarr;</a>
+                <a href="{% url 'venues:list' %}" class="text-indigo-600 hover:text-indigo-800 font-medium">View All Venues &rarr;</a>
             </div>
         {% else %}
             <p class="text-gray-600">No venues available at the moment.</p>
