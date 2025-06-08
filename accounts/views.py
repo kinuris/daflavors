@@ -124,9 +124,12 @@ def provider_dashboard(request):
         messages.error(request, "Access denied. Provider account required.")
         return redirect('core:home')
     
+    # Get provider profile for this user
+    provider_profile = user.provider_profile
+    
     # Get venues and caterers owned by this provider
-    venues = Venue.objects.filter(owner=user)
-    caterers = Caterer.objects.filter(owner=user)
+    venues = Venue.objects.filter(provider=provider_profile)
+    caterers = Caterer.objects.filter(provider=provider_profile)
     
     # Get bookings for this provider's venues and caterers
     venue_bookings = Booking.objects.filter(venue__in=venues)
