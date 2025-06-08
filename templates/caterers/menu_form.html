@@ -1,0 +1,215 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{% if is_create %}Create{% else %}Edit{% endif %} Menu Package - {{ caterer.name }}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Breadcrumb -->
+    <nav class="mb-6">
+        <ol class="flex items-center space-x-2 text-sm text-gray-500">
+            <li><a href="{% url 'core:home' %}" class="hover:text-indigo-600">Home</a></li>
+            <li><span class="mx-2">/</span></li>
+            <li><a href="{% url 'caterers:caterer_list' %}" class="hover:text-indigo-600">Caterers</a></li>
+            <li><span class="mx-2">/</span></li>
+            <li><a href="{% url 'caterers:caterer_detail' caterer.id %}" class="hover:text-indigo-600">{{ caterer.name }}</a></li>
+            <li><span class="mx-2">/</span></li>
+            <li><a href="{% url 'caterers:menu_list' caterer.id %}" class="hover:text-indigo-600">Menu Packages</a></li>
+            <li><span class="mx-2">/</span></li>
+            <li class="font-medium text-gray-900">{% if is_create %}Create Menu Package{% else %}Edit {{ menu_package.name }}{% endif %}</li>
+        </ol>
+    </nav>
+
+    <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200">
+        <div class="px-4 py-5 sm:p-6">
+            <h1 class="text-2xl font-semibold text-gray-900 mb-6">{{ form_title }}</h1>
+            
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- Basic Package Information -->
+                <div class="space-y-6 mb-8">
+                    <h2 class="text-lg font-medium text-gray-900 border-b pb-2">Package Information</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Name -->
+                        <div>
+                            <label for="{{ form.name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.name.label }}</label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ form.name.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Service Style -->
+                        <div>
+                            <label for="{{ form.service_style.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.service_style.label }}</label>
+                            {{ form.service_style }}
+                            {% if form.service_style.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ form.service_style.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Description -->
+                    <div>
+                        <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.description.label }}</label>
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ form.description.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Price Per Person -->
+                        <div>
+                            <label for="{{ form.price_per_person.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.price_per_person.label }}</label>
+                            <div class="mt-1 relative rounded-md shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 sm:text-sm">₱</span>
+                                </div>
+                                {{ form.price_per_person }}
+                            </div>
+                            {% if form.price_per_person.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ form.price_per_person.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Min Guest Count -->
+                        <div>
+                            <label for="{{ form.min_guest_count.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.min_guest_count.label }}</label>
+                            {{ form.min_guest_count }}
+                            {% if form.min_guest_count.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ form.min_guest_count.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Max Guest Count -->
+                        <div>
+                            <label for="{{ form.max_guest_count.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.max_guest_count.label }}</label>
+                            {{ form.max_guest_count }}
+                            {% if form.max_guest_count.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ form.max_guest_count.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                {% if not is_create %}
+                <!-- Menu Items -->
+                <div class="space-y-6 mb-8">
+                    <h2 class="text-lg font-medium text-gray-900 border-b pb-2">Menu Items</h2>
+                    
+                    {{ formset.management_form }}
+                    
+                    <div class="space-y-4" id="formset-container">
+                        {% for form in formset %}
+                            <div class="border border-gray-300 rounded-md p-4 formset-row">
+                                {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+                                <div class="flex justify-between">
+                                    <h3 class="text-md font-medium">{% if form.instance.pk %}{{ form.instance.menu_item.name }}{% else %}New Item{% endif %}</h3>
+                                    {% if form.instance.pk %}
+                                    <div class="flex items-center">
+                                        <label for="{{ form.DELETE.id_for_label }}" class="flex items-center ml-3 text-sm text-red-600 cursor-pointer">
+                                            <input type="checkbox" id="{{ form.DELETE.id_for_label }}" name="{{ form.DELETE.name }}" class="h-4 w-4 text-red-600 border-gray-300 rounded mr-1">
+                                            Remove
+                                        </label>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {% for hidden_field in form.hidden_fields %}
+                                        {{ hidden_field }}
+                                    {% endfor %}
+                                    
+                                    <!-- Course Category -->
+                                    <div>
+                                        <label for="{{ form.course_category.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.course_category.label }}</label>
+                                        {{ form.course_category }}
+                                        {% if form.course_category.errors %}
+                                            <p class="mt-1 text-sm text-red-600">{{ form.course_category.errors.0 }}</p>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <!-- Menu Item -->
+                                    <div>
+                                        <label for="{{ form.menu_item.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.menu_item.label }}</label>
+                                        {{ form.menu_item }}
+                                        {% if form.menu_item.errors %}
+                                            <p class="mt-1 text-sm text-red-600">{{ form.menu_item.errors.0 }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <button type="button" id="add-form" class="mt-4 inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="-ml-0.5 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        Add Another Item
+                    </button>
+                </div>
+                {% endif %}
+                
+                <div class="mt-8 border-t border-gray-200 pt-6 flex justify-end">
+                    <a href="{% if is_create %}{% url 'caterers:menu_list' caterer.id %}{% else %}{% url 'caterers:menu_detail' caterer.id menu_package.id %}{% endif %}" class="mr-3 inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Cancel
+                    </a>
+                    <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        {% if is_create %}Create Menu Package{% else %}Update Menu Package{% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const formsetContainer = document.getElementById('formset-container');
+        const addFormButton = document.getElementById('add-form');
+        
+        if (addFormButton) {
+            addFormButton.addEventListener('click', function() {
+                const totalForms = document.getElementById('id_form-TOTAL_FORMS');
+                const currentForms = parseInt(totalForms.value);
+                
+                // Clone the last form
+                const formCopyContainer = document.createElement('div');
+                formCopyContainer.innerHTML = formsetContainer.lastElementChild.outerHTML;
+                const formCopy = formCopyContainer.firstElementChild;
+                
+                // Update IDs and names
+                const regex = new RegExp(`form-(\\d+)-`, 'g');
+                formCopy.innerHTML = formCopy.innerHTML.replace(regex, `form-${currentForms}-`);
+                
+                // Clear values
+                formCopy.querySelectorAll('input[type="text"], input[type="number"], textarea, select').forEach(input => {
+                    input.value = '';
+                });
+                
+                // Reset any validation errors
+                formCopy.querySelectorAll('.text-red-600').forEach(error => {
+                    error.remove();
+                });
+                
+                // Add the cloned form
+                formsetContainer.appendChild(formCopy);
+                
+                // Update total forms
+                totalForms.value = currentForms + 1;
+            });
+        }
+    });
+</script>
+{% endblock %}

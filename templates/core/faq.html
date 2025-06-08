@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}FAQ - DaFlavors{% endblock %}
+
+{% block page_title %}Frequently Asked Questions{% endblock %}
+{% block page_subtitle %}Find answers to common questions about DaFlavors services{% endblock %}
+
+{% block content %}
+    {% if categories %}
+        <div class="space-y-10">
+            {% for category, faqs in categories.items %}
+                <div>
+                    <h2 class="text-2xl font-bold text-indigo-800 mb-4">{{ category }}</h2>
+                    <div class="space-y-4">
+                        {% for faq in faqs %}
+                            <div class="border rounded-lg overflow-hidden">
+                                <button class="faq-toggle flex justify-between items-center w-full px-6 py-4 text-left bg-white hover:bg-gray-50">
+                                    <span class="font-semibold">{{ faq.question }}</span>
+                                    <svg class="faq-icon w-5 h-5 text-indigo-600 transform transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+                                <div class="faq-answer bg-gray-50 px-6 py-4 hidden">
+                                    <div class="prose max-w-none">
+                                        {{ faq.answer|linebreaks }}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-10">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h3 class="text-xl font-semibold mb-2 text-gray-700">No FAQs Available</h3>
+            <p class="text-gray-500 mx-auto max-w-md">
+                We're still working on our FAQ section. Please check back soon or contact us if you have any questions.
+            </p>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const faqToggles = document.querySelectorAll('.faq-toggle');
+        
+        faqToggles.forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                const answer = this.nextElementSibling;
+                const icon = this.querySelector('.faq-icon');
+                
+                // Toggle the answer visibility
+                answer.classList.toggle('hidden');
+                
+                // Rotate the icon when expanded
+                if (answer.classList.contains('hidden')) {
+                    icon.classList.remove('rotate-180');
+                } else {
+                    icon.classList.add('rotate-180');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

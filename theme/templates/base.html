@@ -1,0 +1,216 @@
+{% load static tailwind_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{% block title %}DaFlavors - Exclusive Venues & Event Catering{% endblock %}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    {% tailwind_css %}
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+    <!-- Container for sidebar and content -->
+    <div class="flex min-h-screen">
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 bg-indigo-800 text-white fixed h-full shadow-md z-10">
+            <!-- Logo and App Name -->
+            <div class="py-6 px-4 border-b border-indigo-700">
+                <a href="{% url 'core:home' %}" class="flex items-center space-x-2">
+                    <span class="text-xl font-bold">DaFlavors</span>
+                </a>
+                <p class="text-xs text-indigo-200">Exclusive Venues & Event Catering</p>
+            </div>
+            
+            <!-- Navigation Links -->
+            <nav class="py-4">
+                <ul class="space-y-2">
+                    <!-- Home -->
+                    <li>
+                        <a href="{% url 'core:home' %}" class="block px-4 py-2 hover:bg-indigo-700 rounded-md transition-colors duration-200 flex items-center space-x-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                            </svg>
+                            <span>Home</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Venues -->
+                    <li>
+                        <a href="{% url 'venues:venue_list' %}" class="block px-4 py-2 hover:bg-indigo-700 rounded-md transition-colors duration-200 flex items-center space-x-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clip-rule="evenodd" />
+                            </svg>
+                            <span>Venues</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Caterers -->
+                    <li>
+                        <a href="{% url 'caterers:caterer_list' %}" class="block px-4 py-2 hover:bg-indigo-700 rounded-md transition-colors duration-200 flex items-center space-x-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M6 3a1 1 0 011-1h.01a1 1 0 010 2H7a1 1 0 01-1-1zm2 3a1 1 0 00-2 0v1a2 2 0 00-2 2v1a2 2 0 00-2 2v.683a3.7 3.7 0 011.055.485 1.704 1.704 0 001.89 0 3.704 3.704 0 014.11 0 1.704 1.704 0 001.89 0 3.704 3.704 0 014.11 0 1.704 1.704 0 001.89 0A3.7 3.7 0 0118 12.683V12a2 2 0 00-2-2V9a2 2 0 00-2-2V6a1 1 0 10-2 0v1h-1V6a1 1 0 10-2 0v1H8V6zm10 8.868a3.704 3.704 0 01-4.055-.036 1.704 1.704 0 00-1.89 0 3.704 3.704 0 01-4.11 0 1.704 1.704 0 00-1.89 0A3.704 3.704 0 012 14.868V17a1 1 0 001 1h14a1 1 0 001-1v-2.132zM9 3a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1zm3 0a1 1 0 011-1h.01a1 1 0 110 2H13a1 1 0 01-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            <span>Caterers</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Bookings -->
+                    {% if user.is_authenticated %}
+                    <li>
+                        <a href="{% url 'bookings:booking_list' %}" class="block px-4 py-2 hover:bg-indigo-700 rounded-md transition-colors duration-200 flex items-center space-x-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                            </svg>
+                            <span>My Bookings</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    <!-- About -->
+                    <li>
+                        <a href="{% url 'core:about' %}" class="block px-4 py-2 hover:bg-indigo-700 rounded-md transition-colors duration-200 flex items-center space-x-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                            </svg>
+                            <span>About Us</span>
+                        </a>
+                    </li>
+                    
+                    <!-- Contact -->
+                    <li>
+                        <a href="{% url 'core:contact' %}" class="block px-4 py-2 hover:bg-indigo-700 rounded-md transition-colors duration-200 flex items-center space-x-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M2.94 6.412A2 2 0 002 8.108V16a2 2 0 002 2h12a2 2 0 002-2V8.108a2 2 0 00-.94-1.696l-6-3.75a2 2 0 00-2.12 0l-6 3.75zm2.615 2.423a1 1 0 10-1.11 1.664l5 3.333a1 1 0 001.11 0l5-3.333a1 1 0 00-1.11-1.664L10 11.798 5.555 8.835z" clip-rule="evenodd" />
+                            </svg>
+                            <span>Contact</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <!-- Authentication Links -->
+            <div class="px-4 py-2 border-t border-indigo-700 mt-4">
+                {% if user.is_authenticated %}
+                <div class="flex items-center space-x-3 mb-3">
+                    <div class="rounded-full h-8 w-8 bg-indigo-600 flex items-center justify-center">
+                        {% if user.profile_picture %}
+                            <img src="{{ user.profile_picture.url }}" alt="{{ user.username }}" class="h-8 w-8 rounded-full">
+                        {% else %}
+                            <span>{{ user.username|slice:":1" }}</span>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <p class="text-sm font-semibold">{{ user.get_full_name|default:user.username }}</p>
+                        <p class="text-xs text-indigo-300">{{ user.user_type|title }}</p>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <a href="{% url 'accounts:profile' %}" class="block px-4 py-2 hover:bg-indigo-700 rounded-md transition-colors duration-200 flex items-center space-x-2 text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clip-rule="evenodd" />
+                        </svg>
+                        <span>Profile</span>
+                    </a>
+                    {% if user.is_provider %}
+                    <a href="{% url 'accounts:provider_dashboard' %}" class="block px-4 py-2 hover:bg-indigo-700 rounded-md transition-colors duration-200 flex items-center space-x-2 text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                        </svg>
+                        <span>Dashboard</span>
+                    </a>
+                    {% endif %}
+                    <a href="{% url 'accounts:logout' %}" class="block px-4 py-2 hover:bg-indigo-700 rounded-md transition-colors duration-200 flex items-center space-x-2 text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd" />
+                        </svg>
+                        <span>Logout</span>
+                    </a>
+                </div>
+                {% else %}
+                <div class="space-y-2">
+                    <a href="{% url 'accounts:login' %}" class="block px-4 py-2 hover:bg-indigo-700 rounded-md transition-colors duration-200 flex items-center space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M3 3a1 1 0 011 1v12a1 1 0 11-2 0V4a1 1 0 011-1zm7.707 3.293a1 1 0 010 1.414L9.414 9H17a1 1 0 110 2H9.414l1.293 1.293a1 1 0 01-1.414 1.414l-3-3a1 1 0 010-1.414l3-3a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                        <span>Login</span>
+                    </a>
+                    <a href="{% url 'accounts:register' %}" class="block px-4 py-2 hover:bg-indigo-700 rounded-md transition-colors duration-200 flex items-center space-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z" />
+                        </svg>
+                        <span>Register</span>
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </aside>
+        
+        <!-- Main Content -->
+        <main class="ml-64 w-full p-8">
+            <!-- Messages/Alerts -->
+            {% if messages %}
+                <div class="mb-6">
+                    {% for message in messages %}
+                        <div class="p-4 mb-2 {% if message.tags == 'success' %}bg-green-100 text-green-700{% elif message.tags == 'error' %}bg-red-100 text-red-700{% elif message.tags == 'info' %}bg-blue-100 text-blue-700{% elif message.tags == 'warning' %}bg-yellow-100 text-yellow-700{% endif %} rounded-md">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+            
+            <!-- Page Title -->
+            <header class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-800">{% block page_title %}{% endblock %}</h1>
+                <div class="mt-1 text-gray-600">{% block page_subtitle %}{% endblock %}</div>
+                <div class="mt-4">{% block page_actions %}{% endblock %}</div>
+            </header>
+            
+            <!-- Page Content -->
+            <div class="bg-white rounded-lg shadow-md p-6">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="bg-indigo-800 text-white py-6 mt-8 ml-64">
+        <div class="container mx-auto px-8">
+            <div class="flex flex-wrap justify-between">
+                <div class="mb-4 w-full md:w-1/3">
+                    <h3 class="text-lg font-semibold mb-3">DaFlavors</h3>
+                    <p class="text-indigo-200 text-sm">Exclusive Venues & Event Catering in Roxas City, Western Visayas, Philippines</p>
+                </div>
+                
+                <div class="mb-4 w-full md:w-1/3">
+                    <h3 class="text-lg font-semibold mb-3">Quick Links</h3>
+                    <ul class="text-indigo-200 text-sm">
+                        <li class="mb-1"><a href="{% url 'core:home' %}" class="hover:text-white">Home</a></li>
+                        <li class="mb-1"><a href="{% url 'venues:venue_list' %}" class="hover:text-white">Venues</a></li>
+                        <li class="mb-1"><a href="{% url 'caterers:caterer_list' %}" class="hover:text-white">Caterers</a></li>
+                        <li class="mb-1"><a href="{% url 'core:about' %}" class="hover:text-white">About Us</a></li>
+                        <li class="mb-1"><a href="{% url 'core:contact' %}" class="hover:text-white">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="w-full md:w-1/3">
+                    <h3 class="text-lg font-semibold mb-3">Contact Us</h3>
+                    <p class="text-indigo-200 text-sm mb-2">Roxas City, Western Visayas, Philippines</p>
+                    <p class="text-indigo-200 text-sm mb-2">Email: info@daflavors.com</p>
+                    <p class="text-indigo-200 text-sm">Phone: +63 123 456 7890</p>
+                </div>
+            </div>
+            
+            <div class="border-t border-indigo-700 pt-4 mt-6 text-center">
+                <p class="text-indigo-300 text-sm">
+                    &copy; {% now "Y" %} DaFlavors. All Rights Reserved. Designed for School Project.
+                </p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- JavaScript -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

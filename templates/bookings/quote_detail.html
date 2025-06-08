@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Quote #{{ quote.id }} for {{ booking.event_type }}{% endblock %}
+
+{% block content %}
+<div class="py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Breadcrumb -->
+        <div class="mb-6 flex items-center space-x-2 text-sm text-gray-500">
+            <a href="{% url 'bookings:list' %}" class="hover:text-indigo-600">Bookings</a>
+            <span>&gt;</span>
+            <a href="{% url 'bookings:detail' booking.id %}" class="hover:text-indigo-600">Booking #{{ booking.id }}</a>
+            <span>&gt;</span>
+            <span class="text-gray-900 font-medium">Quote #{{ quote.id }}</span>
+        </div>
+
+        <!-- Page Header -->
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-2xl font-bold text-gray-900">Quote #{{ quote.id }}</h1>
+            
+            <div class="flex space-x-2">
+                <a href="{% url 'bookings:detail' booking.id %}" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Back to Booking
+                </a>
+                
+                {% if is_provider and quote.status == 'draft' %}
+                <a href="{% url 'bookings:quote_update' booking.id quote.id %}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Edit Quote
+                </a>
+                <a href="{% url 'bookings:quote_send' booking.id quote.id %}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                    Send to Client
+                </a>
+                {% endif %}
+                
+                {% if is_client and quote.status == 'sent' %}
+                <a href="{% url 'bookings:quote_respond' booking.id quote.id %}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Respond to Quote
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Quote Status Banner -->
+        {% if quote.status == 'draft' %}
+        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-yellow-700">
+                        This quote is in draft status and has not been sent to the client.
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% elif quote.status == 'sent' %}
+        <div class="bg-blue-50 border-l-4 border-blue-400 p-4 mb-6">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-blue-700">
+                        This quote has been sent to the client and is awaiting response.
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% elif quote.status == 'accepted' %}
+        <div class="bg-green-50 border-l-4 border-green-400 p-4 mb-6">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-green-700">
+                        This quote has been accepted by the client.
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% elif quote.status == 'rejected' %}
+        <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-red-700">
+                        This quote was rejected by the client.
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% elif quote.status == 'expired' %}
+        <div class="bg-gray-50 border-l-4 border-gray-400 p-4 mb-6">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <p class="text-sm text-gray-700">
+                        This quote has expired.
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Quote Details -->
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-6">
+            <div class="px-4 py-5 sm:px-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Quote Information
+                </h3>
+                <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                    Valid until: {{ quote.valid_until }}
+                </p>
+            </div>
+            <div class="border-t border-gray-200">
+                <dl>
+                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">
+                            Venue Cost
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            {% if quote.venue_cost %}₱{{ quote.venue_cost }}{% else %}Not applicable{% endif %}
+                        </dd>
+                    </div>
+                    <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">
+                            Catering Cost
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            {% if quote.catering_cost %}₱{{ quote.catering_cost }}{% else %}Not applicable{% endif %}
+                        </dd>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">
+                            Service Charges
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            ₱{{ quote.service_charges }}
+                        </dd>
+                    </div>
+                    {% if quote.additional_charges %}
+                    <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">
+                            Additional Charges
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            ₱{{ quote.additional_charges }}
+                            {% if quote.additional_charges_description %}
+                            <p class="mt-1 text-xs italic text-gray-500">{{ quote.additional_charges_description }}</p>
+                            {% endif %}
+                        </dd>
+                    </div>
+                    {% endif %}
+                    <div class="bg-indigo-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-900">
+                            Total Amount
+                        </dt>
+                        <dd class="mt-1 text-lg font-bold text-gray-900 sm:mt-0 sm:col-span-2">
+                            ₱{{ quote.total_amount }}
+                        </dd>
+                    </div>
+                    {% if quote.client_notes %}
+                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">
+                            Notes for Client
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            {{ quote.client_notes|linebreaks }}
+                        </dd>
+                    </div>
+                    {% endif %}
+                    {% if is_provider and quote.provider_notes %}
+                    <div class="bg-yellow-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">
+                            Provider Notes
+                            <span class="block text-xs text-gray-500">(Only visible to provider)</span>
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            {{ quote.provider_notes|linebreaks }}
+                        </dd>
+                    </div>
+                    {% endif %}
+                </dl>
+            </div>
+        </div>
+        
+        <!-- Event Information -->
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-6">
+            <div class="px-4 py-5 sm:px-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Event Information
+                </h3>
+            </div>
+            <div class="border-t border-gray-200">
+                <dl>
+                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">
+                            Event Type
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            {{ booking.event_type }}
+                        </dd>
+                    </div>
+                    <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">
+                            Date & Time
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            {{ booking.event_date|date:"F j, Y" }} from {{ booking.start_time }} to {{ booking.end_time }}
+                        </dd>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">
+                            Guest Count
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            {{ booking.guest_count }} guests
+                        </dd>
+                    </div>
+                    <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">
+                            Venue
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            {% if booking.venue %}
+                                {{ booking.venue.name }}
+                                {% if booking.venue_room %} - {{ booking.venue_room.name }} Room{% endif %}
+                            {% else %}
+                                Not selected
+                            {% endif %}
+                        </dd>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">
+                            Caterer
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            {% if booking.caterer %}
+                                {{ booking.caterer.provider.business_name }}
+                            {% else %}
+                                Not selected
+                            {% endif %}
+                        </dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

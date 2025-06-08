@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Send Quote #{{ quote.id }} to Client{% endblock %}
+
+{% block content %}
+<div class="py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Breadcrumb -->
+        <div class="mb-6 flex items-center space-x-2 text-sm text-gray-500">
+            <a href="{% url 'bookings:list' %}" class="hover:text-indigo-600">Bookings</a>
+            <span>&gt;</span>
+            <a href="{% url 'bookings:detail' booking.id %}" class="hover:text-indigo-600">Booking #{{ booking.id }}</a>
+            <span>&gt;</span>
+            <a href="{% url 'bookings:quote_detail' booking.id quote.id %}" class="hover:text-indigo-600">Quote #{{ quote.id }}</a>
+            <span>&gt;</span>
+            <span class="text-gray-900 font-medium">Send to Client</span>
+        </div>
+
+        <!-- Page Header -->
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-2xl font-bold text-gray-900">Send Quote to Client</h1>
+        </div>
+        
+        <!-- Confirmation Card -->
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Send Quote #{{ quote.id }} to {{ booking.client.get_full_name }}
+                </h3>
+                <div class="mt-2 max-w-xl text-sm text-gray-500">
+                    <p>
+                        You are about to send this quote to the client for their review. Once sent, the client will be notified and can accept or reject the quote.
+                    </p>
+                </div>
+                
+                <!-- Quote Summary -->
+                <div class="mt-5 bg-gray-50 overflow-hidden shadow rounded-lg">
+                    <div class="px-4 py-4 sm:px-6">
+                        <dl class="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
+                            <div class="sm:col-span-1">
+                                <dt class="text-sm font-medium text-gray-500">Total Amount</dt>
+                                <dd class="mt-1 text-lg font-semibold text-gray-900">₱{{ quote.total_amount }}</dd>
+                            </div>
+                            <div class="sm:col-span-1">
+                                <dt class="text-sm font-medium text-gray-500">Valid Until</dt>
+                                <dd class="mt-1 text-sm text-gray-900">{{ quote.valid_until }}</dd>
+                            </div>
+                            {% if quote.venue_cost %}
+                            <div class="sm:col-span-1">
+                                <dt class="text-sm font-medium text-gray-500">Venue Cost</dt>
+                                <dd class="mt-1 text-sm text-gray-900">₱{{ quote.venue_cost }}</dd>
+                            </div>
+                            {% endif %}
+                            {% if quote.catering_cost %}
+                            <div class="sm:col-span-1">
+                                <dt class="text-sm font-medium text-gray-500">Catering Cost</dt>
+                                <dd class="mt-1 text-sm text-gray-900">₱{{ quote.catering_cost }}</dd>
+                            </div>
+                            {% endif %}
+                            {% if quote.client_notes %}
+                            <div class="sm:col-span-2">
+                                <dt class="text-sm font-medium text-gray-500">Client Notes</dt>
+                                <dd class="mt-1 text-sm text-gray-900">{{ quote.client_notes|linebreaks }}</dd>
+                            </div>
+                            {% endif %}
+                        </dl>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="mt-6 flex items-center justify-end space-x-4">
+                    <a href="{% url 'bookings:quote_detail' booking.id quote.id %}" class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Back to Quote
+                    </a>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                            Send Quote to Client
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

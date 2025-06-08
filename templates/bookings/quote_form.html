@@ -1,0 +1,223 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{% if is_update %}Update Quote{% else %}Create Quote{% endif %} - Booking #{{ booking.id }}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Breadcrumb -->
+    <nav class="mb-6">
+        <ol class="flex items-center space-x-2 text-sm text-gray-500">
+            <li><a href="{% url 'core:home' %}" class="hover:text-indigo-600">Home</a></li>
+            <li><span class="mx-2">/</span></li>
+            <li><a href="{% url 'bookings:list' %}" class="hover:text-indigo-600">My Bookings</a></li>
+            <li><span class="mx-2">/</span></li>
+            <li><a href="{% url 'bookings:detail' booking.id %}" class="hover:text-indigo-600">Booking #{{ booking.id }}</a></li>
+            <li><span class="mx-2">/</span></li>
+            <li class="font-medium text-gray-900">{% if is_update %}Update Quote{% else %}Create Quote{% endif %}</li>
+        </ol>
+    </nav>
+
+    <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200">
+        <div class="px-4 py-5 sm:p-6">
+            <h1 class="text-2xl font-semibold text-gray-900 mb-6">{% if is_update %}Update Quote{% else %}Create Quote{% endif %}</h1>
+            
+            <form method="post">
+                {% csrf_token %}
+                
+                <!-- Basic Info -->
+                <div class="space-y-6 mb-8">
+                    <h2 class="text-lg font-medium text-gray-900 border-b pb-2">Booking Details</h2>
+                    
+                    <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6">
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Client</dt>
+                            <dd class="mt-1 text-sm text-gray-900">{{ booking.client.get_full_name|default:booking.client.username }}</dd>
+                        </div>
+                        
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Event Type</dt>
+                            <dd class="mt-1 text-sm text-gray-900">{{ booking.event_type }}</dd>
+                        </div>
+                        
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Date</dt>
+                            <dd class="mt-1 text-sm text-gray-900">{{ booking.event_date }}</dd>
+                        </div>
+                        
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Guest Count</dt>
+                            <dd class="mt-1 text-sm text-gray-900">{{ booking.guest_count }} guests</dd>
+                        </div>
+                    </dl>
+                </div>
+                
+                <!-- Cost Details -->
+                <div class="space-y-6 mb-8">
+                    <h2 class="text-lg font-medium text-gray-900 border-b pb-2">Quote Details</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Venue Cost -->
+                        <div>
+                            <label for="{{ form.venue_cost.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.venue_cost.label }}</label>
+                            <div class="mt-1 relative rounded-md shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 sm:text-sm">₱</span>
+                                </div>
+                                {{ form.venue_cost }}
+                            </div>
+                            {% if form.venue_cost.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ form.venue_cost.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Catering Cost -->
+                        <div>
+                            <label for="{{ form.catering_cost.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.catering_cost.label }}</label>
+                            <div class="mt-1 relative rounded-md shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 sm:text-sm">₱</span>
+                                </div>
+                                {{ form.catering_cost }}
+                            </div>
+                            {% if form.catering_cost.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ form.catering_cost.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Service Charges -->
+                        <div>
+                            <label for="{{ form.service_charges.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.service_charges.label }}</label>
+                            <div class="mt-1 relative rounded-md shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 sm:text-sm">₱</span>
+                                </div>
+                                {{ form.service_charges }}
+                            </div>
+                            {% if form.service_charges.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ form.service_charges.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Additional Charges -->
+                        <div>
+                            <label for="{{ form.additional_charges.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.additional_charges.label }}</label>
+                            <div class="mt-1 relative rounded-md shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 sm:text-sm">₱</span>
+                                </div>
+                                {{ form.additional_charges }}
+                            </div>
+                            {% if form.additional_charges.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ form.additional_charges.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="{{ form.additional_charges_description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.additional_charges_description.label }}</label>
+                        {{ form.additional_charges_description }}
+                        {% if form.additional_charges_description.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ form.additional_charges_description.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Total Amount -->
+                        <div>
+                            <label for="{{ form.total_amount.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.total_amount.label }}</label>
+                            <div class="mt-1 relative rounded-md shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 sm:text-sm">₱</span>
+                                </div>
+                                {{ form.total_amount }}
+                            </div>
+                            {% if form.total_amount.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ form.total_amount.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Valid Until -->
+                        <div>
+                            <label for="{{ form.valid_until.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.valid_until.label }}</label>
+                            {{ form.valid_until }}
+                            {% if form.valid_until.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ form.valid_until.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Notes -->
+                <div class="space-y-6 mb-8">
+                    <h2 class="text-lg font-medium text-gray-900 border-b pb-2">Notes</h2>
+                    
+                    <div>
+                        <label for="{{ form.client_notes.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.client_notes.label }}</label>
+                        {{ form.client_notes }}
+                        {% if form.client_notes.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ form.client_notes.errors.0 }}</p>
+                        {% endif %}
+                        <p class="mt-1 text-xs text-gray-500">These notes will be visible to the client.</p>
+                    </div>
+                    
+                    <div>
+                        <label for="{{ form.provider_notes.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.provider_notes.label }}</label>
+                        {{ form.provider_notes }}
+                        {% if form.provider_notes.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ form.provider_notes.errors.0 }}</p>
+                        {% endif %}
+                        <p class="mt-1 text-xs text-gray-500">These notes are for your reference only and will not be visible to the client.</p>
+                    </div>
+                </div>
+                
+                <div class="mt-8 border-t border-gray-200 pt-6 flex justify-end">
+                    <a href="{% url 'bookings:detail' booking.id %}" class="mr-3 inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Cancel
+                    </a>
+                    <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        {% if is_update %}Update Quote{% else %}Create Quote{% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize date picker
+        flatpickr("input[type=date]", {
+            minDate: "today",
+            dateFormat: "Y-m-d",
+        });
+        
+        // Auto calculate total
+        function calculateTotal() {
+            const venueCost = parseFloat(document.getElementById('{{ form.venue_cost.id_for_label }}').value) || 0;
+            const cateringCost = parseFloat(document.getElementById('{{ form.catering_cost.id_for_label }}').value) || 0;
+            const serviceCharges = parseFloat(document.getElementById('{{ form.service_charges.id_for_label }}').value) || 0;
+            const additionalCharges = parseFloat(document.getElementById('{{ form.additional_charges.id_for_label }}').value) || 0;
+            
+            const total = venueCost + cateringCost + serviceCharges + additionalCharges;
+            
+            document.getElementById('{{ form.total_amount.id_for_label }}').value = total.toFixed(2);
+        }
+        
+        // Add event listeners to all cost fields
+        document.getElementById('{{ form.venue_cost.id_for_label }}').addEventListener('input', calculateTotal);
+        document.getElementById('{{ form.catering_cost.id_for_label }}').addEventListener('input', calculateTotal);
+        document.getElementById('{{ form.service_charges.id_for_label }}').addEventListener('input', calculateTotal);
+        document.getElementById('{{ form.additional_charges.id_for_label }}').addEventListener('input', calculateTotal);
+    });
+</script>
+{% endblock %}

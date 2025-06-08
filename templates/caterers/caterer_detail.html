@@ -1,0 +1,295 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ caterer.provider.business_name }} - DaFlavors{% endblock %}
+
+{% block page_title %}{{ caterer.provider.business_name }}{% endblock %}
+{% block page_subtitle %}Catering Service specializing in {{ caterer.specialty }}{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Left Column: Photos and Info -->
+    <div class="lg:col-span-2">
+        <!-- Image Gallery -->
+        <div class="bg-white rounded-lg shadow mb-6">
+            {% if caterer.images.all %}
+                <div class="relative">
+                    {% with primary_image=caterer.images.filter.is_primary.first %}
+                        {% if primary_image %}
+                            <img src="{{ primary_image.image.url }}" alt="{{ caterer.provider.business_name }}" class="w-full h-96 object-cover rounded-t-lg">
+                        {% else %}
+                            <img src="{{ caterer.images.first.image.url }}" alt="{{ caterer.provider.business_name }}" class="w-full h-96 object-cover rounded-t-lg">
+                        {% endif %}
+                    {% endwith %}
+                </div>
+                
+                <!-- Thumbnail Gallery -->
+                <div class="grid grid-cols-6 gap-2 p-4">
+                    {% for image in caterer.images.all|slice:":6" %}
+                        <img src="{{ image.image.url }}" alt="{{ image.caption }}" class="h-16 w-full object-cover rounded cursor-pointer">
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="w-full h-96 bg-gray-200 flex items-center justify-center rounded-t-lg">
+                    <span class="text-gray-500">No Images Available</span>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Description Section -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-2xl font-semibold mb-4">About This Caterer</h2>
+            <p class="mb-6">{{ caterer.provider.business_description }}</p>
+            
+            <!-- Services Offered -->
+            <h3 class="text-xl font-semibold mb-3">Services Offered</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div class="flex items-center">
+                    {% if caterer.offers_buffet %}
+                        <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                    {% else %}
+                        <svg class="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    {% endif %}
+                    <span>Buffet Service</span>
+                </div>
+                
+                <div class="flex items-center">
+                    {% if caterer.offers_plated %}
+                        <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                    {% else %}
+                        <svg class="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    {% endif %}
+                    <span>Plated Service</span>
+                </div>
+                
+                <div class="flex items-center">
+                    {% if caterer.offers_cocktail %}
+                        <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                    {% else %}
+                        <svg class="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    {% endif %}
+                    <span>Cocktail Reception</span>
+                </div>
+                
+                <div class="flex items-center">
+                    {% if caterer.offers_food_stalls %}
+                        <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                        </svg>
+                    {% else %}
+                        <svg class="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    {% endif %}
+                    <span>Food Stalls</span>
+                </div>
+            </div>
+            
+            <!-- Menu Packages Section -->
+            <h3 class="text-xl font-semibold mb-3">Menu Packages</h3>
+            {% if menu_packages %}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    {% for package in menu_packages %}
+                        <div class="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                            <h4 class="font-semibold text-lg">{{ package.name }}</h4>
+                            <p class="text-sm text-gray-600 mb-2">{{ package.get_package_type_display }}</p>
+                            <p class="text-sm text-gray-700 mb-2">Min. {{ package.min_persons }} persons</p>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="font-bold text-indigo-600">₱{{ package.base_price_per_person }} per person</span>
+                                <a href="{% url 'caterers:menu_detail' caterer.id package.id %}" class="text-sm text-indigo-600 hover:text-indigo-800">View Details</a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="text-center">
+                    <a href="{% url 'caterers:menu_list' caterer.id %}" class="text-indigo-600 hover:text-indigo-800 font-medium">View All Menu Packages</a>
+                </div>
+            {% else %}
+                <p class="text-gray-600 mb-6">This caterer has not added any menu packages yet.</p>
+            {% endif %}
+        </div>
+        
+        <!-- Policies Section -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-2xl font-semibold mb-4">Catering Policies</h2>
+            
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-lg font-semibold mb-2">Setup Policy</h3>
+                    {% if caterer.setup_policy %}
+                        <p>{{ caterer.setup_policy }}</p>
+                    {% else %}
+                        <p class="text-gray-600">No setup policy specified.</p>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-2">Delivery Policy</h3>
+                    {% if caterer.delivery_policy %}
+                        <p>{{ caterer.delivery_policy }}</p>
+                    {% else %}
+                        <p class="text-gray-600">No delivery policy specified.</p>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-2">Payment Policy</h3>
+                    {% if caterer.payment_policy %}
+                        <p>{{ caterer.payment_policy }}</p>
+                    {% else %}
+                        <p class="text-gray-600">No payment policy specified.</p>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-2">Cancellation Policy</h3>
+                    {% if caterer.cancellation_policy %}
+                        <p>{{ caterer.cancellation_policy }}</p>
+                    {% else %}
+                        <p class="text-gray-600">No cancellation policy specified.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Right Column: Contact and Booking Info -->
+    <div class="lg:col-span-1">
+        <!-- Quick Info Card -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h3 class="text-xl font-semibold mb-4">Quick Information</h3>
+            
+            <div class="space-y-4">
+                <!-- Guest Range -->
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-indigo-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"></path>
+                    </svg>
+                    <div>
+                        <p class="text-sm text-gray-600">Guest Capacity</p>
+                        <p class="font-medium">{{ caterer.min_guests }} - {{ caterer.max_guests }} people</p>
+                    </div>
+                </div>
+                
+                <!-- Specialty -->
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-indigo-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                        <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                    </svg>
+                    <div>
+                        <p class="text-sm text-gray-600">Specialty</p>
+                        <p class="font-medium">{{ caterer.specialty }}</p>
+                    </div>
+                </div>
+                
+                <!-- Service Area -->
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-indigo-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <div>
+                        <p class="text-sm text-gray-600">Service Area</p>
+                        <p class="font-medium">{{ caterer.service_area }}</p>
+                    </div>
+                </div>
+                
+                <!-- Available Packages -->
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-indigo-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path>
+                    </svg>
+                    <div>
+                        <p class="text-sm text-gray-600">Menu Packages</p>
+                        <p class="font-medium">{{ menu_packages.count }} available</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contact Info -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h3 class="text-xl font-semibold mb-4">Contact Information</h3>
+            
+            <div class="space-y-4">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-indigo-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
+                    </svg>
+                    <div>
+                        <p class="text-sm text-gray-600">Phone</p>
+                        <p class="font-medium">{{ caterer.provider.business_phone }}</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-indigo-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                    </svg>
+                    <div>
+                        <p class="text-sm text-gray-600">Email</p>
+                        <p class="font-medium">{{ caterer.provider.business_email }}</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-indigo-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <div>
+                        <p class="text-sm text-gray-600">Address</p>
+                        <p class="font-medium">{{ caterer.provider.business_address }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Booking/Inquiry Card -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-xl font-semibold mb-4">Interested in this caterer?</h3>
+            
+            {% if request.user.is_authenticated %}
+                <a href="{% url 'bookings:create' %}?caterer={{ caterer.id }}" class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white text-center font-medium py-3 px-4 rounded-md mb-3">
+                    Book This Caterer
+                </a>
+            {% else %}
+                <a href="{% url 'accounts:login' %}?next={% url 'bookings:create' %}?caterer={{ caterer.id }}" class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white text-center font-medium py-3 px-4 rounded-md mb-3">
+                    Sign in to Book
+                </a>
+            {% endif %}
+            
+            <!-- Owner Actions -->
+            {% if is_owner %}
+                <div class="border-t mt-4 pt-4">
+                    <p class="font-medium text-gray-700 mb-2">Caterer Owner Actions:</p>
+                    <div class="flex space-x-2">
+                        <a href="{% url 'caterers:caterer_update' caterer.id %}" class="flex-1 bg-green-600 hover:bg-green-700 text-white text-center font-medium py-2 px-4 rounded-md">
+                            Edit Profile
+                        </a>
+                        <a href="{% url 'caterers:menu_create' caterer.id %}" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-center font-medium py-2 px-4 rounded-md">
+                            Add Menu
+                        </a>
+                    </div>
+                    <div class="mt-2">
+                        <a href="{% url 'caterers:caterer_delete' caterer.id %}" class="w-full block bg-red-600 hover:bg-red-700 text-white text-center font-medium py-2 px-4 rounded-md">
+                            Delete Profile
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

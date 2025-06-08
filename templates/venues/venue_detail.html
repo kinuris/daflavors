@@ -1,0 +1,295 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ venue.name }} - DaFlavors{% endblock %}
+
+{% block page_title %}{{ venue.name }}{% endblock %}
+{% block page_subtitle %}{{ venue.get_venue_type_display }} in {{ venue.address }}{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Left Column: Photos and Quick Info -->
+    <div class="lg:col-span-2">
+        <!-- Image Gallery -->
+        <div class="bg-white rounded-lg shadow mb-6">
+            {% if venue.images.all %}
+                <div class="relative">
+                    {% with primary_image=venue.images.filter.is_primary.first %}
+                        {% if primary_image %}
+                            <img src="{{ primary_image.image.url }}" alt="{{ venue.name }}" class="w-full h-96 object-cover rounded-t-lg">
+                        {% else %}
+                            <img src="{{ venue.images.first.image.url }}" alt="{{ venue.name }}" class="w-full h-96 object-cover rounded-t-lg">
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <div class="absolute bottom-4 right-4">
+                        <span class="bg-white text-indigo-800 px-3 py-1 rounded-full text-lg font-semibold shadow">
+                            ₱{{ venue.base_price }}
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Thumbnail Gallery -->
+                <div class="grid grid-cols-6 gap-2 p-4">
+                    {% for image in venue.images.all|slice:":6" %}
+                        <img src="{{ image.image.url }}" alt="{{ image.caption }}" class="h-16 w-full object-cover rounded cursor-pointer">
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="w-full h-96 bg-gray-200 flex items-center justify-center rounded-t-lg">
+                    <span class="text-gray-500">No Images Available</span>
+                </div>
+            {% endif %}
+        </div>
+        
+        <!-- Description Section -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h2 class="text-2xl font-semibold mb-4">About This Venue</h2>
+            <p class="mb-6">{{ venue.description }}</p>
+            
+            <!-- Features -->
+            <h3 class="text-xl font-semibold mb-3">Features & Amenities</h3>
+            {% if venue.features.all %}
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+                    {% for feature in venue.features.all %}
+                        <div class="flex items-center">
+                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                            <span>{{ feature.name }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-600 mb-6">No features listed for this venue.</p>
+            {% endif %}
+            
+            <!-- Rooms -->
+            <h3 class="text-xl font-semibold mb-3">Available Rooms/Spaces</h3>
+            {% if venue.rooms.all %}
+                <div class="space-y-4 mb-6">
+                    {% for room in venue.rooms.all %}
+                        <div class="border rounded-lg p-4">
+                            <h4 class="font-semibold text-lg">{{ room.name }}</h4>
+                            <div class="flex flex-wrap gap-6 text-sm text-gray-700 my-2">
+                                <div class="flex items-center">
+                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"></path>
+                                    </svg>
+                                    <span>Capacity: {{ room.capacity }} guests</span>
+                                </div>
+                                
+                                {% if room.price %}
+                                    <div class="flex items-center">
+                                        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.736 6.979C9.208 6.193 9.696 6 10 6c.304 0 .792.193 1.264.979a1 1 0 001.715-1.029C12.279 4.784 11.232 4 10 4s-2.279.784-2.979 1.95a1 1 0 001.715 1.029zM6 12a1 1 0 011-1h.01a1 1 0 110 2H7a1 1 0 01-1-1zm7 0a1 1 0 011-1h.01a1 1 0 110 2H14a1 1 0 01-1-1zm-7 4a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span>Price: ₱{{ room.price }}</span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            {% if room.description %}
+                                <p class="text-gray-700 mt-2">{{ room.description }}</p>
+                            {% endif %}
+                            
+                            <div class="mt-3 flex flex-wrap gap-2">
+                                {% if room.has_av_equipment %}
+                                    <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded text-xs">AV Equipment</span>
+                                {% endif %}
+                                
+                                {% if room.has_stage %}
+                                    <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded text-xs">Stage</span>
+                                {% endif %}
+                                
+                                {% if room.available_layouts %}
+                                    {% for layout in room.available_layouts.split %}
+                                        <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded text-xs">{{ layout|capfirst }} Layout</span>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-gray-600 mb-6">No rooms listed for this venue.</p>
+            {% endif %}
+        </div>
+        
+        <!-- Policies Section -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-2xl font-semibold mb-4">Venue Policies</h2>
+            
+            <div class="space-y-6">
+                <div>
+                    <h3 class="text-lg font-semibold mb-2">Booking Policy</h3>
+                    {% if venue.booking_policy %}
+                        <p>{{ venue.booking_policy }}</p>
+                    {% else %}
+                        <p class="text-gray-600">No booking policy specified.</p>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-2">Cancellation Policy</h3>
+                    {% if venue.cancellation_policy %}
+                        <p>{{ venue.cancellation_policy }}</p>
+                    {% else %}
+                        <p class="text-gray-600">No cancellation policy specified.</p>
+                    {% endif %}
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold mb-2">Corkage Policy</h3>
+                    {% if venue.corkage_policy %}
+                        <p>{{ venue.corkage_policy }}</p>
+                    {% else %}
+                        <p class="text-gray-600">No corkage policy specified.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Right Column: Booking & Provider Info -->
+    <div class="lg:col-span-1">
+        <!-- Quick Info Card -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h3 class="text-xl font-semibold mb-4">Quick Information</h3>
+            
+            <div class="space-y-4">
+                <!-- Capacity -->
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-indigo-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"></path>
+                    </svg>
+                    <div>
+                        <p class="text-sm text-gray-600">Capacity</p>
+                        <p class="font-medium">{{ venue.capacity }} people</p>
+                    </div>
+                </div>
+                
+                <!-- Hours -->
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-indigo-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                    </svg>
+                    <div>
+                        <p class="text-sm text-gray-600">Operating Hours</p>
+                        <p class="font-medium">{{ venue.opening_time|time:"g:i A" }} - {{ venue.closing_time|time:"g:i A" }}</p>
+                    </div>
+                </div>
+                
+                <!-- Address -->
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-indigo-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                    </svg>
+                    <div>
+                        <p class="text-sm text-gray-600">Address</p>
+                        <p class="font-medium">{{ venue.address }}</p>
+                    </div>
+                </div>
+                
+                <!-- Price -->
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-indigo-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.736 6.979C9.208 6.193 9.696 6 10 6c.304 0 .792.193 1.264.979a1 1 0 001.715-1.029C12.279 4.784 11.232 4 10 4s-2.279.784-2.979 1.95a1 1 0 001.715 1.029zM6 12a1 1 0 011-1h.01a1 1 0 110 2H7a1 1 0 01-1-1zm7 0a1 1 0 011-1h.01a1 1 0 110 2H14a1 1 0 01-1-1zm-7 4a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                    </svg>
+                    <div>
+                        <p class="text-sm text-gray-600">Starting Price</p>
+                        <p class="font-medium">₱{{ venue.base_price }}</p>
+                    </div>
+                </div>
+                
+                <!-- Venue Type -->
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-indigo-600 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"></path>
+                    </svg>
+                    <div>
+                        <p class="text-sm text-gray-600">Venue Type</p>
+                        <p class="font-medium">{{ venue.get_venue_type_display }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Provider Info -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+            <h3 class="text-xl font-semibold mb-4">Venue Provider</h3>
+            
+            <div class="flex items-center mb-4">
+                {% if venue.provider.business_logo %}
+                    <img src="{{ venue.provider.business_logo.url }}" alt="{{ venue.provider.business_name }}" class="h-12 w-12 object-cover rounded-full mr-4">
+                {% else %}
+                    <div class="h-12 w-12 rounded-full bg-indigo-600 flex items-center justify-center text-white text-lg font-bold mr-4">
+                        {{ venue.provider.business_name|slice:":1" }}
+                    </div>
+                {% endif %}
+                
+                <div>
+                    <h4 class="font-medium">{{ venue.provider.business_name }}</h4>
+                    <p class="text-sm text-gray-600">{{ venue.provider.service_area }}</p>
+                </div>
+            </div>
+            
+            <div class="space-y-2 mb-4">
+                <p class="text-sm flex items-center">
+                    <svg class="w-4 h-4 text-indigo-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                        <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                    </svg>
+                    {{ venue.provider.business_email }}
+                </p>
+                
+                <p class="text-sm flex items-center">
+                    <svg class="w-4 h-4 text-indigo-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
+                    </svg>
+                    {{ venue.provider.business_phone }}
+                </p>
+            </div>
+            
+            <p class="text-sm mb-4">{{ venue.provider.business_description|truncatewords:30 }}</p>
+            
+            <!-- View more venues from this provider -->
+            <a href="{% url 'venues:venue_list' %}?provider={{ venue.provider.id }}" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center">
+                View more venues from this provider
+                <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+                </svg>
+            </a>
+        </div>
+        
+        <!-- Booking/Inquiry Card -->
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="text-xl font-semibold mb-4">Interested in this venue?</h3>
+            
+            {% if request.user.is_authenticated %}
+                <a href="{% url 'bookings:create' %}?venue={{ venue.id }}" class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white text-center font-medium py-3 px-4 rounded-md mb-3">
+                    Book This Venue
+                </a>
+            {% else %}
+                <a href="{% url 'accounts:login' %}?next={% url 'bookings:create' %}?venue={{ venue.id }}" class="block w-full bg-indigo-600 hover:bg-indigo-700 text-white text-center font-medium py-3 px-4 rounded-md mb-3">
+                    Sign in to Book
+                </a>
+            {% endif %}
+            
+            <!-- Owner Actions -->
+            {% if is_owner %}
+                <div class="border-t mt-4 pt-4">
+                    <p class="font-medium text-gray-700 mb-2">Venue Owner Actions:</p>
+                    <div class="flex space-x-2">
+                        <a href="{% url 'venues:venue_update' venue.id %}" class="flex-1 bg-green-600 hover:bg-green-700 text-white text-center font-medium py-2 px-4 rounded-md">
+                            Edit
+                        </a>
+                        <a href="{% url 'venues:venue_delete' venue.id %}" class="flex-1 bg-red-600 hover:bg-red-700 text-white text-center font-medium py-2 px-4 rounded-md">
+                            Delete
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

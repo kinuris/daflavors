@@ -1,0 +1,156 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Select Menu Package - Booking #{{ booking.id }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Breadcrumb -->
+    <nav class="mb-6">
+        <ol class="flex items-center space-x-2 text-sm text-gray-500">
+            <li><a href="{% url 'core:home' %}" class="hover:text-indigo-600">Home</a></li>
+            <li><span class="mx-2">/</span></li>
+            <li><a href="{% url 'bookings:list' %}" class="hover:text-indigo-600">My Bookings</a></li>
+            <li><span class="mx-2">/</span></li>
+            <li><a href="{% url 'bookings:detail' booking.id %}" class="hover:text-indigo-600">Booking #{{ booking.id }}</a></li>
+            <li><span class="mx-2">/</span></li>
+            <li class="font-medium text-gray-900">Select Menu Package</li>
+        </ol>
+    </nav>
+
+    <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200">
+        <div class="px-4 py-5 sm:p-6">
+            <h1 class="text-2xl font-semibold text-gray-900 mb-6">Select Menu Package</h1>
+            
+            <div class="mb-8">
+                <h2 class="text-lg font-medium text-gray-900 mb-2">Available Menu Packages</h2>
+                <p class="text-gray-600">Select from the available menu packages offered by {{ booking.caterer.name }}.</p>
+                
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {% for package in menu_packages %}
+                        <div class="border rounded-lg overflow-hidden hover:shadow-md transition-shadow duration-200 
+                            {% if form.menu_package.value|stringformat:'s' == package.id|stringformat:'s' %}border-indigo-500 ring-2 ring-indigo-500{% else %}border-gray-200{% endif %}">
+                            <div class="px-4 py-5">
+                                <h3 class="text-lg font-medium text-gray-900">{{ package.name }}</h3>
+                                
+                                <div class="mt-2">
+                                    <p class="text-sm text-gray-600">{{ package.description|truncatechars:100 }}</p>
+                                </div>
+                                
+                                <div class="mt-4 flex items-center justify-between">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                        {% if package.service_style == 'Buffet' %}bg-green-100 text-green-800
+                                        {% elif package.service_style == 'Plated' %}bg-blue-100 text-blue-800
+                                        {% elif package.service_style == 'Family Style' %}bg-purple-100 text-purple-800
+                                        {% elif package.service_style == 'Cocktail' %}bg-yellow-100 text-yellow-800
+                                        {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                        {{ package.service_style }}
+                                    </span>
+                                    <span class="text-sm font-medium text-gray-900">₱{{ package.price_per_person }} / person</span>
+                                </div>
+                                
+                                <div class="mt-2 flex items-center justify-between text-xs text-gray-500">
+                                    <span>Min guests: {{ package.min_guest_count }}</span>
+                                    <span>Max guests: {{ package.max_guest_count }}</span>
+                                </div>
+                                
+                                <div class="mt-4">
+                                    {% if form.menu_package.value|stringformat:'s' == package.id|stringformat:'s' %}
+                                        <button type="button" class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600" disabled>
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                            </svg>
+                                            Selected
+                                        </button>
+                                    {% else %}
+                                        <a href="?menu={{ package.id }}" class="w-full inline-flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                            Select This Package
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <form method="post" class="mt-8 border-t border-gray-200 pt-6">
+                {% csrf_token %}
+                
+                <!-- Hidden menu package field -->
+                {{ form.menu_package }}
+                
+                <!-- Dietary Requirements -->
+                <div class="space-y-6 mb-8">
+                    <h2 class="text-lg font-medium text-gray-900">Dietary Requirements</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div>
+                            <label for="{{ form.vegetarian_count.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.vegetarian_count.label }}</label>
+                            {{ form.vegetarian_count }}
+                            {% if form.vegetarian_count.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ form.vegetarian_count.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.gluten_free_count.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.gluten_free_count.label }}</label>
+                            {{ form.gluten_free_count }}
+                            {% if form.gluten_free_count.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ form.gluten_free_count.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.nut_free_count.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.nut_free_count.label }}</label>
+                            {{ form.nut_free_count }}
+                            {% if form.nut_free_count.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ form.nut_free_count.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <div>
+                            <label for="{{ form.halal_count.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.halal_count.label }}</label>
+                            {{ form.halal_count }}
+                            {% if form.halal_count.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ form.halal_count.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="{{ form.other_dietary_requirements.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.other_dietary_requirements.label }}</label>
+                        {{ form.other_dietary_requirements }}
+                        {% if form.other_dietary_requirements.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ form.other_dietary_requirements.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Additional Notes -->
+                <div class="space-y-6 mb-8">
+                    <h2 class="text-lg font-medium text-gray-900">Additional Notes</h2>
+                    
+                    <div>
+                        <label for="{{ form.notes.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.notes.label }}</label>
+                        {{ form.notes }}
+                        {% if form.notes.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ form.notes.errors.0 }}</p>
+                        {% endif %}
+                        <p class="mt-2 text-xs text-gray-500">Add any special instructions or notes related to your menu selection.</p>
+                    </div>
+                </div>
+                
+                <div class="mt-8 flex justify-end">
+                    <a href="{% url 'bookings:detail' booking.id %}" class="mr-3 inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Cancel
+                    </a>
+                    <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Save Menu Selection
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

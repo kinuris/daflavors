@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Respond to Quote #{{ quote.id }}{% endblock %}
+
+{% block content %}
+<div class="py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Breadcrumb -->
+        <div class="mb-6 flex items-center space-x-2 text-sm text-gray-500">
+            <a href="{% url 'bookings:list' %}" class="hover:text-indigo-600">Bookings</a>
+            <span>&gt;</span>
+            <a href="{% url 'bookings:detail' booking.id %}" class="hover:text-indigo-600">Booking #{{ booking.id }}</a>
+            <span>&gt;</span>
+            <a href="{% url 'bookings:quote_detail' booking.id quote.id %}" class="hover:text-indigo-600">Quote #{{ quote.id }}</a>
+            <span>&gt;</span>
+            <span class="text-gray-900 font-medium">Respond to Quote</span>
+        </div>
+
+        <!-- Page Header -->
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold text-gray-900">Respond to Quote #{{ quote.id }}</h1>
+        </div>
+        
+        <!-- Response Card -->
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+            <div class="px-4 py-5 sm:p-6">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Review and Respond
+                </h3>
+                <div class="mt-2 max-w-xl text-sm text-gray-500">
+                    <p>
+                        Please review the quote details carefully before making your decision. If you accept this quote, a deposit payment will be required to confirm your booking.
+                    </p>
+                </div>
+                
+                <!-- Quote Summary -->
+                <div class="mt-5 bg-gray-50 overflow-hidden shadow rounded-lg">
+                    <div class="px-4 py-4 sm:px-6">
+                        <dl class="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
+                            <div class="sm:col-span-1">
+                                <dt class="text-sm font-medium text-gray-500">Total Amount</dt>
+                                <dd class="mt-1 text-lg font-semibold text-gray-900">₱{{ quote.total_amount }}</dd>
+                            </div>
+                            <div class="sm:col-span-1">
+                                <dt class="text-sm font-medium text-gray-500">Valid Until</dt>
+                                <dd class="mt-1 text-sm text-gray-900">{{ quote.valid_until }}</dd>
+                            </div>
+                            <div class="sm:col-span-1">
+                                <dt class="text-sm font-medium text-gray-500">Event</dt>
+                                <dd class="mt-1 text-sm text-gray-900">{{ booking.event_type }} ({{ booking.guest_count }} guests)</dd>
+                            </div>
+                            <div class="sm:col-span-1">
+                                <dt class="text-sm font-medium text-gray-500">Date & Time</dt>
+                                <dd class="mt-1 text-sm text-gray-900">{{ booking.event_date|date:"F j, Y" }} ({{ booking.start_time }} - {{ booking.end_time }})</dd>
+                            </div>
+                            {% if quote.venue_cost %}
+                            <div class="sm:col-span-1">
+                                <dt class="text-sm font-medium text-gray-500">Venue Cost</dt>
+                                <dd class="mt-1 text-sm text-gray-900">₱{{ quote.venue_cost }}</dd>
+                            </div>
+                            {% endif %}
+                            {% if quote.catering_cost %}
+                            <div class="sm:col-span-1">
+                                <dt class="text-sm font-medium text-gray-500">Catering Cost</dt>
+                                <dd class="mt-1 text-sm text-gray-900">₱{{ quote.catering_cost }}</dd>
+                            </div>
+                            {% endif %}
+                            {% if quote.service_charges %}
+                            <div class="sm:col-span-1">
+                                <dt class="text-sm font-medium text-gray-500">Service Charges</dt>
+                                <dd class="mt-1 text-sm text-gray-900">₱{{ quote.service_charges }}</dd>
+                            </div>
+                            {% endif %}
+                            {% if quote.additional_charges %}
+                            <div class="sm:col-span-1">
+                                <dt class="text-sm font-medium text-gray-500">Additional Charges</dt>
+                                <dd class="mt-1 text-sm text-gray-900">₱{{ quote.additional_charges }}</dd>
+                            </div>
+                            {% endif %}
+                            {% if quote.additional_charges_description %}
+                            <div class="sm:col-span-2">
+                                <dt class="text-sm font-medium text-gray-500">Additional Charges Description</dt>
+                                <dd class="mt-1 text-sm text-gray-900">{{ quote.additional_charges_description }}</dd>
+                            </div>
+                            {% endif %}
+                            {% if quote.client_notes %}
+                            <div class="sm:col-span-2">
+                                <dt class="text-sm font-medium text-gray-500">Notes</dt>
+                                <dd class="mt-1 text-sm text-gray-900">{{ quote.client_notes|linebreaks }}</dd>
+                            </div>
+                            {% endif %}
+                        </dl>
+                    </div>
+                </div>
+                
+                <!-- Response Form -->
+                <div class="mt-6">
+                    <h4 class="text-md font-medium text-gray-900">Your Response</h4>
+                    <div class="mt-3">                            <p class="text-sm text-gray-500">
+                            If you accept, a 50% deposit (₱<span class="deposit-amount">{{ quote.total_amount|floatformat:2|stringformat:'g' }}</span>) will be required to confirm your booking.
+                        </p>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="mt-4 flex items-center space-x-4">
+                        <a href="{% url 'bookings:quote_detail' booking.id quote.id %}" class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                            Back to Quote
+                        </a>
+                        
+                        <form method="post" class="inline-flex space-x-4">
+                            {% csrf_token %}
+                            <button type="submit" name="response" value="reject" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                Decline Quote
+                            </button>
+                            
+                            <button type="submit" name="response" value="accept" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                Accept Quote
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Calculate deposit amount (50% of total)
+        var totalAmount = parseFloat("{{ quote.total_amount|floatformat:2 }}");
+        var depositAmount = totalAmount * 0.5;
+        
+        // Display deposit amount
+        var depositElements = document.querySelectorAll('.deposit-amount');
+        depositElements.forEach(function(element) {
+            element.textContent = depositAmount.toFixed(2);
+        });
+    });
+</script>
+{% endblock %}

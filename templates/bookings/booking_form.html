@@ -1,0 +1,202 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}{% if booking %}Update Booking{% else %}Create New Booking{% endif %}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Breadcrumb -->
+    <nav class="mb-6">
+        <ol class="flex items-center space-x-2 text-sm text-gray-500">
+            <li><a href="{% url 'core:home' %}" class="hover:text-indigo-600">Home</a></li>
+            <li><span class="mx-2">/</span></li>
+            <li><a href="{% url 'bookings:list' %}" class="hover:text-indigo-600">My Bookings</a></li>
+            <li><span class="mx-2">/</span></li>
+            <li class="font-medium text-gray-900">{% if booking %}Update Booking{% else %}Create New Booking{% endif %}</li>
+        </ol>
+    </nav>
+
+    <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200">
+        <div class="px-4 py-5 sm:p-6">
+            <h1 class="text-2xl font-semibold text-gray-900 mb-6">
+                {% if booking %}Update Booking Details{% else %}Create New Booking{% endif %}
+            </h1>
+            
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <!-- Event Details -->
+                <div class="space-y-6 mb-8">
+                    <h2 class="text-lg font-medium text-gray-900 border-b pb-2">Event Details</h2>
+                    
+                    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                        <!-- Event Type -->
+                        <div>
+                            <label for="{{ form.event_type.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.event_type.label }}</label>
+                            {{ form.event_type }}
+                            {% if form.event_type.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ form.event_type.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Guest Count -->
+                        <div>
+                            <label for="{{ form.guest_count.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.guest_count.label }}</label>
+                            {{ form.guest_count }}
+                            {% if form.guest_count.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ form.guest_count.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+                        <!-- Event Date -->
+                        <div>
+                            <label for="{{ form.event_date.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.event_date.label }}</label>
+                            {{ form.event_date }}
+                            {% if form.event_date.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ form.event_date.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Start Time -->
+                        <div>
+                            <label for="{{ form.start_time.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.start_time.label }}</label>
+                            {{ form.start_time }}
+                            {% if form.start_time.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ form.start_time.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- End Time -->
+                        <div>
+                            <label for="{{ form.end_time.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.end_time.label }}</label>
+                            {{ form.end_time }}
+                            {% if form.end_time.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ form.end_time.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Venue Selection -->
+                <div class="space-y-6 mb-8">
+                    <h2 class="text-lg font-medium text-gray-900 border-b pb-2">Venue Selection</h2>
+                    
+                    <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                        <!-- Venue -->
+                        <div>
+                            <label for="{{ form.venue.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.venue.label }}</label>
+                            {{ form.venue }}
+                            {% if form.venue.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ form.venue.errors.0 }}</p>
+                            {% else %}
+                                <p class="mt-2 text-sm text-gray-500">Select a venue or leave blank if you only need catering services.</p>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Venue Room -->
+                        <div>
+                            <label for="{{ form.venue_room.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.venue_room.label }}</label>
+                            {{ form.venue_room }}
+                            {% if form.venue_room.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ form.venue_room.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Catering Selection -->
+                <div class="space-y-6 mb-8">
+                    <h2 class="text-lg font-medium text-gray-900 border-b pb-2">Catering Selection</h2>
+                    
+                    <div>
+                        <label for="{{ form.caterer.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.caterer.label }}</label>
+                        {{ form.caterer }}
+                        {% if form.caterer.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ form.caterer.errors.0 }}</p>
+                        {% else %}
+                            <p class="mt-2 text-sm text-gray-500">Select a caterer or leave blank if you only need venue services.</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Special Requests -->
+                <div class="space-y-6 mb-8">
+                    <h2 class="text-lg font-medium text-gray-900 border-b pb-2">Additional Information</h2>
+                    
+                    <div>
+                        <label for="{{ form.special_requests.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.special_requests.label }}</label>
+                        {{ form.special_requests }}
+                        {% if form.special_requests.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ form.special_requests.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="mt-8 border-t border-gray-200 pt-6 flex justify-end">
+                    <a href="{% if booking %}{% url 'bookings:detail' booking.id %}{% else %}{% url 'bookings:list' %}{% endif %}" class="mr-3 inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Cancel
+                    </a>
+                    <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        {% if booking %}Update Booking{% else %}Create Booking{% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize date and time pickers
+        flatpickr("input[type=date]", {
+            minDate: "today",
+            dateFormat: "Y-m-d",
+        });
+        
+        // Handle venue room loading
+        const venueSelect = document.getElementById('{{ form.venue.id_for_label }}');
+        const roomSelect = document.getElementById('{{ form.venue_room.id_for_label }}');
+        
+        if (venueSelect && roomSelect) {
+            venueSelect.addEventListener('change', function() {
+                const venueId = this.value;
+                
+                if (!venueId) {
+                    // Clear room options if no venue is selected
+                    roomSelect.innerHTML = '<option value="">---------</option>';
+                    return;
+                }
+                
+                // Fetch rooms for selected venue
+                fetch(`/bookings/api/venue-rooms/?venue_id=${venueId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        roomSelect.innerHTML = '<option value="">---------</option>';
+                        
+                        data.rooms.forEach(room => {
+                            const option = document.createElement('option');
+                            option.value = room.id;
+                            option.textContent = `${room.name} (Capacity: ${room.capacity})`;
+                            roomSelect.appendChild(option);
+                        });
+                    })
+                    .catch(error => console.error('Error loading rooms:', error));
+            });
+            
+            // Trigger change event if venue is already selected (edit mode)
+            if (venueSelect.value) {
+                venueSelect.dispatchEvent(new Event('change'));
+            }
+        }
+    });
+</script>
+{% endblock %}

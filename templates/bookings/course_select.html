@@ -1,0 +1,110 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Select Menu Items - Booking #{{ booking.id }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Breadcrumb -->
+    <nav class="mb-6">
+        <ol class="flex items-center space-x-2 text-sm text-gray-500">
+            <li><a href="{% url 'core:home' %}" class="hover:text-indigo-600">Home</a></li>
+            <li><span class="mx-2">/</span></li>
+            <li><a href="{% url 'bookings:list' %}" class="hover:text-indigo-600">My Bookings</a></li>
+            <li><span class="mx-2">/</span></li>
+            <li><a href="{% url 'bookings:detail' booking.id %}" class="hover:text-indigo-600">Booking #{{ booking.id }}</a></li>
+            <li><span class="mx-2">/</span></li>
+            <li><a href="{% url 'bookings:menu_select' booking.id %}" class="hover:text-indigo-600">Select Menu Package</a></li>
+            <li><span class="mx-2">/</span></li>
+            <li class="font-medium text-gray-900">Select Menu Items</li>
+        </ol>
+    </nav>
+
+    <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200">
+        <div class="px-4 py-5 sm:p-6">
+            <h1 class="text-2xl font-semibold text-gray-900 mb-6">Select Menu Items</h1>
+            
+            <div class="mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-medium text-gray-900">{{ menu_selection.menu_package.name }}</h2>
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                        {% if menu_selection.menu_package.service_style == 'Buffet' %}bg-green-100 text-green-800
+                        {% elif menu_selection.menu_package.service_style == 'Plated' %}bg-blue-100 text-blue-800
+                        {% elif menu_selection.menu_package.service_style == 'Family Style' %}bg-purple-100 text-purple-800
+                        {% elif menu_selection.menu_package.service_style == 'Cocktail' %}bg-yellow-100 text-yellow-800
+                        {% else %}bg-gray-100 text-gray-800{% endif %}">
+                        {{ menu_selection.menu_package.service_style }}
+                    </span>
+                </div>
+                
+                <p class="text-gray-600">Please select your preferred menu items for each course. The chef may recommend alternatives if items are unavailable on your event date.</p>
+            </div>
+            
+            <form method="post" class="mt-8">
+                {% csrf_token %}
+                
+                <!-- Menu Selections by Course -->
+                <div class="space-y-8">
+                    {% for course_data in course_forms %}
+                        <div class="border rounded-lg overflow-hidden">
+                            <div class="px-6 py-4 bg-gray-50">
+                                <h3 class="text-lg font-medium text-gray-900">{{ course_data.category.name }}</h3>
+                                {% if course_data.category.description %}
+                                    <p class="mt-1 text-sm text-gray-500">{{ course_data.category.description }}</p>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="px-6 py-5">
+                                {{ course_data.form.course_category }}
+                                
+                                <div class="space-y-4">
+                                    {% if course_data.menu_items %}
+                                        {% for field in course_data.form.visible_fields %}
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-3">{{ field.label }}</label>
+                                                <div class="space-y-3">
+                                                    {% for choice in field %}
+                                                        <div class="relative flex items-start">
+                                                            <div class="flex items-center h-6">
+                                                                {{ choice.tag }}
+                                                            </div>
+                                                            <div class="ml-3 text-sm">
+                                                                <label for="{{ choice.id_for_label }}" class="font-medium text-gray-700">{{ choice.choice_label }}</label>
+                                                                {% for item in course_data.menu_items %}
+                                                                    {% if item.id|stringformat:'s' == choice.choice_value|stringformat:'s' %}
+                                                                        {% if item.description %}
+                                                                            <p class="text-gray-500 mt-1">{{ item.description }}</p>
+                                                                        {% endif %}
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </div>
+                                                        </div>
+                                                    {% endfor %}
+                                                </div>
+                                                {% if field.errors %}
+                                                    <p class="mt-2 text-sm text-red-600">{{ field.errors.0 }}</p>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        <p class="text-gray-500 italic">No menu items available for this course.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="mt-8 border-t border-gray-200 pt-6 flex justify-end">
+                    <a href="{% url 'bookings:detail' booking.id %}" class="mr-3 inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Cancel
+                    </a>
+                    <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Save Menu Selections
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
