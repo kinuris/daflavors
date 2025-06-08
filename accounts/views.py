@@ -77,24 +77,49 @@ def register_view(request):
 def profile_view(request):
     user = request.user
     
+    # Check if user is returning from password change
+    if 'password_changed' in request.GET:
+        messages.success(request, "Password changed successfully!")
+        return redirect('accounts:profile')
+    
     if request.method == 'POST':
+        print(f"DEBUG: POST data received: {request.POST}")
+        print(f"DEBUG: FILES data received: {request.FILES}")
+        
         user_form = UserProfileUpdateForm(request.POST, request.FILES, instance=user)
         provider_form = None
         
+        print(f"DEBUG: User form is valid: {user_form.is_valid()}")
+        if not user_form.is_valid():
+            print(f"DEBUG: User form errors: {user_form.errors}")
+        
+        # Always save user form if valid (including profile picture)
+        if user_form.is_valid():
+            saved_user = user_form.save()
+            print(f"DEBUG: User saved, profile_picture: {saved_user.profile_picture}")
+            messages.success(request, "Profile updated successfully!")
+            return redirect('accounts:profile')
+        else:
+            messages.error(request, "Please correct the errors below.")
+        
+        # For provider users, also handle provider form if fields are present
         if user.is_provider():
             provider_profile = user.provider_profile
-            provider_form = ProviderProfileForm(request.POST, request.FILES, instance=provider_profile)
+            # Only validate provider form if provider-specific fields are in POST data
+            provider_fields = ['business_name', 'business_description', 'business_type', 'website']
+            has_provider_data = any(field in request.POST for field in provider_fields)
             
-            if user_form.is_valid() and provider_form.is_valid():
-                user_form.save()
-                provider_form.save()
-                messages.success(request, "Profile updated successfully!")
-                return redirect('accounts:profile')
-        else:
-            if user_form.is_valid():
-                user_form.save()
-                messages.success(request, "Profile updated successfully!")
-                return redirect('accounts:profile')
+            if has_provider_data:
+                provider_form = ProviderProfileForm(request.POST, request.FILES, instance=provider_profile)
+                print(f"DEBUG: Provider form is valid: {provider_form.is_valid()}")
+                if not provider_form.is_valid():
+                    print(f"DEBUG: Provider form errors: {provider_form.errors}")
+                
+                if provider_form.is_valid():
+                    provider_form.save()
+                    print("DEBUG: Provider profile saved")
+                else:
+                    messages.error(request, "Please correct the provider profile errors below.")
     else:
         user_form = UserProfileUpdateForm(instance=user)
         provider_form = None

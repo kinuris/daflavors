@@ -26,7 +26,8 @@
             <!-- Navigation Links -->
             <nav class="py-4">
                 <ul class="space-y-2">
-                    <!-- Home -->
+                    <!-- Home - Hidden for providers -->
+                    {% if not user.is_provider %}
                     <li>
                         <a href="{% url 'core:home' %}" class="flex items-center px-4 py-2 hover:bg-indigo-700 rounded-md transition-colors duration-200 space-x-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -36,7 +37,7 @@
                         </a>
                     </li>
                     
-                    <!-- Venues -->
+                    <!-- Venues - Hidden for providers -->
                     <li>
                         <a href="{% url 'venues:list' %}" class="flex items-center px-4 py-2 hover:bg-indigo-700 rounded-md transition-colors duration-200 space-x-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -46,7 +47,7 @@
                         </a>
                     </li>
                     
-                    <!-- Caterers -->
+                    <!-- Caterers - Hidden for providers -->
                     <li>
                         <a href="{% url 'caterers:caterer_list' %}" class="flex items-center px-4 py-2 hover:bg-indigo-700 rounded-md transition-colors duration-200 space-x-2">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -56,7 +57,7 @@
                         </a>
                     </li>
                     
-                    <!-- Bookings -->
+                    <!-- Bookings - Hidden for providers -->
                     {% if user.is_authenticated %}
                     <li>
                         <a href="{% url 'bookings:list' %}" class="flex items-center px-4 py-2 hover:bg-indigo-700 rounded-md transition-colors duration-200 space-x-2">
@@ -66,6 +67,7 @@
                             <span>My Bookings</span>
                         </a>
                     </li>
+                    {% endif %}
                     {% endif %}
                     
                     <!-- About -->

@@ -65,5 +65,24 @@ class UserProfileUpdateForm(forms.ModelForm):
             'email': forms.EmailInput(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500'}),
             'phone_number': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500'}),
             'address': forms.Textarea(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500', 'rows': 3}),
-            'profile_picture': forms.FileInput(attrs={'class': 'w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500'})
+            'profile_picture': forms.FileInput(attrs={
+                'class': 'w-full border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500',
+                'accept': 'image/*'
+            })
         }
+    
+    def clean_profile_picture(self):
+        profile_picture = self.cleaned_data.get('profile_picture')
+        
+        if profile_picture:
+            # Check file size (5MB limit)
+            if profile_picture.size > 5 * 1024 * 1024:
+                raise forms.ValidationError("Image file too large. Please upload an image smaller than 5MB.")
+            
+            # Check file type
+            valid_extensions = ['.jpg', '.jpeg', '.png', '.gif']
+            file_extension = profile_picture.name.lower().split('.')[-1]
+            if f'.{file_extension}' not in valid_extensions:
+                raise forms.ValidationError("Invalid file type. Please upload a JPG, PNG, or GIF image.")
+        
+        return profile_picture
