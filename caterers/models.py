@@ -64,6 +64,11 @@ class MenuPackage(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
+    @property
+    def price_per_person(self):
+        """Alias for base_price_per_person for template compatibility"""
+        return self.base_price_per_person
+    
     def __str__(self):
         return f"{self.name} - {self.caterer}"
 

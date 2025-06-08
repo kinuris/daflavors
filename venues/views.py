@@ -4,8 +4,8 @@ from django.contrib import messages
 from django.forms import inlineformset_factory
 from django.db import transaction
 from django.http import Http404
-from .models import Venue, VenueImage, VenueFeature, VenueRoom, VenueAvailability
-from .forms import VenueForm, VenueImageForm, VenueFeatureForm, VenueRoomForm, VenueAvailabilityForm
+from .models import Venue, VenueImage, VenueAvailability
+from .forms import VenueForm, VenueImageForm, VenueAvailabilityForm
 from accounts.models import ProviderProfile
 
 def venue_list(request):
@@ -45,10 +45,6 @@ def venue_detail(request, venue_id):
     """
     venue = get_object_or_404(Venue, id=venue_id)
     
-    # Get all venue rooms and features
-    rooms = venue.rooms.all()
-    features = venue.features.all()
-    
     # Check if the current user is the owner of this venue
     is_owner = False
     if request.user.is_authenticated and hasattr(request.user, 'provider_profile'):
@@ -56,8 +52,6 @@ def venue_detail(request, venue_id):
     
     context = {
         'venue': venue,
-        'rooms': rooms,
-        'features': features,
         'is_owner': is_owner,
     }
     return render(request, 'venues/venue_detail.html', context)
@@ -72,16 +66,12 @@ def venue_create(request):
         return redirect('accounts:become_provider')
     
     VenueImageFormSet = inlineformset_factory(Venue, VenueImage, form=VenueImageForm, extra=3, can_delete=True)
-    VenueRoomFormSet = inlineformset_factory(Venue, VenueRoom, form=VenueRoomForm, extra=2, can_delete=True)
-    VenueFeatureFormSet = inlineformset_factory(Venue, VenueFeature, form=VenueFeatureForm, extra=3, can_delete=True)
     
     if request.method == 'POST':
         form = VenueForm(request.POST)
         image_formset = VenueImageFormSet(request.POST, request.FILES)
-        room_formset = VenueRoomFormSet(request.POST)
-        feature_formset = VenueFeatureFormSet(request.POST)
         
-        if form.is_valid() and image_formset.is_valid() and room_formset.is_valid() and feature_formset.is_valid():
+        if form.is_valid() and image_formset.is_valid():
             with transaction.atomic():
                 venue = form.save(commit=False)
                 venue.provider = request.user.provider_profile
@@ -90,25 +80,15 @@ def venue_create(request):
                 image_formset.instance = venue
                 image_formset.save()
                 
-                room_formset.instance = venue
-                room_formset.save()
-                
-                feature_formset.instance = venue
-                feature_formset.save()
-                
             messages.success(request, "Venue created successfully!")
             return redirect('venues:venue_detail', venue_id=venue.id)
     else:
         form = VenueForm()
         image_formset = VenueImageFormSet()
-        room_formset = VenueRoomFormSet()
-        feature_formset = VenueFeatureFormSet()
     
     context = {
         'form': form,
         'image_formset': image_formset,
-        'room_formset': room_formset,
-        'feature_formset': feature_formset,
         'action': 'Create'
     }
     return render(request, 'venues/venue_form.html', context)
@@ -126,35 +106,26 @@ def venue_update(request, venue_id):
         return redirect('venues:venue_detail', venue_id=venue.id)
     
     VenueImageFormSet = inlineformset_factory(Venue, VenueImage, form=VenueImageForm, extra=1, can_delete=True)
-    VenueRoomFormSet = inlineformset_factory(Venue, VenueRoom, form=VenueRoomForm, extra=1, can_delete=True)
-    VenueFeatureFormSet = inlineformset_factory(Venue, VenueFeature, form=VenueFeatureForm, extra=1, can_delete=True)
     
     if request.method == 'POST':
         form = VenueForm(request.POST, instance=venue)
         image_formset = VenueImageFormSet(request.POST, request.FILES, instance=venue)
-        room_formset = VenueRoomFormSet(request.POST, instance=venue)
-        feature_formset = VenueFeatureFormSet(request.POST, instance=venue)
         
-        if form.is_valid() and image_formset.is_valid() and room_formset.is_valid() and feature_formset.is_valid():
+        if form.is_valid() and image_formset.is_valid():
             with transaction.atomic():
                 venue = form.save()
                 image_formset.save()
-                room_formset.save()
-                feature_formset.save()
                 
             messages.success(request, "Venue updated successfully!")
             return redirect('venues:venue_detail', venue_id=venue.id)
     else:
         form = VenueForm(instance=venue)
         image_formset = VenueImageFormSet(instance=venue)
-        room_formset = VenueRoomFormSet(instance=venue)
-        feature_formset = VenueFeatureFormSet(instance=venue)
+    
     
     context = {
         'form': form,
         'image_formset': image_formset,
-        'room_formset': room_formset,
-        'feature_formset': feature_formset,
         'venue': venue,
         'action': 'Update'
     }
@@ -243,32 +214,18 @@ def venue_update(request, venue_id):
         extra=1, can_delete=True
     )
     
-    FeatureFormSet = inlineformset_factory(
-        Venue, VenueFeature, form=VenueFeatureForm,
-        extra=1, can_delete=True
-    )
-    
-    RoomFormSet = inlineformset_factory(
-        Venue, VenueRoom, form=VenueRoomForm,
-        extra=1, can_delete=True
-    )
-    
     if request.method == 'POST':
         form = VenueForm(request.POST, instance=venue)
         image_formset = ImageFormSet(request.POST, request.FILES, instance=venue)
-        feature_formset = FeatureFormSet(request.POST, instance=venue)
-        room_formset = RoomFormSet(request.POST, instance=venue)
         
         # Create availability records for selected dates
         new_dates = request.POST.getlist('new_availability_date')
         
-        if form.is_valid() and image_formset.is_valid() and feature_formset.is_valid() and room_formset.is_valid():
+        if form.is_valid() and image_formset.is_valid():
             with transaction.atomic():
                 # Save the main form and formsets
                 form.save()
                 image_formset.save()
-                feature_formset.save()
-                room_formset.save()
                 
                 # Handle availability dates
                 for date_str in new_dates:
@@ -284,8 +241,6 @@ def venue_update(request, venue_id):
     else:
         form = VenueForm(instance=venue)
         image_formset = ImageFormSet(instance=venue)
-        feature_formset = FeatureFormSet(instance=venue)
-        room_formset = RoomFormSet(instance=venue)
     
     # Get existing availability dates
     availability_dates = VenueAvailability.objects.filter(venue=venue)
@@ -293,8 +248,6 @@ def venue_update(request, venue_id):
     context = {
         'form': form,
         'image_formset': image_formset,
-        'feature_formset': feature_formset,
-        'room_formset': room_formset,
         'availability_dates': availability_dates,
         'venue': venue,
         'form_title': f'Edit Venue: {venue.name}',

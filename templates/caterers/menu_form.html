@@ -1,7 +1,19 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{% if is_create %}Create{% else %}Edit{% endif %} Menu Package - {{ caterer.name }}{% endblock %}
+{% block title %}{% if                         <!-- Price per Person -->
+                        <div>
+                            <label for="{{ form.base_price_per_person.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.base_price_per_person.label }}</label>
+                            <div class="mt-1 relative rounded-md shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-500 sm:text-sm">₱</span>
+                                </div>
+                                {{ form.base_price_per_person }}
+                            </div>
+                            {% if form.base_price_per_person.errors %}
+                                <p class="mt-2 text-sm text-red-600">{{ form.base_price_per_person.errors.0 }}</p>
+                            {% endif %}
+                        </div>reate{% else %}Edit{% endif %} Menu Package - {{ caterer.name }}{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">

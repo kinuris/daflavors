@@ -51,42 +51,6 @@ class VenueImage(models.Model):
     def __str__(self):
         return f"Image for {self.venue.name}"
 
-class VenueFeature(models.Model):
-    venue = models.ForeignKey(Venue, on_delete=models.CASCADE, related_name='features')
-    name = models.CharField(max_length=100)
-    description = models.TextField(blank=True)
-    
-    def __str__(self):
-        return self.name
-
-class VenueRoom(models.Model):
-    venue = models.ForeignKey(Venue, on_delete=models.CASCADE, related_name='rooms')
-    name = models.CharField(max_length=100)
-    capacity = models.PositiveIntegerField()
-    description = models.TextField(blank=True)
-    
-    # Room features
-    has_av_equipment = models.BooleanField(default=False)
-    has_stage = models.BooleanField(default=False)
-    
-    # Layout options
-    LAYOUT_CHOICES = (
-        ('theater', 'Theater'),
-        ('classroom', 'Classroom'),
-        ('banquet', 'Banquet'),
-        ('boardroom', 'Boardroom'),
-        ('cocktail', 'Cocktail'),
-        ('other', 'Other'),
-    )
-    available_layouts = models.CharField(max_length=255, help_text="Comma-separated list of available layouts")
-    
-    # Pricing
-    price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, 
-                               help_text="Price for this room specifically (if different from venue base price)")
-    
-    def __str__(self):
-        return f"{self.name} at {self.venue.name}"
-
 class VenueAvailability(models.Model):
     venue = models.ForeignKey(Venue, on_delete=models.CASCADE, related_name='availability')
     date = models.DateField()

@@ -24,56 +24,78 @@
             
             <div class="mb-8">
                 <h2 class="text-lg font-medium text-gray-900 mb-2">Available Menu Packages</h2>
-                <p class="text-gray-600">Select from the available menu packages offered by {{ booking.caterer.name }}.</p>
+                <p class="text-gray-600">Select from the available menu packages offered by {{ booking.caterer.provider.business_name }}.</p>
                 
-                <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {% for package in menu_packages %}
-                        <div class="border rounded-lg overflow-hidden hover:shadow-md transition-shadow duration-200 
-                            {% if form.menu_package.value|stringformat:'s' == package.id|stringformat:'s' %}border-indigo-500 ring-2 ring-indigo-500{% else %}border-gray-200{% endif %}">
-                            <div class="px-4 py-5">
-                                <h3 class="text-lg font-medium text-gray-900">{{ package.name }}</h3>
-                                
-                                <div class="mt-2">
-                                    <p class="text-sm text-gray-600">{{ package.description|truncatechars:100 }}</p>
-                                </div>
-                                
-                                <div class="mt-4 flex items-center justify-between">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
-                                        {% if package.service_style == 'Buffet' %}bg-green-100 text-green-800
-                                        {% elif package.service_style == 'Plated' %}bg-blue-100 text-blue-800
-                                        {% elif package.service_style == 'Family Style' %}bg-purple-100 text-purple-800
-                                        {% elif package.service_style == 'Cocktail' %}bg-yellow-100 text-yellow-800
-                                        {% else %}bg-gray-100 text-gray-800{% endif %}">
-                                        {{ package.service_style }}
-                                    </span>
-                                    <span class="text-sm font-medium text-gray-900">₱{{ package.price_per_person }} / person</span>
-                                </div>
-                                
-                                <div class="mt-2 flex items-center justify-between text-xs text-gray-500">
-                                    <span>Min guests: {{ package.min_guest_count }}</span>
-                                    <span>Max guests: {{ package.max_guest_count }}</span>
-                                </div>
-                                
-                                <div class="mt-4">
-                                    {% if form.menu_package.value|stringformat:'s' == package.id|stringformat:'s' %}
-                                        <button type="button" class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600" disabled>
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                            </svg>
-                                            Selected
-                                        </button>
-                                    {% else %}
-                                        <a href="?menu={{ package.id }}" class="w-full inline-flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                            Select This Package
-                                        </a>
-                                    {% endif %}
+                {% if menu_packages %}
+                    <div class="mt-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {% for package in menu_packages %}
+                            <div class="border rounded-lg overflow-hidden hover:shadow-md transition-shadow duration-200 
+                                {% if form.menu_package.value|stringformat:'s' == package.id|stringformat:'s' %}border-indigo-500 ring-2 ring-indigo-500{% else %}border-gray-200{% endif %}">
+                                <div class="px-4 py-5">
+                                    <h3 class="text-lg font-medium text-gray-900">{{ package.name }}</h3>
+                                    
+                                    <div class="mt-2">
+                                        <p class="text-sm text-gray-600">{{ package.description|truncatechars:100 }}</p>
+                                    </div>
+                                    
+                                    <div class="mt-4 flex items-center justify-between">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                            {% if package.package_type == 'buffet' %}bg-green-100 text-green-800
+                                            {% elif package.package_type == 'plated' %}bg-blue-100 text-blue-800
+                                            {% elif package.package_type == 'cocktail' %}bg-yellow-100 text-yellow-800
+                                            {% elif package.package_type == 'food_stalls' %}bg-purple-100 text-purple-800
+                                            {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                            {{ package.get_package_type_display }}
+                                        </span>
+                                        <span class="text-sm font-medium text-gray-900">₱{{ package.base_price_per_person }} / person</span>
+                                    </div>
+                                    
+                                    <div class="mt-2 flex items-center justify-between text-xs text-gray-500">
+                                        <span>Min guests: {{ package.min_persons }}</span>
+                                        {% if package.caterer.max_guests %}
+                                            <span>Max guests: {{ package.caterer.max_guests }}</span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="mt-4">
+                                        {% if form.menu_package.value|stringformat:'s' == package.id|stringformat:'s' %}
+                                            <button type="button" class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600" disabled>
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                                </svg>
+                                                Selected
+                                            </button>
+                                        {% else %}
+                                            <a href="?menu={{ package.id }}" class="w-full inline-flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                                Select This Package
+                                            </a>
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <!-- No packages available -->
+                    <div class="mt-6 text-center py-12">
+                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900">No menu packages available</h3>
+                        <p class="mt-1 text-sm text-gray-500">This caterer hasn't added any menu packages yet.</p>
+                        <div class="mt-6">
+                            <a href="{% url 'caterers:detail' booking.caterer.id %}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                </svg>
+                                Back to Caterer Profile
+                            </a>
                         </div>
-                    {% endfor %}
-                </div>
+                    </div>
+                {% endif %}
             </div>
             
+            {% if menu_packages %}
             <form method="post" class="mt-8 border-t border-gray-200 pt-6">
                 {% csrf_token %}
                 
@@ -150,6 +172,7 @@
                     </button>
                 </div>
             </form>
+            {% endif %}
         </div>
     </div>
 </div>

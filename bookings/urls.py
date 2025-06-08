@@ -27,6 +27,5 @@ urlpatterns = [
     path('<int:booking_id>/payment/<int:payment_id>/confirm/', views.payment_confirm, name='payment_confirm'),
     
     # AJAX endpoints
-    path('ajax/venue-rooms/', views.get_venue_rooms, name='get_venue_rooms'),
     path('ajax/menu-packages/', views.get_menu_packages, name='get_menu_packages'),
 ]

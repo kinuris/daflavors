@@ -85,31 +85,29 @@ def caterer_create(request):
     except Caterer.DoesNotExist:
         pass
     
-    CatererImageFormSet = inlineformset_factory(Caterer, CatererImage, form=CatererImageForm, extra=3)
-    
     if request.method == 'POST':
         form = CatererForm(request.POST)
-        image_formset = CatererImageFormSet(request.POST, request.FILES)
         
-        if form.is_valid() and image_formset.is_valid():
+        if form.is_valid():
             with transaction.atomic():
                 caterer = form.save(commit=False)
                 caterer.provider = request.user.provider_profile
                 caterer.save()
-                
-                image_formset.instance = caterer
-                image_formset.save()
             
             messages.success(request, "Catering service created successfully!")
-            return redirect('caterers:caterer_detail', caterer_id=caterer.id)
+            return redirect('caterers:detail', caterer_id=caterer.id)
+        else:
+            # Debug: print form errors
+            print("Form errors:", form.errors)
+            messages.error(request, "Please correct the errors in the form.")
     else:
         form = CatererForm()
-        image_formset = CatererImageFormSet()
     
     context = {
         'form': form,
-        'image_formset': image_formset,
-        'action': 'Create'
+        'action': 'Create',
+        'is_create': True,
+        'form_title': 'Create Caterer Profile'
     }
     return render(request, 'caterers/caterer_form.html', context)
 
@@ -146,7 +144,9 @@ def caterer_update(request, caterer_id):
         'form': form,
         'image_formset': image_formset,
         'caterer': caterer,
-        'action': 'Update'
+        'action': 'Update',
+        'is_create': False,
+        'form_title': 'Update Caterer Profile'
     }
     return render(request, 'caterers/caterer_form.html', context)
 

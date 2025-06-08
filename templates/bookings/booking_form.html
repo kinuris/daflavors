@@ -99,15 +99,6 @@
                                 <p class="mt-2 text-sm text-gray-500">Select a venue or leave blank if you only need catering services.</p>
                             {% endif %}
                         </div>
-                        
-                        <!-- Venue Room -->
-                        <div>
-                            <label for="{{ form.venue_room.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.venue_room.label }}</label>
-                            {{ form.venue_room }}
-                            {% if form.venue_room.errors %}
-                                <p class="mt-2 text-sm text-red-600">{{ form.venue_room.errors.0 }}</p>
-                            {% endif %}
-                        </div>
                     </div>
                 </div>
                 
@@ -161,42 +152,6 @@
             minDate: "today",
             dateFormat: "Y-m-d",
         });
-        
-        // Handle venue room loading
-        const venueSelect = document.getElementById('{{ form.venue.id_for_label }}');
-        const roomSelect = document.getElementById('{{ form.venue_room.id_for_label }}');
-        
-        if (venueSelect && roomSelect) {
-            venueSelect.addEventListener('change', function() {
-                const venueId = this.value;
-                
-                if (!venueId) {
-                    // Clear room options if no venue is selected
-                    roomSelect.innerHTML = '<option value="">---------</option>';
-                    return;
-                }
-                
-                // Fetch rooms for selected venue
-                fetch(`/bookings/api/venue-rooms/?venue_id=${venueId}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        roomSelect.innerHTML = '<option value="">---------</option>';
-                        
-                        data.rooms.forEach(room => {
-                            const option = document.createElement('option');
-                            option.value = room.id;
-                            option.textContent = `${room.name} (Capacity: ${room.capacity})`;
-                            roomSelect.appendChild(option);
-                        });
-                    })
-                    .catch(error => console.error('Error loading rooms:', error));
-            });
-            
-            // Trigger change event if venue is already selected (edit mode)
-            if (venueSelect.value) {
-                venueSelect.dispatchEvent(new Event('change'));
-            }
-        }
     });
 </script>
 {% endblock %}

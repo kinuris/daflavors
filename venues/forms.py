@@ -1,5 +1,5 @@
 from django import forms
-from .models import Venue, VenueImage, VenueFeature, VenueRoom, VenueAvailability
+from .models import Venue, VenueImage, VenueAvailability
 
 class VenueForm(forms.ModelForm):
     class Meta:
@@ -28,54 +28,6 @@ class VenueImageForm(forms.ModelForm):
             'caption': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500'}),
             'is_primary': forms.CheckboxInput(attrs={'class': 'h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded'}),
         }
-
-class VenueFeatureForm(forms.ModelForm):
-    class Meta:
-        model = VenueFeature
-        fields = ['name', 'description']
-        widgets = {
-            'name': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500'}),
-            'description': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500'}),
-        }
-
-class VenueRoomForm(forms.ModelForm):
-    LAYOUT_CHOICES = (
-        ('theater', 'Theater'),
-        ('classroom', 'Classroom'),
-        ('banquet', 'Banquet'),
-        ('boardroom', 'Boardroom'),
-        ('cocktail', 'Cocktail'),
-        ('other', 'Other'),
-    )
-    
-    available_layouts = forms.MultipleChoiceField(
-        choices=LAYOUT_CHOICES,
-        widget=forms.CheckboxSelectMultiple(attrs={'class': 'h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded'}),
-        required=False
-    )
-    
-    class Meta:
-        model = VenueRoom
-        exclude = ['venue']
-        widgets = {
-            'name': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500'}),
-            'capacity': forms.NumberInput(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500'}),
-            'description': forms.Textarea(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500', 'rows': 3}),
-            'has_av_equipment': forms.CheckboxInput(attrs={'class': 'h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded'}),
-            'has_stage': forms.CheckboxInput(attrs={'class': 'h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded'}),
-            'price': forms.NumberInput(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500'}),
-        }
-        
-    def clean_available_layouts(self):
-        layouts = self.cleaned_data.get('available_layouts')
-        return ','.join(layouts) if layouts else ''
-    
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        
-        # If instance exists, set available_layouts to list from comma-separated string
-        if self.instance and self.instance.available_layouts:
-            self.initial['available_layouts'] = self.instance.available_layouts.split(',')
 
 class VenueAvailabilityForm(forms.ModelForm):
     class Meta:

@@ -118,9 +118,6 @@
                                     <div class="text-sm text-gray-900">
                                         {% if booking.venue %}
                                             {{ booking.venue.name }}
-                                            {% if booking.venue_room %}
-                                                ({{ booking.venue_room.name }})
-                                            {% endif %}
                                         {% else %}
                                             No venue selected
                                         {% endif %}

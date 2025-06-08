@@ -1,6 +1,6 @@
 from django import forms
 from .models import Booking, MenuSelection, CourseSelection, Quote, Payment, Message
-from venues.models import Venue, VenueRoom
+from venues.models import Venue
 from caterers.models import Caterer, MenuPackage, CourseCategory, MenuItem
 
 class BookingForm(forms.ModelForm):
@@ -21,11 +21,6 @@ class BookingForm(forms.ModelForm):
         required=False,
         widget=forms.Select(attrs={'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50'}),
     )
-    venue_room = forms.ModelChoiceField(
-        queryset=VenueRoom.objects.none(),
-        required=False,
-        widget=forms.Select(attrs={'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50'}),
-    )
     caterer = forms.ModelChoiceField(
         queryset=Caterer.objects.all(),
         required=False,
@@ -35,7 +30,7 @@ class BookingForm(forms.ModelForm):
     class Meta:
         model = Booking
         fields = ['event_type', 'event_date', 'start_time', 'end_time', 'guest_count', 
-                  'venue', 'venue_room', 'caterer', 'special_requests']
+                  'venue', 'caterer', 'special_requests']
         widgets = {
             'event_type': forms.TextInput(attrs={'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50'}),
             'guest_count': forms.NumberInput(attrs={'min': 1, 'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50'}),
@@ -46,12 +41,9 @@ class BookingForm(forms.ModelForm):
         venue_id = kwargs.pop('venue_id', None)
         super(BookingForm, self).__init__(*args, **kwargs)
         
-        # If we have a venue, filter the rooms to show only rooms for this venue
+        # If we have a venue, set it as the initial selection
         if venue_id:
             self.fields['venue'].initial = venue_id
-            self.fields['venue_room'].queryset = VenueRoom.objects.filter(venue_id=venue_id)
-        elif self.instance.venue_id:
-            self.fields['venue_room'].queryset = VenueRoom.objects.filter(venue_id=self.instance.venue_id)
 
 class MenuSelectionForm(forms.ModelForm):
     """

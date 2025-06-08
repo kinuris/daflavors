@@ -4,7 +4,7 @@ from datetime import time, timedelta, datetime
 from decimal import Decimal
 
 from accounts.models import ProviderProfile
-from venues.models import Venue, VenueRoom, VenueFeature
+from venues.models import Venue
 from caterers.models import Caterer, MenuPackage, CourseCategory, MenuItem
 
 # Get the User model
@@ -136,44 +136,6 @@ def create_sample_data():
         cancellation_policy='Full refund if cancelled 30 days before the event',
         base_price=Decimal('50000.00')
     )
-    
-    # Create rooms for the venue
-    VenueRoom.objects.create(
-        venue=venue,
-        name='Main Ballroom',
-        capacity=500,
-        description='Grand ballroom with crystal chandeliers',
-        has_av_equipment=True,
-        has_stage=True,
-        available_layouts='theater,banquet,cocktail',
-        price=Decimal('50000.00')
-    )
-    
-    VenueRoom.objects.create(
-        venue=venue,
-        name='Garden Room',
-        capacity=200,
-        description='Indoor-outdoor space with garden view',
-        has_av_equipment=True,
-        has_stage=False,
-        available_layouts='banquet,cocktail',
-        price=Decimal('25000.00')
-    )
-    
-    # Create venue features
-    features = [
-        'Free Parking',
-        'Bridal Suite',
-        'Professional Sound System',
-        'Full Kitchen',
-        'Wheelchair Accessible'
-    ]
-    for feature in features:
-        VenueFeature.objects.create(
-            venue=venue,
-            name=feature,
-            description=f'Venue includes {feature}'
-        )
     
     # Create a caterer for the second provider
     caterer = Caterer.objects.create(

@@ -1,6 +1,6 @@
 from django.db import models
 from accounts.models import CustomUser
-from venues.models import Venue, VenueRoom
+from venues.models import Venue
 from caterers.models import Caterer, MenuPackage, MenuItem, CourseCategory
 
 class Booking(models.Model):
@@ -9,7 +9,6 @@ class Booking(models.Model):
     
     # Event can be at a venue, with a caterer, or both
     venue = models.ForeignKey(Venue, on_delete=models.SET_NULL, null=True, blank=True, related_name='bookings')
-    venue_room = models.ForeignKey(VenueRoom, on_delete=models.SET_NULL, null=True, blank=True)
     caterer = models.ForeignKey(Caterer, on_delete=models.SET_NULL, null=True, blank=True, related_name='bookings')
     
     # Event details

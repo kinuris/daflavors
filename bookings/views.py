@@ -6,7 +6,7 @@ from django.db import transaction
 from django.http import Http404, JsonResponse
 from django.core.exceptions import PermissionDenied
 from accounts.models import CustomUser, ProviderProfile
-from venues.models import Venue, VenueRoom, VenueAvailability
+from venues.models import Venue, VenueAvailability
 from caterers.models import Caterer, MenuPackage, CourseCategory, MenuItem, CatererAvailability
 from .models import Booking, MenuSelection, CourseSelection, Quote, Payment, Message
 from .forms import (BookingForm, MenuSelectionForm, CourseSelectionForm, 
@@ -203,10 +203,6 @@ def booking_update(request, booking_id):
             return redirect('bookings:detail', booking_id=booking.id)
     else:
         form = BookingForm(instance=booking)
-        
-        # Set venue room options
-        if booking.venue:
-            form.fields['venue_room'].queryset = VenueRoom.objects.filter(venue=booking.venue)
     
     context = {
         'form': form,
@@ -269,7 +265,7 @@ def menu_select(request, booking_id):
             
             # Calculate menu price
             package = form.cleaned_data['menu_package']
-            menu_selection.menu_total_price = package.price_per_person * booking.guest_count
+            menu_selection.menu_total_price = package.base_price_per_person * booking.guest_count
             
             menu_selection.save()
             
@@ -670,16 +666,7 @@ def payment_confirm(request, booking_id, payment_id):
     
     return render(request, 'bookings/payment_confirm.html', {'booking': booking, 'payment': payment})
 
-@login_required
-def get_venue_rooms(request):
-    """
-    Ajax endpoint to get venue rooms for a selected venue
-    """
-    venue_id = request.GET.get('venue_id')
-    if venue_id:
-        rooms = VenueRoom.objects.filter(venue_id=venue_id).values('id', 'name', 'capacity')
-        return JsonResponse({'rooms': list(rooms)})
-    return JsonResponse({'rooms': []})
+
 
 @login_required
 def get_menu_packages(request):
@@ -689,8 +676,8 @@ def get_menu_packages(request):
     caterer_id = request.GET.get('caterer_id')
     if caterer_id:
         packages = MenuPackage.objects.filter(caterer_id=caterer_id).values(
-            'id', 'name', 'price_per_person', 'service_style', 
-            'min_guest_count', 'max_guest_count'
+            'id', 'name', 'base_price_per_person', 'package_type', 
+            'min_persons'
         )
         return JsonResponse({'packages': list(packages)})
     return JsonResponse({'packages': []})

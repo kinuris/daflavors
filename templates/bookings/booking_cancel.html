@@ -79,7 +79,6 @@
                         <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                             {% if booking.venue %}
                                 {{ booking.venue.name }}
-                                {% if booking.venue_room %} - {{ booking.venue_room.name }} Room{% endif %}
                             {% else %}
                                 Not selected
                             {% endif %}

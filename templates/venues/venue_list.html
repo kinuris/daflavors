@@ -114,22 +114,6 @@
                                 <!-- Short Description -->
                                 <p class="text-gray-800 mb-4">{{ venue.description|truncatewords:15 }}</p>
                                 
-                                <!-- Features (if any) -->
-                                {% if venue.features.all %}
-                                    <div class="flex flex-wrap gap-2 mb-4">
-                                        {% for feature in venue.features.all|slice:":3" %}
-                                            <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-md text-xs">
-                                                {{ feature.name }}
-                                            </span>
-                                        {% endfor %}
-                                        {% if venue.features.count > 3 %}
-                                            <span class="text-gray-600 text-xs flex items-center">
-                                                +{{ venue.features.count|add:"-3" }} more
-                                            </span>
-                                        {% endif %}
-                                    </div>
-                                {% endif %}
-                                
                                 <!-- View Button -->
                                 <a href="{% url 'venues:detail' venue.id %}" class="block w-full text-center bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-200">
                                     View Details
