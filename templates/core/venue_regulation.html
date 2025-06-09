@@ -1,0 +1,416 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Venue Regulation - Admin Panel{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.5rem 0;
+        margin-bottom: 2rem;
+    }
+    
+    .filter-bar {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .venue-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1rem;
+        transition: all 0.2s;
+    }
+    
+    .venue-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.025em;
+    }
+    
+    .status-active {
+        background: #dcfce7;
+        color: #166534;
+    }
+    
+    .status-inactive {
+        background: #fef3c7;
+        color: #92400e;
+    }
+    
+    .status-suspended {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+    
+    .action-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.2s;
+        border: none;
+        cursor: pointer;
+    }
+    
+    .btn-suspend {
+        background: #ef4444;
+        color: white;
+    }
+    
+    .btn-suspend:hover {
+        background: #dc2626;
+        color: white;
+    }
+    
+    .btn-unsuspend {
+        background: #22c55e;
+        color: white;
+    }
+    
+    .btn-unsuspend:hover {
+        background: #16a34a;
+        color: white;
+    }
+    
+    .btn-toggle {
+        background: #f59e0b;
+        color: white;
+    }
+    
+    .btn-toggle:hover {
+        background: #d97706;
+        color: white;
+    }
+    
+    .btn-view {
+        background: #3b82f6;
+        color: white;
+    }
+    
+    .btn-view:hover {
+        background: #2563eb;
+        color: white;
+    }
+    
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    
+    .modal-content {
+        background-color: white;
+        margin: 15% auto;
+        padding: 2rem;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    
+    .close:hover {
+        color: #000;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-2xl font-bold mb-1">Venue Regulation</h1>
+                <p class="opacity-90">Manage and monitor venue services</p>
+            </div>
+            <div>
+                <a href="{% url 'core:admin_dashboard' %}" class="text-white hover:text-gray-200 underline">← Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mx-auto px-4">
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <form method="get" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Status Filter</label>
+                <select name="status" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" onchange="this.form.submit()">
+                    <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All Venues</option>
+                    <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active Only</option>
+                    <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive Only</option>
+                    <option value="suspended" {% if status_filter == 'suspended' %}selected{% endif %}>Suspended Only</option>
+                </select>
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Search</label>
+                <input type="text" name="search" value="{{ search_query }}" placeholder="Search venues, business name, address..." 
+                       class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            
+            <div class="flex items-end">
+                <button type="submit" class="action-btn btn-view mr-2">Search</button>
+                <a href="{% url 'core:venue_regulation' %}" class="action-btn btn-toggle">Clear</a>
+            </div>
+        </form>
+        
+        <div class="mt-4 text-sm text-gray-600">
+            Showing {{ total_count }} venue{{ total_count|pluralize }}
+        </div>
+    </div>
+
+    <!-- Venues List -->
+    <div class="space-y-4">
+        {% for venue in venues %}
+        <div class="venue-card p-6">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                <div class="flex-1">
+                    <div class="flex items-start justify-between mb-2">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900">{{ venue.name }}</h3>
+                            <p class="text-gray-600">{{ venue.provider.business_name }}</p>
+                        </div>
+                        
+                        <div class="flex items-center space-x-2">
+                            {% if venue.is_suspended %}
+                                <span class="status-badge status-suspended">🚫 Suspended</span>
+                            {% elif not venue.is_active %}
+                                <span class="status-badge status-inactive">⏸️ Inactive</span>
+                            {% else %}
+                                <span class="status-badge status-active">✅ Active</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm text-gray-600 mb-4">
+                        <div>
+                            <span class="font-medium">Address:</span><br>
+                            {{ venue.address|truncatechars:40 }}
+                        </div>
+                        <div>
+                            <span class="font-medium">Capacity:</span><br>
+                            {{ venue.capacity }} guests
+                        </div>
+                        <div>
+                            <span class="font-medium">Type:</span><br>
+                            {{ venue.get_venue_type_display }}
+                        </div>
+                        <div>
+                            <span class="font-medium">Created:</span><br>
+                            {{ venue.created_at|date:"M j, Y" }}
+                        </div>
+                    </div>
+                    
+                    {% if venue.is_suspended %}
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-red-800">Suspension Reason:</p>
+                                <p class="text-sm text-red-700">{{ venue.suspension_reason }}</p>
+                            </div>
+                            <div class="text-right text-xs text-red-600">
+                                <p>{{ venue.suspended_at|date:"M j, Y g:i A" }}</p>
+                                <p>by {{ venue.suspended_by.get_full_name|default:venue.suspended_by.username }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mt-4 lg:mt-0 lg:ml-6 flex flex-wrap gap-2">
+                    <a href="{% url 'core:venue_detail_admin' venue.id %}" class="action-btn btn-view">View Details</a>
+                    
+                    {% if venue.is_suspended %}
+                        <button onclick="unsuspendVenue({{ venue.id }}, '{{ venue.name|escapejs }}')" class="action-btn btn-unsuspend">Unsuspend</button>
+                    {% else %}
+                        <button onclick="showSuspendModal({{ venue.id }}, '{{ venue.name|escapejs }}')" class="action-btn btn-suspend">Suspend</button>
+                    {% endif %}
+                    
+                    <button onclick="toggleVenueActive({{ venue.id }}, '{{ venue.name|escapejs }}', {{ venue.is_active|yesno:'true,false' }})" class="action-btn btn-toggle">
+                        {% if venue.is_active %}Deactivate{% else %}Activate{% endif %}
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="text-center py-12">
+            <div class="text-6xl mb-4">🔍</div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">No venues found</h3>
+            <p class="text-gray-600">Try adjusting your search criteria or filters.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Suspension Modal -->
+<div id="suspendModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeSuspendModal()">&times;</span>
+        <h2 class="text-xl font-bold mb-4">Suspend Venue</h2>
+        <p class="mb-4">You are about to suspend: <strong id="venueNameModal"></strong></p>
+        <form id="suspendForm">
+            <div class="mb-4">
+                <label for="suspendReason" class="block text-sm font-medium text-gray-700 mb-2">Suspension Reason *</label>
+                <textarea id="suspendReason" name="reason" rows="4" required
+                          class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          placeholder="Enter the reason for suspension..."></textarea>
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="closeSuspendModal()" class="action-btn btn-toggle">Cancel</button>
+                <button type="submit" class="action-btn btn-suspend">Suspend Venue</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let currentVenueId = null;
+
+function showSuspendModal(venueId, venueName) {
+    currentVenueId = venueId;
+    document.getElementById('venueNameModal').textContent = venueName;
+    document.getElementById('suspendModal').style.display = 'block';
+    document.getElementById('suspendReason').focus();
+}
+
+function closeSuspendModal() {
+    document.getElementById('suspendModal').style.display = 'none';
+    document.getElementById('suspendReason').value = '';
+    currentVenueId = null;
+}
+
+document.getElementById('suspendForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const reason = document.getElementById('suspendReason').value.trim();
+    if (!reason) {
+        alert('Please enter a suspension reason.');
+        return;
+    }
+    
+    suspendVenue(currentVenueId, reason);
+});
+
+function suspendVenue(venueId, reason) {
+    fetch(`/admin-panel/venues/${venueId}/suspend/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({ reason: reason })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+        closeSuspendModal();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while suspending the venue.');
+        closeSuspendModal();
+    });
+}
+
+function unsuspendVenue(venueId, venueName) {
+    if (confirm(`Are you sure you want to unsuspend "${venueName}"?`)) {
+        fetch(`/admin-panel/venues/${venueId}/unsuspend/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while unsuspending the venue.');
+        });
+    }
+}
+
+function toggleVenueActive(venueId, venueName, isActive) {
+    const action = isActive ? 'deactivate' : 'activate';
+    if (confirm(`Are you sure you want to ${action} "${venueName}"?`)) {
+        fetch(`/admin-panel/venues/${venueId}/toggle-active/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while updating the venue status.');
+        });
+    }
+}
+
+// Close modal when clicking outside of it
+window.onclick = function(event) {
+    const modal = document.getElementById('suspendModal');
+    if (event.target == modal) {
+        closeSuspendModal();
+    }
+}
+
+// Add CSRF token to all requests
+const csrfToken = '{{ csrf_token }}';
+if (!document.querySelector('[name=csrfmiddlewaretoken]')) {
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = 'csrfmiddlewaretoken';
+    csrfInput.value = csrfToken;
+    document.body.appendChild(csrfInput);
+}
+</script>
+{% endblock %}

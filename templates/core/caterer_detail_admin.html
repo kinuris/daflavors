@@ -1,0 +1,608 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ caterer.provider.business_name }} - Caterer Details - Admin Panel{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.5rem 0;
+        margin-bottom: 2rem;
+    }
+    
+    .detail-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+    }
+    
+    .status-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.875rem;
+        letter-spacing: 0.025em;
+    }
+    
+    .status-active {
+        background: #dcfce7;
+        color: #166534;
+    }
+    
+    .status-inactive {
+        background: #fef3c7;
+        color: #92400e;
+    }
+    
+    .status-suspended {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+    
+    .service-tag {
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        margin: 0.125rem;
+        display: inline-block;
+    }
+    
+    .tag-buffet {
+        background: #fef3c7;
+        color: #92400e;
+    }
+    
+    .tag-plated {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+    
+    .tag-cocktail {
+        background: #f3e8ff;
+        color: #7c3aed;
+    }
+    
+    .tag-stalls {
+        background: #dcfce7;
+        color: #166534;
+    }
+    
+    .action-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-block;
+        margin: 0.25rem;
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-suspend {
+        background: #ef4444;
+        color: white;
+    }
+    
+    .btn-suspend:hover {
+        background: #dc2626;
+        color: white;
+    }
+    
+    .btn-unsuspend {
+        background: #22c55e;
+        color: white;
+    }
+    
+    .btn-unsuspend:hover {
+        background: #16a34a;
+        color: white;
+    }
+    
+    .btn-toggle {
+        background: #f59e0b;
+        color: white;
+    }
+    
+    .btn-toggle:hover {
+        background: #d97706;
+        color: white;
+    }
+    
+    .btn-back {
+        background: #6b7280;
+        color: white;
+    }
+    
+    .btn-back:hover {
+        background: #4b5563;
+        color: white;
+    }
+    
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1rem;
+    }
+    
+    .info-item {
+        padding: 1rem;
+        background: #f9fafb;
+        border-radius: 8px;
+        border-left: 4px solid #3b82f6;
+    }
+    
+    .info-label {
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.25rem;
+    }
+    
+    .info-value {
+        color: #6b7280;
+    }
+    
+    .package-card {
+        background: #f9fafb;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid #10b981;
+    }
+    
+    .menu-item {
+        padding: 0.75rem;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        justify-between;
+        align-items: center;
+    }
+    
+    .menu-item:last-child {
+        border-bottom: none;
+    }
+    
+    .booking-item {
+        padding: 1rem;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        justify-between;
+        align-items: center;
+    }
+    
+    .booking-item:last-child {
+        border-bottom: none;
+    }
+    
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+    }
+    
+    .modal-content {
+        background-color: white;
+        margin: 15% auto;
+        padding: 2rem;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 500px;
+        position: relative;
+    }
+    
+    .close {
+        position: absolute;
+        right: 1rem;
+        top: 1rem;
+        font-size: 1.5rem;
+        font-weight: bold;
+        cursor: pointer;
+        color: #9ca3af;
+    }
+    
+    .close:hover {
+        color: #374151;
+    }
+    
+    .dietary-icons {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .dietary-icon {
+        padding: 0.25rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        background: #e5e7eb;
+        color: #374151;
+    }
+    
+    .dietary-vegetarian {
+        background: #dcfce7;
+        color: #166534;
+    }
+    
+    .dietary-gluten-free {
+        background: #fef3c7;
+        color: #92400e;
+    }
+    
+    .dietary-nut-free {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+    
+    .dietary-halal {
+        background: #dbeafe;
+        color: #1e40af;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-header">
+    <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between">
+            <div>
+                <h1 class="text-3xl font-bold mb-2">Caterer Details</h1>
+                <p class="text-blue-100">Administrative Review & Management</p>
+            </div>
+            <div>
+                <a href="{% url 'core:caterer_regulation' %}" class="text-white hover:text-gray-200 underline">← Back to Caterer Regulation</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mx-auto px-4">
+    <!-- Caterer Header -->
+    <div class="detail-card p-6">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+            <div class="mb-4 lg:mb-0">
+                <h2 class="text-2xl font-bold text-gray-900 mb-2">{{ caterer.provider.business_name }}</h2>
+                <p class="text-gray-600 mb-2">{{ caterer.specialty }}</p>
+                <p class="text-sm text-gray-500">Owner: {{ caterer.provider.user.get_full_name|default:caterer.provider.user.username }}</p>
+                
+                <!-- Service Offerings -->
+                <div class="mt-3">
+                    {% if caterer.offers_buffet %}<span class="service-tag tag-buffet">Buffet</span>{% endif %}
+                    {% if caterer.offers_plated %}<span class="service-tag tag-plated">Plated</span>{% endif %}
+                    {% if caterer.offers_cocktail %}<span class="service-tag tag-cocktail">Cocktail</span>{% endif %}
+                    {% if caterer.offers_food_stalls %}<span class="service-tag tag-stalls">Food Stalls</span>{% endif %}
+                </div>
+            </div>
+            <div class="flex flex-col lg:items-end">
+                {% if caterer.is_suspended %}
+                    <span class="status-badge status-suspended mb-2">🚫 Suspended</span>
+                {% elif not caterer.is_active %}
+                    <span class="status-badge status-inactive mb-2">⏸️ Inactive</span>
+                {% else %}
+                    <span class="status-badge status-active mb-2">✅ Active</span>
+                {% endif %}
+                
+                <div class="text-sm text-gray-500">
+                    <p>Created: {{ caterer.created_at|date:"M j, Y" }}</p>
+                    {% if caterer.updated_at != caterer.created_at %}
+                        <p>Updated: {{ caterer.updated_at|date:"M j, Y" }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        {% if caterer.is_suspended %}
+        <div class="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <h4 class="font-semibold text-red-800 mb-2">Suspension Details</h4>
+            <p class="text-red-700 mb-2">{{ caterer.suspension_reason }}</p>
+            <div class="text-sm text-red-600">
+                <p>Suspended: {{ caterer.suspended_at|date:"M j, Y g:i A" }}</p>
+                <p>By: {{ caterer.suspended_by.get_full_name|default:caterer.suspended_by.username }}</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- Caterer Information -->
+    <div class="detail-card p-6">
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Catering Information</h3>
+        <div class="info-grid">
+            <div class="info-item">
+                <div class="info-label">Guest Capacity</div>
+                <div class="info-value">{{ caterer.min_guests }} - {{ caterer.max_guests }} guests</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Service Area</div>
+                <div class="info-value">{{ caterer.service_area }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Specialty</div>
+                <div class="info-value">{{ caterer.specialty }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Contact</div>
+                <div class="info-value">
+                    {{ caterer.provider.user.email }}<br>
+                    {% if caterer.provider.phone %}{{ caterer.provider.phone }}{% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Service Policies -->
+    <div class="detail-card p-6">
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Service Policies</h3>
+        <div class="space-y-4">
+            {% if caterer.setup_policy %}
+            <div>
+                <div class="info-label">Setup Policy</div>
+                <div class="info-value">{{ caterer.setup_policy|linebreaks }}</div>
+            </div>
+            {% endif %}
+            
+            {% if caterer.delivery_policy %}
+            <div>
+                <div class="info-label">Delivery Policy</div>
+                <div class="info-value">{{ caterer.delivery_policy|linebreaks }}</div>
+            </div>
+            {% endif %}
+            
+            {% if caterer.payment_policy %}
+            <div>
+                <div class="info-label">Payment Policy</div>
+                <div class="info-value">{{ caterer.payment_policy|linebreaks }}</div>
+            </div>
+            {% endif %}
+            
+            {% if caterer.cancellation_policy %}
+            <div>
+                <div class="info-label">Cancellation Policy</div>
+                <div class="info-value">{{ caterer.cancellation_policy|linebreaks }}</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <!-- Menu Packages -->
+    <div class="detail-card p-6">
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Menu Packages</h3>
+        {% if packages %}
+            {% for package in packages %}
+            <div class="package-card">
+                <div class="flex justify-between items-start mb-2">
+                    <h4 class="font-semibold text-gray-900">{{ package.name }}</h4>
+                    <div class="text-right">
+                        <div class="font-semibold text-green-600">₱{{ package.base_price_per_person|floatformat:2 }}/person</div>
+                        <div class="text-xs text-gray-500">Min {{ package.min_persons }} persons</div>
+                    </div>
+                </div>
+                <p class="text-gray-600 text-sm mb-2">{{ package.description|truncatechars:100 }}</p>
+                <div class="flex justify-between items-center">
+                    <span class="text-xs text-gray-500">{{ package.get_package_type_display }}</span>
+                    {% if package.is_customizable %}
+                        <span class="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">Customizable</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-gray-500 text-center py-4">No menu packages found</p>
+        {% endif %}
+    </div>
+    
+    <!-- Sample Menu Items -->
+    <div class="detail-card p-6">
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Sample Menu Items (Latest 10)</h3>
+        {% if menu_items %}
+            {% for item in menu_items %}
+            <div class="menu-item">
+                <div class="flex-1">
+                    <div class="font-semibold text-gray-900">{{ item.name }}</div>
+                    <div class="text-sm text-gray-600">{{ item.description|truncatechars:80 }}</div>
+                    <div class="dietary-icons mt-1">
+                        {% if item.is_vegetarian %}<span class="dietary-icon dietary-vegetarian">Vegetarian</span>{% endif %}
+                        {% if item.is_gluten_free %}<span class="dietary-icon dietary-gluten-free">Gluten-Free</span>{% endif %}
+                        {% if item.is_nut_free %}<span class="dietary-icon dietary-nut-free">Nut-Free</span>{% endif %}
+                        {% if item.is_halal %}<span class="dietary-icon dietary-halal">Halal</span>{% endif %}
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="font-semibold text-gray-900">₱{{ item.individual_price|floatformat:2 }}</div>
+                    <div class="text-xs text-gray-500">{{ item.course_category.name }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-gray-500 text-center py-4">No menu items found</p>
+        {% endif %}
+    </div>
+    
+    <!-- Recent Bookings -->
+    <div class="detail-card p-6">
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Recent Bookings (Last 10)</h3>
+        {% if bookings %}
+            {% for booking in bookings %}
+            <div class="booking-item">
+                <div>
+                    <div class="font-semibold text-gray-900">{{ booking.client.get_full_name|default:booking.client.username }}</div>
+                    <div class="text-sm text-gray-600">{{ booking.event_type }} • {{ booking.event_date|date:"M j, Y" }}</div>
+                    <div class="text-sm text-gray-500">{{ booking.guest_count }} guests • ₱{{ booking.total_amount|floatformat:2 }}</div>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm font-medium
+                        {% if booking.status == 'confirmed' %}text-green-600
+                        {% elif booking.status == 'pending' %}text-yellow-600
+                        {% elif booking.status == 'cancelled' %}text-red-600
+                        {% else %}text-gray-600{% endif %}">
+                        {{ booking.get_status_display }}
+                    </div>
+                    <div class="text-xs text-gray-500">{{ booking.created_at|date:"M j" }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p class="text-gray-500 text-center py-4">No bookings found</p>
+        {% endif %}
+    </div>
+    
+    <!-- Admin Actions -->
+    <div class="detail-card p-6">
+        <h3 class="text-xl font-bold text-gray-900 mb-4">Administrative Actions</h3>
+        <div class="flex flex-wrap gap-3">
+            <a href="{% url 'core:caterer_regulation' %}" class="action-btn btn-back">← Back to List</a>
+            
+            {% if caterer.is_suspended %}
+                <button onclick="unsuspendCaterer({{ caterer.id }}, '{{ caterer.provider.business_name|escapejs }}')" class="action-btn btn-unsuspend">Unsuspend Caterer</button>
+            {% else %}
+                <button onclick="showSuspendModal({{ caterer.id }}, '{{ caterer.provider.business_name|escapejs }}')" class="action-btn btn-suspend">Suspend Caterer</button>
+            {% endif %}
+            
+            <button onclick="toggleCatererActive({{ caterer.id }}, '{{ caterer.provider.business_name|escapejs }}', {{ caterer.is_active|yesno:'true,false' }})" class="action-btn btn-toggle">
+                {% if caterer.is_active %}Deactivate{% else %}Activate{% endif %} Caterer
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Suspension Modal -->
+<div id="suspendModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeSuspendModal()">&times;</span>
+        <h2 class="text-xl font-bold mb-4">Suspend Caterer</h2>
+        <p class="mb-4">You are about to suspend: <strong id="catererNameModal"></strong></p>
+        <form id="suspendForm">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label for="suspendReason" class="block text-sm font-medium text-gray-700 mb-2">Suspension Reason *</label>
+                <textarea id="suspendReason" name="reason" rows="4" required
+                          class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          placeholder="Enter the reason for suspension..."></textarea>
+            </div>
+            <div class="flex justify-end space-x-3">
+                <button type="button" onclick="closeSuspendModal()" class="action-btn btn-toggle">Cancel</button>
+                <button type="submit" class="action-btn btn-suspend">Suspend Caterer</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let currentCatererId = null;
+
+function showSuspendModal(catererId, catererName) {
+    currentCatererId = catererId;
+    document.getElementById('catererNameModal').textContent = catererName;
+    document.getElementById('suspendModal').style.display = 'block';
+    document.getElementById('suspendReason').focus();
+}
+
+function closeSuspendModal() {
+    document.getElementById('suspendModal').style.display = 'none';
+    document.getElementById('suspendReason').value = '';
+    currentCatererId = null;
+}
+
+document.getElementById('suspendForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const reason = document.getElementById('suspendReason').value.trim();
+    if (!reason) {
+        alert('Please enter a suspension reason.');
+        return;
+    }
+    
+    suspendCaterer(currentCatererId, reason);
+});
+
+function suspendCaterer(catererId, reason) {
+    fetch(`/admin-panel/caterers/${catererId}/suspend/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({ reason: reason })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            location.reload();
+        } else {
+            alert('Error: ' + data.error);
+        }
+        closeSuspendModal();
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while suspending the caterer.');
+        closeSuspendModal();
+    });
+}
+
+function unsuspendCaterer(catererId, catererName) {
+    if (confirm(`Are you sure you want to unsuspend "${catererName}"?`)) {
+        fetch(`/admin-panel/caterers/${catererId}/unsuspend/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while unsuspending the caterer.');
+        });
+    }
+}
+
+function toggleCatererActive(catererId, catererName, isActive) {
+    const action = isActive ? 'deactivate' : 'activate';
+    if (confirm(`Are you sure you want to ${action} "${catererName}"?`)) {
+        fetch(`/admin-panel/caterers/${catererId}/toggle-active/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                location.reload();
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while updating the caterer status.');
+        });
+    }
+}
+
+// Close modal when clicking outside of it
+window.onclick = function(event) {
+    const modal = document.getElementById('suspendModal');
+    if (event.target == modal) {
+        closeSuspendModal();
+    }
+}
+</script>
+{% endblock %}
