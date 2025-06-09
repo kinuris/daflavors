@@ -12,7 +12,8 @@ def venue_list(request):
     """
     Display list of all venues with search and filtering options
     """
-    venues = Venue.objects.all()
+    # Only show venues that are available for booking (active and not suspended)
+    venues = Venue.objects.filter(is_active=True, is_suspended=False)
     venue_types = Venue.TYPE_CHOICES
     
     # Filter by venue type if specified
@@ -49,6 +50,12 @@ def venue_detail(request, venue_id):
     is_owner = False
     if request.user.is_authenticated and hasattr(request.user, 'provider_profile'):
         is_owner = venue.provider == request.user.provider_profile
+    
+    # If venue is suspended or inactive, only show to owner and admin
+    if not venue.is_available_for_booking():
+        if not is_owner and not request.user.is_staff:
+            messages.error(request, "This venue is currently not available for booking.")
+            return redirect('venues:list')
     
     context = {
         'venue': venue,

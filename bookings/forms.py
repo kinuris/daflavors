@@ -17,14 +17,16 @@ class BookingForm(forms.ModelForm):
         widget=forms.TimeInput(attrs={'type': 'time', 'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50'}),
     )
     venue = forms.ModelChoiceField(
-        queryset=Venue.objects.all(),
+        queryset=Venue.objects.filter(is_active=True, is_suspended=False),
         required=False,
         widget=forms.Select(attrs={'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50'}),
+        help_text="Only active venues available for booking"
     )
     caterer = forms.ModelChoiceField(
-        queryset=Caterer.objects.all(),
+        queryset=Caterer.objects.filter(is_active=True, is_suspended=False),
         required=False,
         widget=forms.Select(attrs={'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50'}),
+        help_text="Only active caterers available for booking"
     )
     
     class Meta:
@@ -41,9 +43,34 @@ class BookingForm(forms.ModelForm):
         venue_id = kwargs.pop('venue_id', None)
         super(BookingForm, self).__init__(*args, **kwargs)
         
-        # If we have a venue, set it as the initial selection
+        # If we have a venue, set it as the initial selection and validate it's available
         if venue_id:
-            self.fields['venue'].initial = venue_id
+            try:
+                venue = Venue.objects.get(id=venue_id, is_active=True, is_suspended=False)
+                self.fields['venue'].initial = venue_id
+            except Venue.DoesNotExist:
+                # If venue is suspended or inactive, don't set it as initial
+                pass
+    
+    def clean_venue(self):
+        """Validate that selected venue is available for booking"""
+        venue = self.cleaned_data.get('venue')
+        if venue and not venue.is_available_for_booking():
+            raise forms.ValidationError(
+                f"The venue '{venue.name}' is currently not available for booking. "
+                f"Please select a different venue or contact support for assistance."
+            )
+        return venue
+    
+    def clean_caterer(self):
+        """Validate that selected caterer is available for booking"""
+        caterer = self.cleaned_data.get('caterer')
+        if caterer and not caterer.is_available_for_booking():
+            raise forms.ValidationError(
+                f"The caterer '{caterer.business_name}' is currently not available for booking. "
+                f"Please select a different caterer or contact support for assistance."
+            )
+        return caterer
 
 class MenuSelectionForm(forms.ModelForm):
     """
@@ -72,13 +99,27 @@ class MenuSelectionForm(forms.ModelForm):
         menu_id = kwargs.pop('menu_id', None)
         super(MenuSelectionForm, self).__init__(*args, **kwargs)
         
-        # Filter menu packages by caterer
+        # Filter menu packages by caterer and ensure caterer is active and not suspended
         if caterer_id:
-            self.fields['menu_package'].queryset = MenuPackage.objects.filter(caterer_id=caterer_id)
+            self.fields['menu_package'].queryset = MenuPackage.objects.filter(
+                caterer_id=caterer_id,
+                caterer__is_active=True,
+                caterer__is_suspended=False
+            )
             
-            # If a specific menu package was requested
+            # If a specific menu package was requested, validate it's still available
             if menu_id:
-                self.fields['menu_package'].initial = menu_id
+                try:
+                    menu_package = MenuPackage.objects.get(
+                        id=menu_id, 
+                        caterer_id=caterer_id,
+                        caterer__is_active=True,
+                        caterer__is_suspended=False
+                    )
+                    self.fields['menu_package'].initial = menu_id
+                except MenuPackage.DoesNotExist:
+                    # If menu package is no longer available, don't set it as initial
+                    pass
 
 class CourseSelectionForm(forms.ModelForm):
     """
@@ -106,7 +147,9 @@ class CourseSelectionForm(forms.ModelForm):
             self.fields['course_category'].initial = course_category.id
             self.fields['selected_items'].queryset = MenuItem.objects.filter(
                 caterer_id=caterer_id, 
-                course_category=course_category
+                course_category=course_category,
+                caterer__is_active=True,
+                caterer__is_suspended=False
             )
 
 class QuoteForm(forms.ModelForm):

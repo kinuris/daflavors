@@ -13,7 +13,8 @@ def caterer_list(request):
     """
     Display list of all caterers with search and filtering options
     """
-    caterers = Caterer.objects.all()
+    # Only show caterers that are available for booking (active and not suspended)
+    caterers = Caterer.objects.filter(is_active=True, is_suspended=False)
     
     # Filter by specialty if specified
     specialty = request.GET.get('specialty')
@@ -60,6 +61,12 @@ def caterer_detail(request, caterer_id):
     is_owner = False
     if request.user.is_authenticated and hasattr(request.user, 'provider_profile'):
         is_owner = caterer.provider == request.user.provider_profile
+    
+    # If caterer is suspended or inactive, only show to owner and admin
+    if not caterer.is_available_for_booking():
+        if not is_owner and not request.user.is_staff:
+            messages.error(request, "This caterer is currently not available for booking.")
+            return redirect('caterers:list')
     
     context = {
         'caterer': caterer,

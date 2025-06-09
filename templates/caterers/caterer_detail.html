@@ -273,6 +273,45 @@
             <!-- Owner Actions -->
             {% if is_owner %}
                 <div class="border-t mt-4 pt-4">
+                    <!-- Status Indicator for Owner -->
+                    <div class="mb-4 p-3 rounded-lg border
+                        {% if caterer.is_suspended %}
+                            bg-red-50 border-red-200
+                        {% elif not caterer.is_active %}
+                            bg-orange-50 border-orange-200
+                        {% else %}
+                            bg-green-50 border-green-200
+                        {% endif %}">
+                        <div class="flex items-center">
+                            {% if caterer.is_suspended %}
+                                <span class="text-red-600 text-lg mr-2">🚫</span>
+                                <div>
+                                    <p class="font-medium text-red-800">Service Suspended</p>
+                                    <p class="text-sm text-red-600">
+                                        {% if caterer.suspension_reason %}
+                                            Reason: {{ caterer.suspension_reason }}
+                                        {% endif %}
+                                        {% if caterer.suspended_at %}
+                                            <br>Suspended on: {{ caterer.suspended_at|date:"M d, Y" }}
+                                        {% endif %}
+                                    </p>
+                                </div>
+                            {% elif not caterer.is_active %}
+                                <span class="text-orange-600 text-lg mr-2">⏸️</span>
+                                <div>
+                                    <p class="font-medium text-orange-800">Service Inactive</p>
+                                    <p class="text-sm text-orange-600">Your catering service is currently inactive and not visible to clients.</p>
+                                </div>
+                            {% else %}
+                                <span class="text-green-600 text-lg mr-2">✅</span>
+                                <div>
+                                    <p class="font-medium text-green-800">Service Active</p>
+                                    <p class="text-sm text-green-600">Your catering service is live and available for booking.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
                     <p class="font-medium text-gray-700 mb-2">Caterer Owner Actions:</p>
                     <div class="flex space-x-2">
                         <a href="{% url 'caterers:update' caterer.id %}" class="flex-1 bg-green-600 hover:bg-green-700 text-white text-center font-medium py-2 px-4 rounded-md">
@@ -287,6 +326,15 @@
                             Delete Profile
                         </a>
                     </div>
+                    
+                    {% if caterer.is_suspended %}
+                        <div class="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                            <p class="text-sm text-yellow-800">
+                                <strong>Note:</strong> While suspended, your catering service is not visible to clients and cannot receive new bookings. 
+                                Please contact support for assistance with reactivation.
+                            </p>
+                        </div>
+                    {% endif %}
                 </div>
             {% endif %}
         </div>

@@ -32,12 +32,23 @@ class Venue(models.Model):
     # Pricing
     base_price = models.DecimalField(max_digits=10, decimal_places=2, help_text="Base price for venue rental")
     
+    # Admin monitoring fields
+    is_active = models.BooleanField(default=True, help_text="Whether this venue is active and accepting bookings")
+    is_suspended = models.BooleanField(default=False, help_text="Whether this venue has been suspended by admin")
+    suspension_reason = models.TextField(blank=True, help_text="Reason for suspension (admin only)")
+    suspended_at = models.DateTimeField(null=True, blank=True)
+    suspended_by = models.ForeignKey('accounts.CustomUser', on_delete=models.SET_NULL, null=True, blank=True, related_name='suspended_venues', limit_choices_to={'is_staff': True})
+    
     # Datetime fields
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
         return self.name
+    
+    def is_available_for_booking(self):
+        """Check if venue is available for new bookings"""
+        return self.is_active and not self.is_suspended
     
     class Meta:
         ordering = ['name']
