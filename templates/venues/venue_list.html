@@ -62,11 +62,13 @@
                             <!-- Venue Image -->
                             <div class="h-48 relative">
                                 {% if venue.images.all %}
-                                    {% with primary_image=venue.images.filter.is_primary.first %}
-                                        {% if primary_image %}
-                                            <img src="{{ primary_image.image.url }}" alt="{{ venue.name }}" class="w-full h-full object-cover">
+                                    {% with primary_images=venue.images.all %}
+                                        {% if primary_images.0 %}
+                                            <img src="{{ primary_images.0.image.url }}" alt="{{ venue.name }}" class="w-full h-full object-cover">
                                         {% else %}
-                                            <img src="{{ venue.images.first.image.url }}" alt="{{ venue.name }}" class="w-full h-full object-cover">
+                                            <div class="w-full h-full bg-gray-200 flex items-center justify-center">
+                                                <span class="text-gray-500">No Image Available</span>
+                                            </div>
                                         {% endif %}
                                     {% endwith %}
                                 {% else %}

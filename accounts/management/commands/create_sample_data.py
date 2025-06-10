@@ -5,7 +5,7 @@ from datetime import time, timedelta, datetime
 from decimal import Decimal
 
 from accounts.models import ProviderProfile
-from venues.models import Venue, VenueRoom, VenueFeature
+from venues.models import Venue
 from caterers.models import Caterer, MenuPackage, CourseCategory, MenuItem
 
 # Get the user model at runtime to ensure we get the correct custom user model
@@ -28,8 +28,6 @@ class Command(BaseCommand):
             MenuPackage.objects.all().delete()
             CourseCategory.objects.all().delete()
             Caterer.objects.all().delete()
-            VenueFeature.objects.all().delete()
-            VenueRoom.objects.all().delete()
             Venue.objects.all().delete()
             ProviderProfile.objects.all().delete()
             User.objects.all().delete()
@@ -171,48 +169,6 @@ class Command(BaseCommand):
             base_price=Decimal('50000.00')
         )
         self.stdout.write(self.style.SUCCESS(f'Created venue: {venue.name}'))
-        
-        # Create rooms for the venue
-        rooms = [
-            VenueRoom.objects.create(
-                venue=venue,
-                name='Main Ballroom',
-                capacity=500,
-                description='Grand ballroom with crystal chandeliers',
-                has_av_equipment=True,
-                has_stage=True,
-                available_layouts='theater,banquet,cocktail',
-                price=Decimal('50000.00')
-            ),
-            VenueRoom.objects.create(
-                venue=venue,
-                name='Garden Room',
-                capacity=200,
-                description='Indoor-outdoor space with garden view',
-                has_av_equipment=True,
-                has_stage=False,
-                available_layouts='banquet,cocktail',
-                price=Decimal('25000.00')
-            )
-        ]
-        for room in rooms:
-            self.stdout.write(self.style.SUCCESS(f'Created venue room: {room.name}'))
-        
-        # Create venue features
-        features = [
-            'Free Parking',
-            'Bridal Suite',
-            'Professional Sound System',
-            'Full Kitchen',
-            'Wheelchair Accessible'
-        ]
-        for feature in features:
-            VenueFeature.objects.create(
-                venue=venue,
-                name=feature,
-                description=f'Venue includes {feature}'
-            )
-            self.stdout.write(self.style.SUCCESS(f'Created venue feature: {feature}'))
         
         # Create a caterer for the second provider
         caterer = Caterer.objects.create(

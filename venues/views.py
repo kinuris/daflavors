@@ -88,7 +88,7 @@ def venue_create(request):
                 image_formset.save()
                 
             messages.success(request, "Venue created successfully!")
-            return redirect('venues:venue_detail', venue_id=venue.id)
+            return redirect('venues:detail', venue_id=venue.id)
     else:
         form = VenueForm()
         image_formset = VenueImageFormSet()
@@ -110,7 +110,7 @@ def venue_update(request, venue_id):
     # Check if user has permission to edit this venue
     if not request.user.provider_profile == venue.provider:
         messages.error(request, "You don't have permission to edit this venue.")
-        return redirect('venues:venue_detail', venue_id=venue.id)
+        return redirect('venues:detail', venue_id=venue.id)
     
     VenueImageFormSet = inlineformset_factory(Venue, VenueImage, form=VenueImageForm, extra=1, can_delete=True)
     
@@ -124,7 +124,7 @@ def venue_update(request, venue_id):
                 image_formset.save()
                 
             messages.success(request, "Venue updated successfully!")
-            return redirect('venues:venue_detail', venue_id=venue.id)
+            return redirect('venues:detail', venue_id=venue.id)
     else:
         form = VenueForm(instance=venue)
         image_formset = VenueImageFormSet(instance=venue)
@@ -188,7 +188,7 @@ def venue_create(request):
             messages.success(request, f"Venue '{venue.name}' created successfully!")
             
             # Redirect to update page to add images, features, and rooms
-            return redirect('venues:venue_update', venue_id=venue.id)
+            return redirect('venues:update', venue_id=venue.id)
     else:
         form = VenueForm()
     
@@ -210,10 +210,10 @@ def venue_update(request, venue_id):
         provider_profile = request.user.provider_profile
         if venue.provider != provider_profile:
             messages.error(request, "You don't have permission to edit this venue.")
-            return redirect('venues:venue_detail', venue_id=venue_id)
+            return redirect('venues:detail', venue_id=venue_id)
     except:
         messages.error(request, "You don't have permission to edit this venue.")
-        return redirect('venues:venue_detail', venue_id=venue_id)
+        return redirect('venues:detail', venue_id=venue_id)
     
     # Create formsets for related objects
     ImageFormSet = inlineformset_factory(
@@ -244,7 +244,7 @@ def venue_update(request, venue_id):
                         )
             
             messages.success(request, f"Venue '{venue.name}' updated successfully!")
-            return redirect('venues:venue_detail', venue_id=venue_id)
+            return redirect('venues:detail', venue_id=venue_id)
     else:
         form = VenueForm(instance=venue)
         image_formset = ImageFormSet(instance=venue)
@@ -275,10 +275,10 @@ def venue_delete(request, venue_id):
         provider_profile = request.user.provider_profile
         if venue.provider != provider_profile:
             messages.error(request, "You don't have permission to delete this venue.")
-            return redirect('venues:venue_detail', venue_id=venue_id)
+            return redirect('venues:detail', venue_id=venue_id)
     except:
         messages.error(request, "You don't have permission to delete this venue.")
-        return redirect('venues:venue_detail', venue_id=venue_id)
+        return redirect('venues:detail', venue_id=venue_id)
     
     venue_name = venue.name
     
