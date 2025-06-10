@@ -4,80 +4,82 @@
 {% block title %}Menu Packages - {{ caterer.name }}{% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Breadcrumb -->
-    <nav class="mb-6">
-        <ol class="flex items-center space-x-2 text-sm text-gray-500">
-            <li><a href="{% url 'core:home' %}" class="hover:text-indigo-600">Home</a></li>
-            <li><span class="mx-2">/</span></li>
-            <li><a href="{% url 'caterers:list' %}" class="hover:text-indigo-600">Caterers</a></li>
-            <li><span class="mx-2">/</span></li>
-            <li><a href="{% url 'caterers:detail' caterer.id %}" class="hover:text-indigo-600">{{ caterer.name }}</a></li>
-            <li><span class="mx-2">/</span></li>
-            <li class="font-medium text-gray-900">Menu Packages</li>
-        </ol>
-    </nav>
+<div class="bg-black text-white min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Breadcrumb -->
+        <nav class="mb-6">
+            <ol class="flex items-center space-x-2 text-sm text-gray-400">
+                <li><a href="{% url 'core:home' %}" class="hover:text-white transition-colors">Home</a></li>
+                <li><span class="mx-2">/</span></li>
+                <li><a href="{% url 'caterers:list' %}" class="hover:text-white transition-colors">Caterers</a></li>
+                <li><span class="mx-2">/</span></li>
+                <li><a href="{% url 'caterers:detail' caterer.id %}" class="hover:text-white transition-colors">{{ caterer.name }}</a></li>
+                <li><span class="mx-2">/</span></li>
+                <li class="font-medium text-white">Menu Packages</li>
+            </ol>
+        </nav>
 
-    <!-- Header -->
-    <div class="flex items-center justify-between mb-6">
-        <h1 class="text-3xl font-bold text-gray-900">Menu Packages by {{ caterer.name }}</h1>
-        {% if is_owner %}
-        <a href="{% url 'caterers:menu_add' caterer.id %}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-            <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            Add New Menu Package
-        </a>
-        {% endif %}
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-6">
+            <h1 class="text-3xl font-bold text-white" style="letter-spacing: 0.1em;">Menu Packages by {{ caterer.name }}</h1>
+            {% if is_owner %}
+            <a href="{% url 'caterers:menu_add' caterer.id %}" class="inline-flex items-center px-4 py-2 border border-white rounded-md shadow-sm text-sm font-medium text-white bg-transparent hover:bg-white hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white">
+                <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                Add New Menu Package
+            </a>
+            {% endif %}
     </div>
 
-    {% if menu_packages %}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {% for package in menu_packages %}
-                <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200">
-                    <div class="px-6 py-5">
-                        <div class="flex items-center justify-between">
-                            <h3 class="text-xl font-semibold text-gray-900">{{ package.name }}</h3>
-                            <span class="px-3 py-1 text-sm font-medium rounded-full {{ package.service_style|lower == 'buffet' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }}">
-                                {{ package.service_style }}
-                            </span>
-                        </div>
-                        <p class="mt-2 text-gray-600">{{ package.description|truncatechars:100 }}</p>
-                        <div class="mt-4">
+        {% if menu_packages %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for package in menu_packages %}
+                    <div class="bg-gray-900 border border-gray-700 rounded-lg overflow-hidden">
+                        <div class="px-6 py-5">
                             <div class="flex items-center justify-between">
-                                <span class="text-gray-700">Price per person:</span>
-                                <span class="font-semibold text-gray-900">₱{{ package.base_price_per_person }}</span>
+                                <h3 class="text-xl font-semibold text-white">{{ package.name }}</h3>
+                                <span class="px-3 py-1 text-sm font-medium rounded-full bg-gray-800 text-gray-300">
+                                    {{ package.service_style }}
+                                </span>
                             </div>
-                            <div class="flex items-center justify-between mt-1">
-                                <span class="text-gray-700">Minimum guests:</span>
-                                <span class="font-semibold text-gray-900">{{ package.min_guest_count }}</span>
+                            <p class="mt-2 text-gray-300">{{ package.description|truncatechars:100 }}</p>
+                            <div class="mt-4">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-gray-400">Price per person:</span>
+                                    <span class="font-semibold text-white">₱{{ package.base_price_per_person }}</span>
+                                </div>
+                                <div class="flex items-center justify-between mt-1">
+                                    <span class="text-gray-400">Minimum guests:</span>
+                                    <span class="font-semibold text-white">{{ package.min_guest_count }}</span>
+                                </div>
                             </div>
-                        </div>
-                        <div class="mt-4 flex justify-end space-x-3">
-                            <a href="{% url 'caterers:menu_detail' caterer.id package.id %}" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                View Menu
-                            </a>
-                            {% if is_owner %}
-                                <a href="{% url 'caterers:menu_update' caterer.id package.id %}" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                                    Edit
+                            <div class="mt-4 flex justify-end space-x-3">
+                                <a href="{% url 'caterers:menu_detail' caterer.id package.id %}" class="inline-flex items-center px-3 py-2 border border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-300 bg-transparent hover:bg-gray-800 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                                    View Menu
                                 </a>
-                                <a href="{% url 'caterers:menu_delete' caterer.id package.id %}" class="inline-flex items-center px-3 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                                    Delete
-                                </a>
-                            {% endif %}
+                                {% if is_owner %}
+                                    <a href="{% url 'caterers:menu_update' caterer.id package.id %}" class="inline-flex items-center px-3 py-2 border border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-300 bg-transparent hover:bg-gray-800 hover:text-white transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                                        Edit
+                                    </a>
+                                    <a href="{% url 'caterers:menu_delete' caterer.id package.id %}" class="inline-flex items-center px-3 py-2 border border-red-600 rounded-md shadow-sm text-sm font-medium text-red-400 bg-transparent hover:bg-red-900 hover:text-red-300 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                        Delete
+                                    </a>
+                                {% endif %}
+                            </div>
                         </div>
                     </div>
-                </div>
-            {% endfor %}
-        </div>
-    {% else %}
-        <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200 p-6">
-            {% if is_owner %}
-                <p class="text-gray-600">You haven't added any menu packages yet. Create your first menu package to showcase your offerings.</p>
-            {% else %}
-                <p class="text-gray-600">This caterer hasn't added any menu packages yet. Check back later or contact them directly for more information.</p>
-            {% endif %}
-        </div>
-    {% endif %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="bg-gray-900 border border-gray-700 rounded-lg p-6">
+                {% if is_owner %}
+                    <p class="text-gray-300">You haven't added any menu packages yet. Create your first menu package to showcase your offerings.</p>
+                {% else %}
+                    <p class="text-gray-300">This caterer hasn't added any menu packages yet. Check back later or contact them directly for more information.</p>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}

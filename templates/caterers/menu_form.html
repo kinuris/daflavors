@@ -1,19 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{% if                         <!-- Price per Person -->
-                        <div>
-                            <label for="{{ form.base_price_per_person.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.base_price_per_person.label }}</label>
-                            <div class="mt-1 relative rounded-md shadow-sm">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <span class="text-gray-500 sm:text-sm">₱</span>
-                                </div>
-                                {{ form.base_price_per_person }}
-                            </div>
-                            {% if form.base_price_per_person.errors %}
-                                <p class="mt-2 text-sm text-red-600">{{ form.base_price_per_person.errors.0 }}</p>
-                            {% endif %}
-                        </div>reate{% else %}Edit{% endif %} Menu Package - {{ caterer.name }}{% endblock %}
+{% block title %}{% if is_create %}Create{% else %}Edit{% endif %} Menu Package - {{ caterer.name }}{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -21,83 +9,108 @@
 {% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Breadcrumb -->
-    <nav class="mb-6">
-        <ol class="flex items-center space-x-2 text-sm text-gray-500">
-            <li><a href="{% url 'core:home' %}" class="hover:text-indigo-600">Home</a></li>
-            <li><span class="mx-2">/</span></li>
-            <li><a href="{% url 'caterers:caterer_list' %}" class="hover:text-indigo-600">Caterers</a></li>
-            <li><span class="mx-2">/</span></li>
-            <li><a href="{% url 'caterers:caterer_detail' caterer.id %}" class="hover:text-indigo-600">{{ caterer.name }}</a></li>
-            <li><span class="mx-2">/</span></li>
-            <li><a href="{% url 'caterers:menu_list' caterer.id %}" class="hover:text-indigo-600">Menu Packages</a></li>
-            <li><span class="mx-2">/</span></li>
-            <li class="font-medium text-gray-900">{% if is_create %}Create Menu Package{% else %}Edit {{ menu_package.name }}{% endif %}</li>
-        </ol>
-    </nav>
+<div class="min-h-screen bg-black text-white">
+    <div class="container mx-auto px-4 py-12">
+        <!-- Header -->
+        <div class="mb-12">
+            <h1 class="text-4xl font-light mb-4" style="letter-spacing: 0.1em;">{{ form_title }}</h1>
+            <p class="text-xl text-gray-300" style="letter-spacing: 0.05em;">
+                {% if is_create %}Create new menu package for {{ caterer.name }}{% else %}Update menu package information{% endif %}
+            </p>
+        </div>
 
-    <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200">
-        <div class="px-4 py-5 sm:p-6">
-            <h1 class="text-2xl font-semibold text-gray-900 mb-6">{{ form_title }}</h1>
+        <!-- Form -->
+        <form method="post" enctype="multipart/form-data" class="dark-form space-y-12">
+            {% csrf_token %}
             
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
+            <!-- Display form errors -->
+            {% if form.non_field_errors %}
+                <div class="bg-red-900/20 border border-red-600 text-red-300 px-6 py-4 rounded-lg mb-6">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+            
+            <!-- Basic Package Information -->
+            <div class="bg-gray-900 border border-gray-700 rounded-lg p-8">
+                <h2 class="text-2xl font-light mb-8 pb-4 border-b border-gray-700" style="letter-spacing: 0.1em;">P A C K A G E &nbsp;&nbsp; I N F O R M A T I O N</h2>
                 
-                <!-- Basic Package Information -->
-                <div class="space-y-6 mb-8">
-                    <h2 class="text-lg font-medium text-gray-900 border-b pb-2">Package Information</h2>
-                    
+                <div class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Name -->
                         <div>
-                            <label for="{{ form.name.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.name.label }}</label>
+                            <label for="{{ form.name.id_for_label }}" class="block text-sm font-light text-gray-300 mb-2" style="letter-spacing: 0.05em;">
+                                Package Name <span class="text-red-400">*</span>
+                            </label>
                             {{ form.name }}
                             {% if form.name.errors %}
-                                <p class="mt-2 text-sm text-red-600">{{ form.name.errors.0 }}</p>
+                                <div class="text-red-400 text-sm mt-2">{{ form.name.errors.0 }}</div>
                             {% endif %}
                         </div>
                         
                         <!-- Service Style -->
                         <div>
-                            <label for="{{ form.service_style.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.service_style.label }}</label>
+                            <label for="{{ form.service_style.id_for_label }}" class="block text-sm font-light text-gray-300 mb-2" style="letter-spacing: 0.05em;">
+                                Service Style <span class="text-red-400">*</span>
+                            </label>
                             {{ form.service_style }}
                             {% if form.service_style.errors %}
-                                <p class="mt-2 text-sm text-red-600">{{ form.service_style.errors.0 }}</p>
+                                <div class="text-red-400 text-sm mt-2">{{ form.service_style.errors.0 }}</div>
                             {% endif %}
                         </div>
                     </div>
                     
                     <!-- Description -->
                     <div>
-                        <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.description.label }}</label>
+                        <label for="{{ form.description.id_for_label }}" class="block text-sm font-light text-gray-300 mb-2" style="letter-spacing: 0.05em;">
+                            Description
+                        </label>
                         {{ form.description }}
                         {% if form.description.errors %}
-                            <p class="mt-2 text-sm text-red-600">{{ form.description.errors.0 }}</p>
+                            <div class="text-red-400 text-sm mt-2">{{ form.description.errors.0 }}</div>
                         {% endif %}
                     </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <!-- Price Per Person -->
                         <div>
-                            <label for="{{ form.price_per_person.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.price_per_person.label }}</label>
-                            <div class="mt-1 relative rounded-md shadow-sm">
+                            <label for="{{ form.price_per_person.id_for_label }}" class="block text-sm font-light text-gray-300 mb-2" style="letter-spacing: 0.05em;">
+                                Price Per Person <span class="text-red-400">*</span>
+                            </label>
+                            <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <span class="text-gray-500 sm:text-sm">₱</span>
+                                    <span class="text-gray-400 text-sm">₱</span>
                                 </div>
                                 {{ form.price_per_person }}
                             </div>
                             {% if form.price_per_person.errors %}
-                                <p class="mt-2 text-sm text-red-600">{{ form.price_per_person.errors.0 }}</p>
+                                <div class="text-red-400 text-sm mt-2">{{ form.price_per_person.errors.0 }}</div>
                             {% endif %}
                         </div>
                         
                         <!-- Min Guest Count -->
                         <div>
-                            <label for="{{ form.min_guest_count.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.min_guest_count.label }}</label>
+                            <label for="{{ form.min_guest_count.id_for_label }}" class="block text-sm font-light text-gray-300 mb-2" style="letter-spacing: 0.05em;">
+                                Minimum Guests <span class="text-red-400">*</span>
+                            </label>
                             {{ form.min_guest_count }}
                             {% if form.min_guest_count.errors %}
-                                <p class="mt-2 text-sm text-red-600">{{ form.min_guest_count.errors.0 }}</p>
+                                <div class="text-red-400 text-sm mt-2">{{ form.min_guest_count.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Max Guest Count -->
+                        <div>
+                            <label for="{{ form.max_guest_count.id_for_label }}" class="block text-sm font-light text-gray-300 mb-2" style="letter-spacing: 0.05em;">
+                                Maximum Guests
+                            </label>
+                            {{ form.max_guest_count }}
+                            {% if form.max_guest_count.errors %}
+                                <div class="text-red-400 text-sm mt-2">{{ form.max_guest_count.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
                             {% endif %}
                         </div>
                         
@@ -110,77 +123,83 @@
                             {% endif %}
                         </div>
                     </div>
-                </div>
+            {% if not is_create %}
+            <!-- Menu Items -->
+            <div class="bg-gray-900 border border-gray-700 rounded-lg p-8">
+                <h2 class="text-2xl font-light mb-8 pb-4 border-b border-gray-700" style="letter-spacing: 0.1em;">M E N U &nbsp;&nbsp; I T E M S</h2>
                 
-                {% if not is_create %}
-                <!-- Menu Items -->
-                <div class="space-y-6 mb-8">
-                    <h2 class="text-lg font-medium text-gray-900 border-b pb-2">Menu Items</h2>
-                    
-                    {{ formset.management_form }}
-                    
-                    <div class="space-y-4" id="formset-container">
-                        {% for form in formset %}
-                            <div class="border border-gray-300 rounded-md p-4 formset-row">
-                                {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
-                                <div class="flex justify-between">
-                                    <h3 class="text-md font-medium">{% if form.instance.pk %}{{ form.instance.menu_item.name }}{% else %}New Item{% endif %}</h3>
-                                    {% if form.instance.pk %}
-                                    <div class="flex items-center">
-                                        <label for="{{ form.DELETE.id_for_label }}" class="flex items-center ml-3 text-sm text-red-600 cursor-pointer">
-                                            <input type="checkbox" id="{{ form.DELETE.id_for_label }}" name="{{ form.DELETE.name }}" class="h-4 w-4 text-red-600 border-gray-300 rounded mr-1">
-                                            Remove
-                                        </label>
-                                    </div>
+                {{ formset.management_form }}
+                
+                <div class="space-y-6" id="formset-container">
+                    {% for form in formset %}
+                        <div class="border border-gray-600 rounded-lg p-6 formset-row bg-gray-800">
+                            {% if form.instance.pk %}{{ form.DELETE }}{% endif %}
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-lg font-light text-white" style="letter-spacing: 0.05em;">
+                                    {% if form.instance.pk %}{{ form.instance.menu_item.name }}{% else %}New Item{% endif %}
+                                </h3>
+                                {% if form.instance.pk %}
+                                <div class="flex items-center">
+                                    <label for="{{ form.DELETE.id_for_label }}" class="flex items-center text-sm text-red-400 cursor-pointer" style="letter-spacing: 0.05em;">
+                                        <input type="checkbox" id="{{ form.DELETE.id_for_label }}" name="{{ form.DELETE.name }}" class="h-4 w-4 text-red-400 bg-gray-800 border-gray-600 rounded mr-2 focus:ring-red-400">
+                                        Remove
+                                    </label>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {% for hidden_field in form.hidden_fields %}
+                                    {{ hidden_field }}
+                                {% endfor %}
+                                
+                                <!-- Course Category -->
+                                <div>
+                                    <label for="{{ form.course_category.id_for_label }}" class="block text-sm font-light text-gray-300 mb-2" style="letter-spacing: 0.05em;">
+                                        Course Category
+                                    </label>
+                                    {{ form.course_category }}
+                                    {% if form.course_category.errors %}
+                                        <div class="text-red-400 text-sm mt-2">{{ form.course_category.errors.0 }}</div>
                                     {% endif %}
                                 </div>
                                 
-                                <div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    {% for hidden_field in form.hidden_fields %}
-                                        {{ hidden_field }}
-                                    {% endfor %}
-                                    
-                                    <!-- Course Category -->
-                                    <div>
-                                        <label for="{{ form.course_category.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.course_category.label }}</label>
-                                        {{ form.course_category }}
-                                        {% if form.course_category.errors %}
-                                            <p class="mt-1 text-sm text-red-600">{{ form.course_category.errors.0 }}</p>
-                                        {% endif %}
-                                    </div>
-                                    
-                                    <!-- Menu Item -->
-                                    <div>
-                                        <label for="{{ form.menu_item.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.menu_item.label }}</label>
-                                        {{ form.menu_item }}
-                                        {% if form.menu_item.errors %}
-                                            <p class="mt-1 text-sm text-red-600">{{ form.menu_item.errors.0 }}</p>
-                                        {% endif %}
-                                    </div>
+                                <!-- Menu Item -->
+                                <div>
+                                    <label for="{{ form.menu_item.id_for_label }}" class="block text-sm font-light text-gray-300 mb-2" style="letter-spacing: 0.05em;">
+                                        Menu Item
+                                    </label>
+                                    {{ form.menu_item }}
+                                    {% if form.menu_item.errors %}
+                                        <div class="text-red-400 text-sm mt-2">{{ form.menu_item.errors.0 }}</div>
+                                    {% endif %}
                                 </div>
                             </div>
-                        {% endfor %}
-                    </div>
-                    
-                    <button type="button" id="add-form" class="mt-4 inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="-ml-0.5 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                        </svg>
-                        Add Another Item
-                    </button>
+                        </div>
+                    {% endfor %}
                 </div>
-                {% endif %}
                 
-                <div class="mt-8 border-t border-gray-200 pt-6 flex justify-end">
-                    <a href="{% if is_create %}{% url 'caterers:menu_list' caterer.id %}{% else %}{% url 'caterers:menu_detail' caterer.id menu_package.id %}{% endif %}" class="mr-3 inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <button type="button" id="add-form" class="mt-6 bg-transparent border border-white text-white px-6 py-3 rounded-lg hover:bg-white hover:text-black transition-colors inline-flex items-center" style="letter-spacing: 0.05em;">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="-ml-0.5 mr-2 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Add Another Item
+                </button>
+            </div>
+            {% endif %}
+            
+            <!-- Form Submit Buttons -->
+            <div class="border-t border-gray-700 pt-8">
+                <div class="flex justify-end space-x-4">
+                    <a href="{% if is_create %}{% url 'caterers:menu_list' caterer.id %}{% else %}{% url 'caterers:menu_detail' caterer.id menu_package.id %}{% endif %}" class="px-8 py-3 border border-gray-600 text-gray-300 rounded-lg hover:border-white hover:text-white transition-colors" style="letter-spacing: 0.05em;">
                         Cancel
                     </a>
-                    <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <button type="submit" class="px-8 py-3 bg-transparent border border-white text-white rounded-lg hover:bg-white hover:text-black transition-colors" style="letter-spacing: 0.05em;">
                         {% if is_create %}Create Menu Package{% else %}Update Menu Package{% endif %}
                     </button>
                 </div>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
 </div>
 {% endblock %}

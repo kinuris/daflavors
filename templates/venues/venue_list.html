@@ -6,134 +6,134 @@
 {% block page_subtitle %}Find the perfect venue for your next event{% endblock %}
 
 {% block content %}
-    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <!-- Filter Sidebar -->
-        <div class="lg:col-span-1">
-            <div class="bg-white rounded-lg shadow p-6">
-                <h3 class="font-semibold text-lg mb-4 pb-2 border-b">Filter Options</h3>
-                
-                <form method="get" class="space-y-4">
-                    <!-- Venue Type Filter -->
-                    <div>
-                        <label for="venue_type" class="block text-sm font-medium text-gray-700 mb-1">Venue Type</label>
-                        <select name="venue_type" id="venue_type" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <option value="">All Types</option>
-                            {% for value, name in venue_types %}
-                                <option value="{{ value }}" {% if selected_type == value %}selected{% endif %}>{{ name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
+    <div class="container mx-auto px-4 py-16">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Filter Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="bg-black border border-gray-800 p-8">
+                    <h3 class="font-light text-lg mb-8 pb-4 border-b border-gray-800 text-white tracking-wider">Filter Options</h3>
                     
-                    <!-- Capacity Filter -->
-                    <div>
-                        <label for="min_capacity" class="block text-sm font-medium text-gray-700 mb-1">Minimum Capacity</label>
-                        <input type="number" name="min_capacity" id="min_capacity" value="{{ min_capacity }}" min="0" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    </div>
-                    
-                    <!-- Price Filter -->
-                    <div>
-                        <label for="max_price" class="block text-sm font-medium text-gray-700 mb-1">Maximum Price (₱)</label>
-                        <input type="number" name="max_price" id="max_price" value="{{ max_price }}" min="0" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    </div>
-                    
-                    <!-- Submit Button -->
-                    <div class="pt-2">
-                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md">
-                            Apply Filters
-                        </button>
-                    </div>
-                    
-                    <!-- Reset Button -->
-                    <div>
-                        <a href="{% url 'venues:list' %}" class="block text-center w-full text-indigo-600 hover:text-indigo-800 font-medium py-2 px-4 rounded-md border border-indigo-600">
-                            Reset All Filters
-                        </a>
-                    </div>
-                </form>
-            </div>
-        </div>
-        
-        <!-- Venues List -->
-        <div class="lg:col-span-3">
-            {% if venues %}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {% for venue in venues %}
-                        <div class="bg-white rounded-lg shadow overflow-hidden">
-                            <!-- Venue Image -->
-                            <div class="h-48 relative">
-                                {% if venue.images.all %}
-                                    {% with primary_images=venue.images.all %}
-                                        {% if primary_images.0 %}
-                                            <img src="{{ primary_images.0.image.url }}" alt="{{ venue.name }}" class="w-full h-full object-cover">
-                                        {% else %}
-                                            <div class="w-full h-full bg-gray-200 flex items-center justify-center">
-                                                <span class="text-gray-500">No Image Available</span>
-                                            </div>
-                                        {% endif %}
-                                    {% endwith %}
-                                {% else %}
-                                    <div class="w-full h-full bg-gray-200 flex items-center justify-center">
-                                        <span class="text-gray-500">No Image Available</span>
-                                    </div>
-                                {% endif %}
-                                
-                                <!-- Venue Type Badge -->
-                                <div class="absolute top-4 left-4">
-                                    <span class="bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
-                                        {{ venue.get_venue_type_display }}
-                                    </span>
-                                </div>
-                                
-                                <!-- Price Badge -->
-                                <div class="absolute bottom-4 right-4">
-                                    <span class="bg-white text-indigo-800 px-3 py-1 rounded-full text-sm font-semibold shadow">
-                                        ₱{{ venue.base_price }}
-                                    </span>
-                                </div>
-                            </div>
-                            
-                            <!-- Venue Info -->
-                            <div class="p-6">
-                                <h3 class="font-bold text-lg">{{ venue.name }}</h3>
-                                <p class="text-gray-600 text-sm mb-2">{{ venue.address }}</p>
-                                
-                                <!-- Venue Capacity -->
-                                <div class="flex items-center text-sm text-gray-700 mb-4">
-                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"></path>
-                                    </svg>
-                                    <span>Capacity: {{ venue.capacity }} guests</span>
-                                </div>
-                                
-                                <!-- Venue Times -->
-                                <div class="flex items-center text-sm text-gray-700 mb-4">
-                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
-                                    </svg>
-                                    <span>{{ venue.opening_time|time:"g:i A" }} - {{ venue.closing_time|time:"g:i A" }}</span>
-                                </div>
-                                
-                                <!-- Short Description -->
-                                <p class="text-gray-800 mb-4">{{ venue.description|truncatewords:15 }}</p>
-                                
-                                <!-- View Button -->
-                                <a href="{% url 'venues:detail' venue.id %}" class="block w-full text-center bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-200">
-                                    View Details
-                                </a>
-                            </div>
+                    <form method="get" class="space-y-6 dark-form">
+                        <!-- Venue Type Filter -->
+                        <div>
+                            <label for="venue_type" class="block text-sm font-light text-gray-400 mb-2 tracking-wider">Venue Type</label>
+                            <select name="venue_type" id="venue_type" class="w-full px-4 py-3 bg-black border border-gray-700 text-white focus:outline-none focus:border-white tracking-wide font-light">
+                                <option value="">All Types</option>
+                                {% for value, name in venue_types %}
+                                    <option value="{{ value }}" {% if selected_type == value %}selected{% endif %}>{{ name }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
-                    {% endfor %}
+                        
+                        <!-- Capacity Filter -->
+                        <div>
+                            <label for="min_capacity" class="block text-sm font-light text-gray-400 mb-2 tracking-wider">Minimum Capacity</label>
+                            <input type="number" name="min_capacity" id="min_capacity" value="{{ min_capacity }}" min="0" class="w-full px-4 py-3 bg-black border border-gray-700 text-white focus:outline-none focus:border-white tracking-wide font-light">
+                        </div>
+                        
+                        <!-- Price Filter -->
+                        <div>
+                            <label for="max_price" class="block text-sm font-light text-gray-400 mb-2 tracking-wider">Maximum Price (₱)</label>
+                            <input type="number" name="max_price" id="max_price" value="{{ max_price }}" min="0" class="w-full px-4 py-3 bg-black border border-gray-700 text-white focus:outline-none focus:border-white tracking-wide font-light">
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <div class="pt-4">
+                            <button type="submit" class="w-full ghost-button py-3 px-4 font-light tracking-wider">
+                                Apply Filters
+                            </button>
+                        </div>
+                        
+                        <!-- Reset Button -->
+                        <div>
+                            <a href="{% url 'venues:list' %}" class="block text-center w-full ghost-button py-3 px-4 font-light tracking-wider">
+                                Reset All Filters
+                            </a>
+                        </div>                    </form>
                 </div>
-                
-                <!-- Pagination could be added here -->
-                
-            {% else %}
-                <div class="bg-white p-8 rounded-lg shadow text-center">
-                    <h3 class="text-xl font-semibold text-gray-700 mb-4">No venues found</h3>
-                    <p class="text-gray-600 mb-6">There are no venues matching your search criteria.</p>
-                    <a href="{% url 'venues:list' %}" class="text-indigo-600 hover:text-indigo-800 font-medium">Reset all filters</a>
-                </div>
-            {% endif %}
+            </div>
+            
+            <!-- Venues List -->
+            <div class="lg:col-span-3">
+                {% if venues %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {% for venue in venues %}
+                            <div class="bg-black border border-gray-800 overflow-hidden hover:border-gray-600 transition duration-500 group">
+                                <!-- Venue Image -->
+                                <div class="h-64 relative overflow-hidden">
+                                    {% if venue.images.all %}
+                                        {% with primary_images=venue.images.all %}
+                                            {% if primary_images.0 %}
+                                                <img src="{{ primary_images.0.image.url }}" alt="{{ venue.name }}" class="w-full h-full object-cover transform group-hover:scale-105 transition duration-700">
+                                            {% else %}
+                                                <div class="w-full h-full bg-gray-900 flex items-center justify-center">
+                                                    <span class="text-gray-600 font-light tracking-wider">No Image Available</span>
+                                                </div>
+                                            {% endif %}
+                                        {% endwith %}
+                                    {% else %}
+                                        <div class="w-full h-full bg-gray-900 flex items-center justify-center">
+                                            <span class="text-gray-600 font-light tracking-wider">No Image Available</span>
+                                        </div>
+                                    {% endif %}
+                                    
+                                    <!-- Venue Type Badge -->
+                                    <div class="absolute top-4 left-4">
+                                        <span class="bg-gray-900 text-white px-4 py-2 text-xs font-light tracking-wider border border-gray-700">
+                                            {{ venue.get_venue_type_display }}
+                                        </span>
+                                    </div>
+                                    
+                                    <!-- Price Badge -->
+                                    <div class="absolute bottom-4 right-4">
+                                        <span class="bg-black text-white px-4 py-2 text-sm font-light tracking-wider border border-gray-700">
+                                            ₱{{ venue.base_price }}
+                                        </span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Venue Info -->
+                                <div class="p-6 border-t border-gray-800">
+                                    <h3 class="font-light text-lg text-white tracking-wider mb-2">{{ venue.name }}</h3>
+                                    <p class="text-gray-400 text-sm mb-4 tracking-wide font-light">{{ venue.address }}</p>                                    
+                                    <!-- Venue Capacity -->
+                                    <div class="flex items-center text-sm text-gray-400 mb-4">
+                                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"></path>
+                                        </svg>
+                                        <span class="tracking-wide font-light">Capacity: {{ venue.capacity }} guests</span>
+                                    </div>
+                                    
+                                    <!-- Venue Times -->
+                                    <div class="flex items-center text-sm text-gray-400 mb-4">
+                                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                                        </svg>
+                                        <span class="tracking-wide font-light">{{ venue.opening_time|time:"g:i A" }} - {{ venue.closing_time|time:"g:i A" }}</span>
+                                    </div>
+                                    
+                                    <!-- Short Description -->
+                                    <p class="text-gray-300 mb-6 tracking-wide font-light">{{ venue.description|truncatewords:15 }}</p>
+                                    
+                                    <!-- View Button -->
+                                    <a href="{% url 'venues:detail' venue.id %}" class="block w-full text-center ghost-button py-3 px-4 font-light tracking-wider transition duration-200">
+                                        View Details
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Pagination could be added here -->
+                    
+                {% else %}
+                    <div class="bg-black border border-gray-800 p-12 text-center">
+                        <h3 class="text-xl font-light text-white mb-6 tracking-wider">No venues found</h3>
+                        <p class="text-gray-400 mb-8 tracking-wide font-light">There are no venues matching your search criteria.</p>
+                        <a href="{% url 'venues:list' %}" class="ghost-button px-6 py-3 tracking-wider font-light">Reset all filters</a>
+                    </div>
+                {% endif %}
+            </div>
         </div>
     </div>
 {% endblock %}

@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Quote #{{ quote.id }} for {{ booking.event_type }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-black text-white">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Breadcrumb -->
+        <nav class="mb-8">
+            <ol class="flex items-center space-x-2 text-sm text-gray-400">
+                <li><a href="{% url 'bookings:list' %}" class="hover:text-white transition-colors duration-300">Bookings</a></li>
+                <li><span class="mx-2">/</span></li>
+                <li><a href="{% url 'bookings:detail' booking.id %}" class="hover:text-white transition-colors duration-300">Booking #{{ booking.id }}</a></li>
+                <li><span class="mx-2">/</span></li>
+                <li class="text-white">Quote #{{ quote.id }}</li>
+            </ol>
+        </nav>
+
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-12">
+            <h1 class="text-4xl font-light" style="letter-spacing: 0.1em;">Quote #{{ quote.id }}</h1>
+            
+            <div class="flex space-x-4">
+                <a href="{% url 'bookings:detail' booking.id %}" class="border border-white text-white px-6 py-3 rounded-lg hover:bg-white hover:text-black transition-all duration-300 font-light" style="letter-spacing: 0.05em;">
+                    Back to Booking
+                </a>
+                
+                {% if is_provider and quote.status == 'draft' %}
+                <a href="{% url 'bookings:quote_update' booking.id quote.id %}" class="border border-blue-500 text-blue-400 px-6 py-3 rounded-lg hover:bg-blue-500 hover:text-black transition-all duration-300 font-light" style="letter-spacing: 0.05em;">
+                    Edit Quote
+                </a>
+                <a href="{% url 'bookings:quote_send' booking.id quote.id %}" class="border border-green-500 text-green-400 px-6 py-3 rounded-lg hover:bg-green-500 hover:text-black transition-all duration-300 font-light" style="letter-spacing: 0.05em;">
+                    Send to Client
+                </a>
+                {% endif %}
+                
+                {% if is_client and quote.status == 'sent' %}
+                <a href="{% url 'bookings:quote_respond' booking.id quote.id %}" class="border border-blue-500 text-blue-400 px-6 py-3 rounded-lg hover:bg-blue-500 hover:text-black transition-all duration-300 font-light" style="letter-spacing: 0.05em;">
+                    Respond to Quote
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Quote Status Banner -->
+        {% if quote.status == 'draft' %}
+        <div class="bg-yellow-900/20 border border-yellow-600 rounded-lg p-6 mb-8">
+            <div class="flex items-center">
+                <svg class="h-6 w-6 text-yellow-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                </svg>
+                <div>
+                    <h3 class="text-lg font-light text-yellow-300">Draft Quote</h3>
+                    <p class="text-yellow-400 text-sm">This quote is in draft status and has not been sent to the client yet.</p>
+                </div>
+            </div>
+        </div>
+        {% elif quote.status == 'sent' %}
+        <div class="bg-blue-900/20 border border-blue-600 rounded-lg p-6 mb-8">
+            <div class="flex items-center">
+                <svg class="h-6 w-6 text-blue-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                </svg>
+                <div>
+                    <h3 class="text-lg font-light text-blue-300">Quote Sent</h3>
+                    <p class="text-blue-400 text-sm">This quote has been sent to the client and is awaiting their response.</p>
+                </div>
+            </div>
+        </div>
+        {% elif quote.status == 'accepted' %}
+        <div class="bg-green-900/20 border border-green-600 rounded-lg p-6 mb-8">
+            <div class="flex items-center">
+                <svg class="h-6 w-6 text-green-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                </svg>
+                <div>
+                    <h3 class="text-lg font-light text-green-300">Quote Accepted</h3>
+                    <p class="text-green-400 text-sm">This quote has been accepted by the client.</p>
+                </div>
+            </div>
+        </div>
+        {% elif quote.status == 'rejected' %}
+        <div class="bg-red-900/20 border border-red-600 rounded-lg p-6 mb-8">
+            <div class="flex items-center">
+                <svg class="h-6 w-6 text-red-400 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                </svg>
+                <div>
+                    <h3 class="text-lg font-light text-red-300">Quote Rejected</h3>
+                    <p class="text-red-400 text-sm">This quote has been rejected by the client.</p>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <!-- Quote Details -->
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Quote Information -->
+                <div class="bg-gray-900 border border-gray-700 rounded-lg p-8">
+                    <h2 class="text-2xl font-light mb-6" style="letter-spacing: 0.1em;">Q U O T E &nbsp;&nbsp; D E T A I L S</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {% if quote.venue_cost %}
+                        <div class="bg-gray-800 border border-gray-600 rounded-lg p-6">
+                            <h3 class="text-lg font-light text-white mb-4">Venue Cost</h3>
+                            <p class="text-3xl font-light text-white">₱{{ quote.venue_cost }}</p>
+                            {% if quote.venue_notes %}
+                            <p class="text-gray-400 text-sm mt-2">{{ quote.venue_notes }}</p>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if quote.catering_cost %}
+                        <div class="bg-gray-800 border border-gray-600 rounded-lg p-6">
+                            <h3 class="text-lg font-light text-white mb-4">Catering Cost</h3>
+                            <p class="text-3xl font-light text-white">₱{{ quote.catering_cost }}</p>
+                            {% if quote.catering_notes %}
+                            <p class="text-gray-400 text-sm mt-2">{{ quote.catering_notes }}</p>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if quote.additional_fees %}
+                        <div class="bg-gray-800 border border-gray-600 rounded-lg p-6">
+                            <h3 class="text-lg font-light text-white mb-4">Additional Fees</h3>
+                            <p class="text-3xl font-light text-white">₱{{ quote.additional_fees }}</p>
+                            {% if quote.additional_notes %}
+                            <p class="text-gray-400 text-sm mt-2">{{ quote.additional_notes }}</p>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="bg-gray-800 border-2 border-green-600 rounded-lg p-6">
+                            <h3 class="text-lg font-light text-green-300 mb-4">Total Cost</h3>
+                            <p class="text-4xl font-light text-green-400">₱{{ quote.total_cost }}</p>
+                        </div>
+                    </div>
+                    
+                    {% if quote.terms_and_conditions %}
+                    <div class="mt-8 pt-8 border-t border-gray-700">
+                        <h3 class="text-xl font-light text-white mb-4">Terms & Conditions</h3>
+                        <div class="text-gray-300 leading-relaxed">
+                            {{ quote.terms_and_conditions|linebreaks }}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if quote.notes %}
+                    <div class="mt-8 pt-8 border-t border-gray-700">
+                        <h3 class="text-xl font-light text-white mb-4">Additional Notes</h3>
+                        <div class="text-gray-300 leading-relaxed">
+                            {{ quote.notes|linebreaks }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Booking Information -->
+                <div class="bg-gray-900 border border-gray-700 rounded-lg p-8">
+                    <h2 class="text-2xl font-light mb-6" style="letter-spacing: 0.1em;">B O O K I N G &nbsp;&nbsp; I N F O</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <p class="text-sm text-gray-400 mb-1">Event Type</p>
+                            <p class="text-white text-lg">{{ booking.event_type }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-400 mb-1">Guest Count</p>
+                            <p class="text-white text-lg">{{ booking.guest_count }} people</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-400 mb-1">Event Date</p>
+                            <p class="text-white text-lg">{{ booking.event_date }}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-400 mb-1">Time</p>
+                            <p class="text-white text-lg">{{ booking.start_time }} - {{ booking.end_time }}</p>
+                        </div>
+                    </div>
+                    
+                    {% if booking.venue %}
+                    <div class="mt-6 pt-6 border-t border-gray-700">
+                        <p class="text-sm text-gray-400 mb-2">Venue</p>
+                        <p class="text-white text-lg">{{ booking.venue.name }}</p>
+                        <p class="text-gray-300">{{ booking.venue.address }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    {% if booking.caterer %}
+                    <div class="mt-6 pt-6 border-t border-gray-700">
+                        <p class="text-sm text-gray-400 mb-2">Caterer</p>
+                        <p class="text-white text-lg">{{ booking.caterer.provider.business_name }}</p>
+                        <p class="text-gray-300">{{ booking.caterer.specialty }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <div class="space-y-8">
+                <!-- Quote Summary -->
+                <div class="bg-gray-900 border border-gray-700 rounded-lg p-6">
+                    <h3 class="text-xl font-light mb-6" style="letter-spacing: 0.1em;">S U M M A R Y</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Quote ID</span>
+                            <span class="text-white">#{{ quote.id }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Created</span>
+                            <span class="text-white">{{ quote.created_at|date:"M d, Y" }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Status</span>
+                            <span class="px-2 py-1 rounded text-sm
+                                {% if quote.status == 'draft' %}bg-gray-700 text-gray-300
+                                {% elif quote.status == 'sent' %}bg-blue-900/30 text-blue-300
+                                {% elif quote.status == 'accepted' %}bg-green-900/30 text-green-300
+                                {% elif quote.status == 'rejected' %}bg-red-900/30 text-red-300
+                                {% endif %}">
+                                {{ quote.get_status_display }}
+                            </span>
+                        </div>
+                        {% if quote.valid_until %}
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Valid Until</span>
+                            <span class="text-white">{{ quote.valid_until|date:"M d, Y" }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="flex justify-between pt-4 border-t border-gray-700">
+                            <span class="text-gray-400">Total Cost</span>
+                            <span class="text-white text-xl font-light">₱{{ quote.total_cost }}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actions -->
+                {% if is_client and quote.status == 'sent' %}
+                <div class="bg-gray-900 border border-gray-700 rounded-lg p-6">
+                    <h3 class="text-xl font-light mb-6" style="letter-spacing: 0.1em;">A C T I O N S</h3>
+                    
+                    <div class="space-y-4">
+                        <a href="{% url 'bookings:quote_respond' booking.id quote.id %}?action=accept" class="block w-full border border-green-500 text-green-400 text-center py-3 px-4 rounded-lg hover:bg-green-500 hover:text-black transition-all duration-300 font-light" style="letter-spacing: 0.05em;">
+                            Accept Quote
+                        </a>
+                        <a href="{% url 'bookings:quote_respond' booking.id quote.id %}?action=reject" class="block w-full border border-red-500 text-red-400 text-center py-3 px-4 rounded-lg hover:bg-red-500 hover:text-black transition-all duration-300 font-light" style="letter-spacing: 0.05em;">
+                            Reject Quote
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Contact Information -->
+                <div class="bg-gray-900 border border-gray-700 rounded-lg p-6">
+                    <h3 class="text-xl font-light mb-6" style="letter-spacing: 0.1em;">C O N T A C T</h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <p class="text-sm text-gray-400 mb-1">Client</p>
+                            <p class="text-white">{{ booking.client.first_name }} {{ booking.client.last_name }}</p>
+                            <p class="text-gray-300 text-sm">{{ booking.client.email }}</p>
+                        </div>
+                        
+                        {% if booking.venue %}
+                        <div>
+                            <p class="text-sm text-gray-400 mb-1">Venue Provider</p>
+                            <p class="text-white">{{ booking.venue.provider.business_name }}</p>
+                            <p class="text-gray-300 text-sm">{{ booking.venue.provider.business_email }}</p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if booking.caterer %}
+                        <div>
+                            <p class="text-sm text-gray-400 mb-1">Caterer</p>
+                            <p class="text-white">{{ booking.caterer.provider.business_name }}</p>
+                            <p class="text-gray-300 text-sm">{{ booking.caterer.provider.business_email }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

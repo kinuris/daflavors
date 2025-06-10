@@ -4,101 +4,208 @@
 {% block title %}Record Payment for {{ booking.event_type }}{% endblock %}
 
 {% block content %}
-<div class="py-6">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Breadcrumb -->
-        <div class="mb-6 flex items-center space-x-2 text-sm text-gray-500">
-            <a href="{% url 'bookings:list' %}" class="hover:text-indigo-600">Bookings</a>
-            <span>&gt;</span>
-            <a href="{% url 'bookings:detail' booking.id %}" class="hover:text-indigo-600">Booking #{{ booking.id }}</a>
-            <span>&gt;</span>
-            <span class="text-gray-900 font-medium">Record Payment</span>
-        </div>
-
-        <!-- Page Header -->
-        <div class="mb-6">
-            <h1 class="text-2xl font-bold text-gray-900">Record Payment</h1>
-            <p class="mt-1 text-sm text-gray-500">
+<div class="min-h-screen bg-black text-white">
+    <div class="container mx-auto px-4 py-12">
+        <!-- Header -->
+        <div class="mb-12">
+            <h1 class="text-4xl font-light mb-4" style="letter-spacing: 0.1em;">Record Payment</h1>
+            <p class="text-xl text-gray-300" style="letter-spacing: 0.05em;">
                 Record a payment for your booking #{{ booking.id }}
             </p>
         </div>
         
-        <!-- Booking Info Summary -->
-        <div class="bg-white shadow sm:rounded-lg mb-8">
-            <div class="px-4 py-5 sm:px-6">
-                <h3 class="text-lg leading-6 font-medium text-gray-900">
-                    Booking Summary
-                </h3>
-            </div>
-            <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
-                <dl class="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
-                    <div class="sm:col-span-1">
-                        <dt class="text-sm font-medium text-gray-500">Event Type</dt>
-                        <dd class="mt-1 text-sm text-gray-900">{{ booking.event_type }}</dd>
-                    </div>
-                    <div class="sm:col-span-1">
-                        <dt class="text-sm font-medium text-gray-500">Date & Time</dt>
-                        <dd class="mt-1 text-sm text-gray-900">{{ booking.event_date|date:"F j, Y" }}</dd>
-                    </div>
-                    <div class="sm:col-span-1">
-                        <dt class="text-sm font-medium text-gray-500">Total Amount</dt>
-                        <dd class="mt-1 text-sm font-bold text-gray-900">
-                            {% if booking.total_amount %}
-                                ₱{{ booking.total_amount }}
-                            {% else %}
-                                Not yet determined
-                            {% endif %}
-                        </dd>
-                    </div>
-                    <div class="sm:col-span-1">
-                        <dt class="text-sm font-medium text-gray-500">Deposit Required</dt>
-                        <dd class="mt-1 text-sm text-gray-900">
-                            {% if booking.deposit_amount %}
-                                ₱{{ booking.deposit_amount }}
-                            {% else %}
-                                Not specified
-                            {% endif %}
-                        </dd>
-                    </div>
-                    <div class="sm:col-span-1">
-                        <dt class="text-sm font-medium text-gray-500">Deposit Status</dt>
-                        <dd class="mt-1 text-sm">
-                            {% if booking.deposit_paid %}
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                    Paid
-                                </span>
-                            {% else %}
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                    Pending
-                                </span>
-                            {% endif %}
-                        </dd>
-                    </div>
-                    <div class="sm:col-span-1">
-                        <dt class="text-sm font-medium text-gray-500">Final Payment Status</dt>
-                        <dd class="mt-1 text-sm">
-                            {% if booking.final_payment_received %}
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                    Paid
-                                </span>
-                            {% else %}
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                    Pending
-                                </span>
-                            {% endif %}
-                        </dd>
-                    </div>
-                </dl>
-            </div>
+        <!-- Booking Summary -->
+        <div class="bg-gray-900 border border-gray-700 rounded-lg p-8 mb-12">
+            <h2 class="text-2xl font-light mb-8 pb-4 border-b border-gray-700" style="letter-spacing: 0.1em;">B O O K I N G &nbsp;&nbsp; S U M M A R Y</h2>
+            
+            <dl class="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
+                <div>
+                    <dt class="text-sm font-light text-gray-400" style="letter-spacing: 0.05em;">Event Type</dt>
+                    <dd class="mt-2 text-lg text-white">{{ booking.event_type }}</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-light text-gray-400" style="letter-spacing: 0.05em;">Date & Time</dt>
+                    <dd class="mt-2 text-lg text-white">{{ booking.event_date|date:"F j, Y" }}</dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-light text-gray-400" style="letter-spacing: 0.05em;">Total Amount</dt>
+                    <dd class="mt-2 text-lg font-light text-white">
+                        {% if booking.total_amount %}
+                            ₱{{ booking.total_amount }}
+                        {% else %}
+                            Not yet determined
+                        {% endif %}
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-light text-gray-400" style="letter-spacing: 0.05em;">Deposit Required</dt>
+                    <dd class="mt-2 text-lg text-white">
+                        {% if booking.deposit_amount %}
+                            ₱{{ booking.deposit_amount }}
+                        {% else %}
+                            Not specified
+                        {% endif %}
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-light text-gray-400" style="letter-spacing: 0.05em;">Deposit Status</dt>
+                    <dd class="mt-2">
+                        {% if booking.deposit_paid %}
+                            <span class="px-3 py-1 text-xs font-light border border-green-600 text-green-400 rounded-full bg-green-900/20">
+                                Paid
+                            </span>
+                        {% else %}
+                            <span class="px-3 py-1 text-xs font-light border border-yellow-600 text-yellow-400 rounded-full bg-yellow-900/20">
+                                Pending
+                            </span>
+                        {% endif %}
+                    </dd>
+                </div>
+                <div>
+                    <dt class="text-sm font-light text-gray-400" style="letter-spacing: 0.05em;">Final Payment Status</dt>
+                    <dd class="mt-2">
+                        {% if booking.final_payment_received %}
+                            <span class="px-3 py-1 text-xs font-light border border-green-600 text-green-400 rounded-full bg-green-900/20">
+                                Paid
+                            </span>
+                        {% else %}
+                            <span class="px-3 py-1 text-xs font-light border border-yellow-600 text-yellow-400 rounded-full bg-yellow-900/20">
+                                Pending
+                            </span>
+                        {% endif %}
+                    </dd>
+                </div>
+            </dl>
         </div>
 
         <!-- Payment Form -->
-        <div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
-            <div class="md:grid md:grid-cols-3 md:gap-6">
-                <div class="md:col-span-1">
-                    <h3 class="text-lg font-medium leading-6 text-gray-900">Payment Information</h3>
-                    <p class="mt-1 text-sm text-gray-500">
-                        Please provide your payment details. Your payment will need to be confirmed by the provider.
+        <div class="bg-gray-900 border border-gray-700 rounded-lg p-8 mb-12">
+            <h2 class="text-2xl font-light mb-8 pb-4 border-b border-gray-700" style="letter-spacing: 0.1em;">P A Y M E N T &nbsp;&nbsp; I N F O R M A T I O N</h2>
+            
+            <form method="POST" action="" class="dark-form">
+                {% csrf_token %}
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Payment Type -->
+                    <div>
+                        <label for="{{ form.payment_type.id_for_label }}" class="block text-sm font-light text-gray-300 mb-2" style="letter-spacing: 0.05em;">
+                            Payment Type <span class="text-red-400">*</span>
+                        </label>
+                        {{ form.payment_type }}
+                        {% if form.payment_type.errors %}
+                            <div class="text-red-400 text-sm mt-2">{{ form.payment_type.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Amount -->
+                    <div>
+                        <label for="{{ form.amount.id_for_label }}" class="block text-sm font-light text-gray-300 mb-2" style="letter-spacing: 0.05em;">
+                            Amount (PHP) <span class="text-red-400">*</span>
+                        </label>
+                        {{ form.amount }}
+                        {% if form.amount.errors %}
+                            <div class="text-red-400 text-sm mt-2">{{ form.amount.errors.0 }}</div>
+                        {% endif %}
+                        <p class="mt-2 text-xs text-gray-500">Enter the amount in Philippine Pesos.</p>
+                    </div>
+                    
+                    <!-- Payment Method -->
+                    <div>
+                        <label for="{{ form.payment_method.id_for_label }}" class="block text-sm font-light text-gray-300 mb-2" style="letter-spacing: 0.05em;">
+                            Payment Method <span class="text-red-400">*</span>
+                        </label>
+                        {{ form.payment_method }}
+                        {% if form.payment_method.errors %}
+                            <div class="text-red-400 text-sm mt-2">{{ form.payment_method.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Payment Date -->
+                    <div>
+                        <label for="{{ form.payment_date.id_for_label }}" class="block text-sm font-light text-gray-300 mb-2" style="letter-spacing: 0.05em;">
+                            Date of Payment <span class="text-red-400">*</span>
+                        </label>
+                        {{ form.payment_date }}
+                        {% if form.payment_date.errors %}
+                            <div class="text-red-400 text-sm mt-2">{{ form.payment_date.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Reference Number -->
+                <div class="mt-6">
+                    <label for="{{ form.reference_number.id_for_label }}" class="block text-sm font-light text-gray-300 mb-2" style="letter-spacing: 0.05em;">
+                        Reference Number
+                    </label>
+                    {{ form.reference_number }}
+                    {% if form.reference_number.errors %}
+                        <div class="text-red-400 text-sm mt-2">{{ form.reference_number.errors.0 }}</div>
+                    {% endif %}
+                    <p class="mt-2 text-xs text-gray-500">Enter the transaction reference number or receipt number.</p>
+                </div>
+                
+                <!-- Form Actions -->
+                <div class="flex justify-end space-x-4 mt-8 pt-8 border-t border-gray-700">
+                    <a href="{% url 'bookings:detail' booking.id %}" class="px-8 py-3 border border-gray-600 text-gray-300 rounded-lg hover:border-white hover:text-white transition-colors" style="letter-spacing: 0.05em;">
+                        Cancel
+                    </a>
+                    <button type="submit" class="px-8 py-3 bg-transparent border border-white text-white rounded-lg hover:bg-white hover:text-black transition-colors" style="letter-spacing: 0.05em;">
+                        Record Payment
+                    </button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Payment Instructions -->
+        <div class="bg-gray-900 border border-gray-700 rounded-lg p-8">
+            <h2 class="text-2xl font-light mb-8 pb-4 border-b border-gray-700" style="letter-spacing: 0.1em;">P A Y M E N T &nbsp;&nbsp; I N S T R U C T I O N S</h2>
+            
+            <div class="space-y-6">
+                <p class="text-gray-300" style="letter-spacing: 0.05em;">Please use one of the following payment methods:</p>
+                
+                <div>
+                    <h3 class="font-light text-white text-lg mb-3" style="letter-spacing: 0.05em;">Bank Transfer:</h3>
+                    <div class="bg-gray-800 border border-gray-600 rounded-lg p-4 space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Bank:</span>
+                            <span class="text-white">BDO</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Account Name:</span>
+                            <span class="text-white">DaFlavors Inc.</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Account Number:</span>
+                            <span class="text-white">123456789012</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="font-light text-white text-lg mb-3" style="letter-spacing: 0.05em;">GCash:</h3>
+                    <div class="bg-gray-800 border border-gray-600 rounded-lg p-4 space-y-2">
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Name:</span>
+                            <span class="text-white">DaFlavors</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-gray-400">Number:</span>
+                            <span class="text-white">0917 123 4567</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-blue-900/20 border border-blue-600 rounded-lg p-4">
+                    <p class="text-blue-300" style="letter-spacing: 0.05em;">Please include your Booking ID #{{ booking.id }} in the reference or notes when sending payment.</p>
+                </div>
+                
+                <div class="bg-yellow-900/20 border border-yellow-600 rounded-lg p-4">
+                    <p class="text-yellow-300 font-light" style="letter-spacing: 0.05em;">Important: After payment, please record your payment details using the form above.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
                     </p>
                 </div>
                 <div class="mt-5 md:mt-0 md:col-span-2">

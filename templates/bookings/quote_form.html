@@ -9,84 +9,91 @@
 {% endblock %}
 
 {% block content %}
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Breadcrumb -->
-    <nav class="mb-6">
-        <ol class="flex items-center space-x-2 text-sm text-gray-500">
-            <li><a href="{% url 'core:home' %}" class="hover:text-indigo-600">Home</a></li>
-            <li><span class="mx-2">/</span></li>
-            <li><a href="{% url 'bookings:list' %}" class="hover:text-indigo-600">My Bookings</a></li>
-            <li><span class="mx-2">/</span></li>
-            <li><a href="{% url 'bookings:detail' booking.id %}" class="hover:text-indigo-600">Booking #{{ booking.id }}</a></li>
-            <li><span class="mx-2">/</span></li>
-            <li class="font-medium text-gray-900">{% if is_update %}Update Quote{% else %}Create Quote{% endif %}</li>
-        </ol>
-    </nav>
+<div class="min-h-screen bg-black text-white">
+    <div class="container mx-auto px-4 py-12">
+        <!-- Header -->
+        <div class="mb-12">
+            <h1 class="text-4xl font-light mb-4" style="letter-spacing: 0.1em;">
+                {% if is_update %}Update Quote{% else %}Create Quote{% endif %}
+            </h1>
+            <p class="text-xl text-gray-300" style="letter-spacing: 0.05em;">
+                Booking #{{ booking.id }} - {{ booking.client.get_full_name|default:booking.client.username }}
+            </p>
+        </div>
 
-    <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200">
-        <div class="px-4 py-5 sm:p-6">
-            <h1 class="text-2xl font-semibold text-gray-900 mb-6">{% if is_update %}Update Quote{% else %}Create Quote{% endif %}</h1>
+        <!-- Form -->
+        <form method="post" class="dark-form space-y-12">
+            {% csrf_token %}
             
-            <form method="post">
-                {% csrf_token %}
-                
-                <!-- Basic Info -->
-                <div class="space-y-6 mb-8">
-                    <h2 class="text-lg font-medium text-gray-900 border-b pb-2">Booking Details</h2>
-                    
-                    <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6">
-                        <div>
-                            <dt class="text-sm font-medium text-gray-500">Client</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ booking.client.get_full_name|default:booking.client.username }}</dd>
-                        </div>
-                        
-                        <div>
-                            <dt class="text-sm font-medium text-gray-500">Event Type</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ booking.event_type }}</dd>
-                        </div>
-                        
-                        <div>
-                            <dt class="text-sm font-medium text-gray-500">Date</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ booking.event_date }}</dd>
-                        </div>
-                        
-                        <div>
-                            <dt class="text-sm font-medium text-gray-500">Guest Count</dt>
-                            <dd class="mt-1 text-sm text-gray-900">{{ booking.guest_count }} guests</dd>
-                        </div>
-                    </dl>
+            <!-- Display form errors -->
+            {% if form.non_field_errors %}
+                <div class="bg-red-900/20 border border-red-600 text-red-300 px-6 py-4 rounded-lg mb-6">
+                    {{ form.non_field_errors }}
                 </div>
+            {% endif %}
+            
+            <!-- Booking Details -->
+            <div class="bg-gray-900 border border-gray-700 rounded-lg p-8">
+                <h2 class="text-2xl font-light mb-8 pb-4 border-b border-gray-700" style="letter-spacing: 0.1em;">B O O K I N G &nbsp;&nbsp; D E T A I L S</h2>
                 
-                <!-- Cost Details -->
-                <div class="space-y-6 mb-8">
-                    <h2 class="text-lg font-medium text-gray-900 border-b pb-2">Quote Details</h2>
+                <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                    <div>
+                        <dt class="text-sm font-light text-gray-400" style="letter-spacing: 0.05em;">Client</dt>
+                        <dd class="mt-2 text-lg text-white">{{ booking.client.get_full_name|default:booking.client.username }}</dd>
+                    </div>
                     
+                    <div>
+                        <dt class="text-sm font-light text-gray-400" style="letter-spacing: 0.05em;">Event Type</dt>
+                        <dd class="mt-2 text-lg text-white">{{ booking.event_type }}</dd>
+                    </div>
+                    
+                    <div>
+                        <dt class="text-sm font-light text-gray-400" style="letter-spacing: 0.05em;">Date</dt>
+                        <dd class="mt-2 text-lg text-white">{{ booking.event_date }}</dd>
+                    </div>
+                    
+                    <div>
+                        <dt class="text-sm font-light text-gray-400" style="letter-spacing: 0.05em;">Guest Count</dt>
+                        <dd class="mt-2 text-lg text-white">{{ booking.guest_count }} guests</dd>
+                    </div>
+                </dl>
+            </div>
+            
+            <!-- Quote Details -->
+            <div class="bg-gray-900 border border-gray-700 rounded-lg p-8">
+                <h2 class="text-2xl font-light mb-8 pb-4 border-b border-gray-700" style="letter-spacing: 0.1em;">Q U O T E &nbsp;&nbsp; D E T A I L S</h2>
+                
+                <div class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Venue Cost -->
                         <div>
-                            <label for="{{ form.venue_cost.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.venue_cost.label }}</label>
-                            <div class="mt-1 relative rounded-md shadow-sm">
+                            <label for="{{ form.venue_cost.id_for_label }}" class="block text-sm font-light text-gray-300 mb-2" style="letter-spacing: 0.05em;">
+                                Venue Cost <span class="text-red-400">*</span>
+                            </label>
+                            <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <span class="text-gray-500 sm:text-sm">₱</span>
+                                    <span class="text-gray-400 text-sm">₱</span>
                                 </div>
                                 {{ form.venue_cost }}
                             </div>
                             {% if form.venue_cost.errors %}
-                                <p class="mt-2 text-sm text-red-600">{{ form.venue_cost.errors.0 }}</p>
+                                <div class="text-red-400 text-sm mt-2">{{ form.venue_cost.errors.0 }}</div>
                             {% endif %}
                         </div>
                         
                         <!-- Catering Cost -->
                         <div>
-                            <label for="{{ form.catering_cost.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.catering_cost.label }}</label>
-                            <div class="mt-1 relative rounded-md shadow-sm">
+                            <label for="{{ form.catering_cost.id_for_label }}" class="block text-sm font-light text-gray-300 mb-2" style="letter-spacing: 0.05em;">
+                                Catering Cost <span class="text-red-400">*</span>
+                            </label>
+                            <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <span class="text-gray-500 sm:text-sm">₱</span>
+                                    <span class="text-gray-400 text-sm">₱</span>
                                 </div>
                                 {{ form.catering_cost }}
                             </div>
                             {% if form.catering_cost.errors %}
-                                <p class="mt-2 text-sm text-red-600">{{ form.catering_cost.errors.0 }}</p>
+                                <div class="text-red-400 text-sm mt-2">{{ form.catering_cost.errors.0 }}</div>
                             {% endif %}
                         </div>
                     </div>
@@ -94,10 +101,121 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <!-- Service Charges -->
                         <div>
-                            <label for="{{ form.service_charges.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">{{ form.service_charges.label }}</label>
-                            <div class="mt-1 relative rounded-md shadow-sm">
+                            <label for="{{ form.service_charges.id_for_label }}" class="block text-sm font-light text-gray-300 mb-2" style="letter-spacing: 0.05em;">
+                                Service Charges
+                            </label>
+                            <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <span class="text-gray-500 sm:text-sm">₱</span>
+                                    <span class="text-gray-400 text-sm">₱</span>
+                                </div>
+                                {{ form.service_charges }}
+                            </div>
+                            {% if form.service_charges.errors %}
+                                <div class="text-red-400 text-sm mt-2">{{ form.service_charges.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Additional Charges -->
+                        <div>
+                            <label for="{{ form.additional_charges.id_for_label }}" class="block text-sm font-light text-gray-300 mb-2" style="letter-spacing: 0.05em;">
+                                Additional Charges
+                            </label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-400 text-sm">₱</span>
+                                </div>
+                                {{ form.additional_charges }}
+                            </div>
+                            {% if form.additional_charges.errors %}
+                                <div class="text-red-400 text-sm mt-2">{{ form.additional_charges.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="{{ form.additional_charges_description.id_for_label }}" class="block text-sm font-light text-gray-300 mb-2" style="letter-spacing: 0.05em;">
+                            Additional Charges Description
+                        </label>
+                        {{ form.additional_charges_description }}
+                        {% if form.additional_charges_description.errors %}
+                            <div class="text-red-400 text-sm mt-2">{{ form.additional_charges_description.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Total Amount -->
+                        <div>
+                            <label for="{{ form.total_amount.id_for_label }}" class="block text-sm font-light text-gray-300 mb-2" style="letter-spacing: 0.05em;">
+                                Total Amount <span class="text-red-400">*</span>
+                            </label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <span class="text-gray-400 text-sm">₱</span>
+                                </div>
+                                {{ form.total_amount }}
+                            </div>
+                            {% if form.total_amount.errors %}
+                                <div class="text-red-400 text-sm mt-2">{{ form.total_amount.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Valid Until -->
+                        <div>
+                            <label for="{{ form.valid_until.id_for_label }}" class="block text-sm font-light text-gray-300 mb-2" style="letter-spacing: 0.05em;">
+                                Valid Until <span class="text-red-400">*</span>
+                            </label>
+                            {{ form.valid_until }}
+                            {% if form.valid_until.errors %}
+                                <div class="text-red-400 text-sm mt-2">{{ form.valid_until.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Notes -->
+            <div class="bg-gray-900 border border-gray-700 rounded-lg p-8">
+                <h2 class="text-2xl font-light mb-8 pb-4 border-b border-gray-700" style="letter-spacing: 0.1em;">N O T E S</h2>
+                
+                <div class="space-y-6">
+                    <div>
+                        <label for="{{ form.client_notes.id_for_label }}" class="block text-sm font-light text-gray-300 mb-2" style="letter-spacing: 0.05em;">
+                            Client Notes
+                        </label>
+                        {{ form.client_notes }}
+                        {% if form.client_notes.errors %}
+                            <div class="text-red-400 text-sm mt-2">{{ form.client_notes.errors.0 }}</div>
+                        {% endif %}
+                        <p class="mt-2 text-xs text-gray-500">These notes will be visible to the client.</p>
+                    </div>
+                    
+                    <div>
+                        <label for="{{ form.provider_notes.id_for_label }}" class="block text-sm font-light text-gray-300 mb-2" style="letter-spacing: 0.05em;">
+                            Provider Notes
+                        </label>
+                        {{ form.provider_notes }}
+                        {% if form.provider_notes.errors %}
+                            <div class="text-red-400 text-sm mt-2">{{ form.provider_notes.errors.0 }}</div>
+                        {% endif %}
+                        <p class="mt-2 text-xs text-gray-500">These notes are for your reference only and will not be visible to the client.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Form Submit Buttons -->
+            <div class="border-t border-gray-700 pt-8">
+                <div class="flex justify-end space-x-4">
+                    <a href="{% url 'bookings:detail' booking.id %}" class="px-8 py-3 border border-gray-600 text-gray-300 rounded-lg hover:border-white hover:text-white transition-colors" style="letter-spacing: 0.05em;">
+                        Cancel
+                    </a>
+                    <button type="submit" class="px-8 py-3 bg-transparent border border-white text-white rounded-lg hover:bg-white hover:text-black transition-colors" style="letter-spacing: 0.05em;">
+                        {% if is_update %}Update Quote{% else %}Create Quote{% endif %}
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
                                 </div>
                                 {{ form.service_charges }}
                             </div>

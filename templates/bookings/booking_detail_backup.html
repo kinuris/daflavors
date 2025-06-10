@@ -1,0 +1,804 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Booking #{{ booking.id }} - {{ booking.event_type }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Breadcrumb -->
+    <nav class="mb-6">
+        <ol class="flex items-center space-x-2 text-sm text-gray-500">
+            <li><a href="{% url 'core:home' %}" class="hover:text-indigo-600">Home</a></li>
+            <li><span class="mx-2">/</span></li>
+            <li><a href="{% url 'bookings:list' %}" class="hover:text-indigo-600">My Bookings</a></li>
+            <li><span class="mx-2">/</span></li>
+            <li class="font-medium text-gray-900">Booking #{{ booking.id }}</li>
+        </ol>
+    </nav>
+
+    <!-- Header -->
+    <div class="md:flex md:items-center md:justify-between mb-8">
+        <div class="flex-1 min-w-0">
+            <h1 class="text-3xl font-bold leading-tight text-gray-900">
+                {{ booking.event_type }}
+            </h1>
+            <div class="mt-1 flex flex-wrap items-center text-sm text-gray-500">
+                <p class="mr-6">
+                    <span class="font-medium text-gray-900">Status:</span>
+                    <span class="ml-1 px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                        {% if booking.status == 'inquiry' %}bg-yellow-100 text-yellow-800
+                        {% elif booking.status == 'quote_provided' %}bg-blue-100 text-blue-800
+                        {% elif booking.status == 'pending_deposit' %}bg-purple-100 text-purple-800
+                        {% elif booking.status == 'confirmed' %}bg-green-100 text-green-800
+                        {% elif booking.status == 'in_progress' %}bg-indigo-100 text-indigo-800
+                        {% elif booking.status == 'completed' %}bg-green-100 text-green-800
+                        {% elif booking.status == 'cancelled' %}bg-red-100 text-red-800
+                        {% endif %}">
+                        {{ booking.get_status_display }}
+                    </span>
+                </p>
+                <p class="mr-6">
+                    <span class="font-medium text-gray-900">Date:</span>
+                    <span class="ml-1">{{ booking.event_date }}</span>
+                </p>
+                <p>
+                    <span class="font-medium text-gray-900">Time:</span>
+                    <span class="ml-1">{{ booking.start_time }} - {{ booking.end_time }}</span>
+                </p>
+            </div>
+        </div>
+        <div class="mt-4 flex md:mt-0 md:ml-4 space-x-3">
+            {% if booking.status not in 'completed,cancelled' %}
+                {% if user == booking.client and booking.status in 'inquiry,quote_provided' %}
+                    <a href="{% url 'bookings:update' booking.id %}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        </svg>
+                        Edit
+                    </a>
+                {% endif %}
+                
+                {% if booking.caterer and not menu_selection %}
+                    <a href="{% url 'bookings:menu_select' booking.id %}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                        Select Menu
+                    </a>
+                {% endif %}
+                
+                {% if is_booking_provider and booking.status == 'inquiry' %}
+                    <a href="{% url 'bookings:quote_create' booking.id %}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                        </svg>
+                        Create Quote
+                    </a>
+                {% endif %}
+                
+                {% if booking.status in 'pending_deposit,confirmed,in_progress' %}
+                    <a href="{% url 'bookings:payment_create' booking.id %}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Record Payment
+                    </a>
+                {% endif %}
+                
+                <a href="{% url 'bookings:cancel' booking.id %}" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    Cancel Booking
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Booking Details (2-column layout) -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Main content (2 cols wide) -->
+        <div class="lg:col-span-2 space-y-8">
+            <!-- Event Details -->
+            <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200">
+                <div class="px-4 py-5 sm:p-6">
+                    <h2 class="text-lg font-medium text-gray-900 mb-4">Event Details</h2>
+                    
+                    <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6">
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Event Type</dt>
+                            <dd class="mt-1 text-sm text-gray-900">{{ booking.event_type }}</dd>
+                        </div>
+                        
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Guest Count</dt>
+                            <dd class="mt-1 text-sm text-gray-900">{{ booking.guest_count }} guests</dd>
+                        </div>
+                        
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Date</dt>
+                            <dd class="mt-1 text-sm text-gray-900">{{ booking.event_date }}</dd>
+                        </div>
+                        
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Time</dt>
+                            <dd class="mt-1 text-sm text-gray-900">{{ booking.start_time }} - {{ booking.end_time }}</dd>
+                        </div>
+                        
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Venue</dt>
+                            <dd class="mt-1 text-sm text-gray-900">
+                                {% if booking.venue %}
+                                    {{ booking.venue.name }}
+                                    {% if booking.venue_room %}
+                                        ({{ booking.venue_room.name }})
+                                    {% endif %}
+                                {% else %}
+                                    No venue selected
+                                {% endif %}
+                            </dd>
+                        </div>
+                        
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Caterer</dt>
+                            <dd class="mt-1 text-sm text-gray-900">
+                                {% if booking.caterer %}
+                                    {{ booking.caterer.name }}
+                                {% else %}
+                                    No caterer selected
+                                {% endif %}
+                            </dd>
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <dt class="text-sm font-medium text-gray-500">Special Requests</dt>
+                            <dd class="mt-1 text-sm text-gray-900">
+                                {% if booking.special_requests %}
+                                    <p class="whitespace-pre-line">{{ booking.special_requests }}</p>
+                                {% else %}
+                                    <p class="text-gray-500 italic">No special requests provided</p>
+                                {% endif %}
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
+            </div>
+            
+            <!-- Menu Selection (if applicable) -->
+            {% if menu_selection %}
+                <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200">
+                    <div class="px-4 py-5 sm:p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h2 class="text-lg font-medium text-gray-900">Menu Selection</h2>
+                            {% if user == booking.client and booking.status in 'inquiry,quote_provided' %}
+                                <a href="{% url 'bookings:menu_select' booking.id %}" class="inline-flex items-center px-3 py-1.5 border border-gray-300 text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    Change Menu
+                                </a>
+                            {% endif %}
+                        </div>
+                        
+                        <dl class="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-6 mb-6">
+                            <div>
+                                <dt class="text-sm font-medium text-gray-500">Menu Package</dt>
+                                <dd class="mt-1 text-sm text-gray-900">{{ menu_selection.menu_package.name }}</dd>
+                            </div>
+                            
+                            <div>
+                                <dt class="text-sm font-medium text-gray-500">Service Style</dt>
+                                <dd class="mt-1 text-sm text-gray-900">{{ menu_selection.menu_package.service_style }}</dd>
+                            </div>
+                            
+                            <div>
+                                <dt class="text-sm font-medium text-gray-500">Price per Person</dt>
+                                <dd class="mt-1 text-sm text-gray-900">₱{{ menu_selection.menu_package.base_price_per_person }}</dd>
+                            </div>
+                            
+                            <div>
+                                <dt class="text-sm font-medium text-gray-500">Total Menu Price</dt>
+                                <dd class="mt-1 text-sm text-gray-900">₱{{ menu_selection.menu_total_price }}</dd>
+                            </div>
+                            
+                            {% if course_selections %}
+                                <div class="md:col-span-2">
+                                    <dt class="text-sm font-medium text-gray-500 mb-2">Selected Menu Items</dt>
+                                    <dd class="mt-1">
+                                        {% for course in course_selections %}
+                                            <div class="mb-4">
+                                                <h4 class="font-medium text-gray-900">{{ course.course_category.name }}</h4>
+                                                <ul class="mt-2 pl-5 list-disc text-sm text-gray-700">
+                                                    {% for item in course.selected_items.all %}
+                                                        <li>{{ item.name }}</li>
+                                                    {% endfor %}
+                                                </ul>
+                                            </div>
+                                        {% endfor %}
+                                    </dd>
+                                </div>
+                            {% endif %}
+                            
+                            <div class="md:col-span-2">
+                                <dt class="text-sm font-medium text-gray-500">Dietary Requirements</dt>
+                                <dd class="mt-1 text-sm">
+                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                        {% if menu_selection.vegetarian_count > 0 %}
+                                            <span class="px-2 py-1 bg-green-100 text-green-800 rounded">
+                                                Vegetarian: {{ menu_selection.vegetarian_count }}
+                                            </span>
+                                        {% endif %}
+                                        
+                                        {% if menu_selection.gluten_free_count > 0 %}
+                                            <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded">
+                                                Gluten Free: {{ menu_selection.gluten_free_count }}
+                                            </span>
+                                        {% endif %}
+                                        
+                                        {% if menu_selection.nut_free_count > 0 %}
+                                            <span class="px-2 py-1 bg-orange-100 text-orange-800 rounded">
+                                                Nut Free: {{ menu_selection.nut_free_count }}
+                                            </span>
+                                        {% endif %}
+                                        
+                                        {% if menu_selection.halal_count > 0 %}
+                                            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded">
+                                                Halal: {{ menu_selection.halal_count }}
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    {% if menu_selection.other_dietary_requirements %}
+                                        <h5 class="mt-3 font-medium text-gray-700">Additional Requirements:</h5>
+                                        <p class="mt-1 text-gray-700">{{ menu_selection.other_dietary_requirements }}</p>
+                                    {% endif %}
+                                </dd>
+                            </div>
+                            
+                            {% if menu_selection.notes %}
+                                <div class="md:col-span-2">
+                                    <dt class="text-sm font-medium text-gray-500">Notes</dt>
+                                    <dd class="mt-1 text-sm text-gray-900">
+                                        <p class="whitespace-pre-line">{{ menu_selection.notes }}</p>
+                                    </dd>
+                                </div>
+                            {% endif %}
+                        </dl>
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Quotes -->
+            {% if quotes %}
+                <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200">
+                    <div class="px-4 py-5 sm:p-6">
+                        <h2 class="text-lg font-medium text-gray-900 mb-4">Quotes</h2>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Quote #
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Date
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Total Amount
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Status
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Actions
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    {% for quote in quotes %}
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                #{{ quote.id }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                {{ quote.created_at|date:"M d, Y" }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                ₱{{ quote.total_amount }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                                    {% if quote.status == 'draft' %}bg-gray-100 text-gray-800
+                                                    {% elif quote.status == 'sent' %}bg-blue-100 text-blue-800
+                                                    {% elif quote.status == 'accepted' %}bg-green-100 text-green-800
+                                                    {% elif quote.status == 'rejected' %}bg-red-100 text-red-800
+                                                    {% elif quote.status == 'expired' %}bg-yellow-100 text-yellow-800
+                                                    {% endif %}">
+                                                    {{ quote.get_status_display }}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                <a href="{% url 'bookings:quote_detail' booking.id quote.id %}" class="text-indigo-600 hover:text-indigo-900">
+                                                    View
+                                                </a>
+                                                
+                                                {% if is_booking_provider and quote.status == 'draft' %}
+                                                    <a href="{% url 'bookings:quote_update' booking.id quote.id %}" class="ml-3 text-green-600 hover:text-green-900">
+                                                        Edit
+                                                    </a>
+                                                    <a href="{% url 'bookings:quote_send' booking.id quote.id %}" class="ml-3 text-blue-600 hover:text-blue-900">
+                                                        Send
+                                                    </a>
+                                                {% endif %}
+                                                
+                                                {% if user == booking.client and quote.status == 'sent' %}
+                                                    <a href="{% url 'bookings:quote_respond' booking.id quote.id %}" class="ml-3 text-green-600 hover:text-green-900">
+                                                        Respond
+                                                    </a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Payments -->
+            {% if payments %}
+                <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200">
+                    <div class="px-4 py-5 sm:p-6">
+                        <h2 class="text-lg font-medium text-gray-900 mb-4">Payments</h2>
+                        
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Date
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Type
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Amount
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Method
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Status
+                                        </th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            Actions
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    {% for payment in payments %}
+                                        <tr>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                {{ payment.payment_date }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                {{ payment.get_payment_type_display }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+                                                ₱{{ payment.amount }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                {{ payment.get_payment_method_display }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full {% if payment.is_confirmed %}bg-green-100 text-green-800{% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                                    {% if payment.is_confirmed %}
+                                                        Confirmed
+                                                    {% else %}
+                                                        Pending
+                                                    {% endif %}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                {% if is_booking_provider and not payment.is_confirmed %}
+                                                    <a href="{% url 'bookings:payment_confirm' booking.id payment.id %}" class="text-green-600 hover:text-green-900">
+                                                        Confirm
+                                                    </a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            
+            <!-- Communication -->
+            <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200">
+                <div class="px-4 py-5 sm:p-6">
+                    <h2 class="text-lg font-medium text-gray-900 mb-4">Messages</h2>
+                    
+                    {% if messages_list %}
+                        <div class="border rounded-lg overflow-hidden mb-6">
+                            <div class="px-4 py-3 bg-gray-50 border-b">
+                                <h3 class="text-sm font-medium text-gray-700">Conversation History</h3>
+                            </div>
+                            <div class="p-4 max-h-96 overflow-y-auto space-y-4">
+                                {% for message in messages_list %}
+                                    <div class="flex {% if message.sender == user %}justify-end{% endif %}">
+                                        <div class="max-w-2xl rounded-lg px-4 py-2 {% if message.sender == user %}bg-indigo-100{% else %}bg-gray-100{% endif %}">
+                                            <div class="flex justify-between">
+                                                <p class="text-xs font-medium {% if message.sender == user %}text-indigo-600{% else %}text-gray-600{% endif %}">
+                                                    {{ message.sender.get_full_name|default:message.sender.username }}
+                                                </p>
+                                                <p class="text-xs text-gray-500 ml-2">{{ message.sent_at|date:"M d, Y H:i" }}</p>
+                                            </div>
+                                            <h4 class="text-sm font-medium text-gray-900 mt-1">{{ message.subject }}</h4>
+                                            <p class="text-sm text-gray-700 mt-1 whitespace-pre-line">{{ message.content }}</p>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% else %}
+                        <p class="text-gray-500 mb-6">No messages yet.</p>
+                    {% endif %}
+                    
+                    {% if can_send_message and message_recipient %}
+                        <form method="post" class="space-y-4">
+                            {% csrf_token %}
+                            
+                            <div>
+                                <label for="{{ message_form.subject.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ message_form.subject.label }}</label>
+                                {{ message_form.subject }}
+                                {% if message_form.subject.errors %}
+                                    <p class="mt-2 text-sm text-red-600">{{ message_form.subject.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            
+                            <div>
+                                <label for="{{ message_form.content.id_for_label }}" class="block text-sm font-medium text-gray-700">{{ message_form.content.label }}</label>
+                                {{ message_form.content }}
+                                {% if message_form.content.errors %}
+                                    <p class="mt-2 text-sm text-red-600">{{ message_form.content.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="flex justify-end">
+                                <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                    Send Message
+                                </button>
+                            </div>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="lg:col-span-1 space-y-8">
+            <!-- Booking Status -->
+            <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200">
+                <div class="px-4 py-5 sm:p-6">
+                    <h2 class="text-lg font-medium text-gray-900 mb-4">Booking Summary</h2>
+                    
+                    <dl class="space-y-4">
+                        <div>
+                            <dt class="text-sm font-medium text-gray-500">Booking Status</dt>
+                            <dd class="mt-1">
+                                <span class="px-2 py-1 inline-flex text-sm font-semibold rounded 
+                                    {% if booking.status == 'inquiry' %}bg-yellow-100 text-yellow-800
+                                    {% elif booking.status == 'quote_provided' %}bg-blue-100 text-blue-800
+                                    {% elif booking.status == 'pending_deposit' %}bg-purple-100 text-purple-800
+                                    {% elif booking.status == 'confirmed' %}bg-green-100 text-green-800
+                                    {% elif booking.status == 'in_progress' %}bg-indigo-100 text-indigo-800
+                                    {% elif booking.status == 'completed' %}bg-green-100 text-green-800
+                                    {% elif booking.status == 'cancelled' %}bg-red-100 text-red-800
+                                    {% endif %}">
+                                    {{ booking.get_status_display }}
+                                </span>
+                            </dd>
+                        </div>
+                        
+                        {% if booking.total_amount %}
+                            <div>
+                                <dt class="text-sm font-medium text-gray-500">Total Amount</dt>
+                                <dd class="mt-1 text-lg font-bold text-gray-900">₱{{ booking.total_amount }}</dd>
+                            </div>
+                            
+                            {% if booking.deposit_amount %}
+                                <div>
+                                    <dt class="text-sm font-medium text-gray-500">Deposit Required</dt>
+                                    <dd class="mt-1 text-sm font-medium text-gray-900">₱{{ booking.deposit_amount }}</dd>
+                                </div>
+                                
+                                <div>
+                                    <dt class="text-sm font-medium text-gray-500">Deposit Status</dt>
+                                    <dd class="mt-1">
+                                        <span class="px-2 py-1 inline-flex text-xs font-semibold rounded {% if booking.deposit_paid %}bg-green-100 text-green-800{% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                            {% if booking.deposit_paid %}
+                                                Paid
+                                            {% else %}
+                                                Pending
+                                            {% endif %}
+                                        </span>
+                                    </dd>
+                                </div>
+                                
+                                <div>
+                                    <dt class="text-sm font-medium text-gray-500">Final Payment</dt>
+                                    <dd class="mt-1">
+                                        <span class="px-2 py-1 inline-flex text-xs font-semibold rounded {% if booking.final_payment_received %}bg-green-100 text-green-800{% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                            {% if booking.final_payment_received %}
+                                                Received
+                                            {% else %}
+                                                Pending
+                                            {% endif %}
+                                        </span>
+                                    </dd>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    </dl>
+                    
+                    {% if booking.status == 'pending_deposit' and not booking.deposit_paid %}
+                        <div class="mt-6 border-t border-gray-200 pt-4">
+                            <p class="text-sm text-gray-600 mb-3">Deposit payment is needed to confirm this booking.</p>
+                            <a href="{% url 'bookings:payment_create' booking.id %}" class="inline-flex items-center w-full justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Make Payment
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Contact Information -->
+            <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200">
+                <div class="px-4 py-5 sm:p-6">
+                    <h2 class="text-lg font-medium text-gray-900 mb-4">Contact Information</h2>
+                    
+                    {% if user == booking.client %}
+                        <h3 class="text-sm font-medium text-gray-700 mb-2">Provider Information</h3>
+                        <dl class="space-y-3 mb-6">
+                            {% if booking.venue %}
+                                <div>
+                                    <dt class="text-xs text-gray-500">Venue</dt>
+                                    <dd class="mt-1 text-sm text-gray-900">{{ booking.venue.name }}</dd>
+                                    <dd class="mt-1 text-sm text-gray-500">{{ booking.venue.contact_email }}</dd>
+                                    <dd class="text-sm text-gray-500">{{ booking.venue.contact_phone }}</dd>
+                                </div>
+                            {% endif %}
+                            
+                            {% if booking.caterer %}
+                                <div>
+                                    <dt class="text-xs text-gray-500">Caterer</dt>
+                                    <dd class="mt-1 text-sm text-gray-900">{{ booking.caterer.name }}</dd>
+                                    <dd class="mt-1 text-sm text-gray-500">{{ booking.caterer.contact_email }}</dd>
+                                    <dd class="text-sm text-gray-500">{{ booking.caterer.contact_phone }}</dd>
+                                </div>
+                            {% endif %}
+                        </dl>
+                    {% else %}
+                        <h3 class="text-sm font-medium text-gray-700 mb-2">Client Information</h3>
+                        <dl class="space-y-3 mb-6">
+                            <div>
+                                <dt class="text-xs text-gray-500">Client Name</dt>
+                                <dd class="mt-1 text-sm text-gray-900">{{ booking.client.get_full_name|default:booking.client.username }}</dd>
+                            </div>
+                            
+                            <div>
+                                <dt class="text-xs text-gray-500">Email</dt>
+                                <dd class="mt-1 text-sm text-gray-900">{{ booking.client.email }}</dd>
+                            </div>
+                            
+                            {% if booking.client.profile.phone %}
+                                <div>
+                                    <dt class="text-xs text-gray-500">Phone</dt>
+                                    <dd class="mt-1 text-sm text-gray-900">{{ booking.client.profile.phone }}</dd>
+                                </div>
+                            {% endif %}
+                        </dl>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Booking Timeline -->
+            <div class="bg-white overflow-hidden shadow-sm rounded-lg border border-gray-200">
+                <div class="px-4 py-5 sm:p-6">
+                    <h2 class="text-lg font-medium text-gray-900 mb-4">Booking Timeline</h2>
+                    
+                    <div class="flow-root">
+                        <ul class="-mb-8">
+                            <li>
+                                <div class="relative pb-8">
+                                    <span class="absolute top-5 left-5 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                                    <div class="relative flex items-start space-x-3">
+                                        <div>
+                                            <div class="relative px-1 bg-white">
+                                                <div class="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center ring-8 ring-white">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="min-w-0 flex-1">
+                                            <div>
+                                                <p class="text-sm text-gray-500">Booking Created</p>
+                                                <p class="mt-0.5 text-xs text-gray-500">{{ booking.created_at|date:"M d, Y H:i" }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                            
+                            {% if booking.status != 'inquiry' %}
+                                <li>
+                                    <div class="relative pb-8">
+                                        <span class="absolute top-5 left-5 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                                        <div class="relative flex items-start space-x-3">
+                                            <div>
+                                                <div class="relative px-1 bg-white">
+                                                    <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center ring-8 ring-white">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="min-w-0 flex-1">
+                                                <div>
+                                                    <p class="text-sm text-gray-500">Quote Provided</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endif %}
+                            
+                            {% if booking.status != 'inquiry' and booking.status != 'quote_provided' %}
+                                <li>
+                                    <div class="relative pb-8">
+                                        <span class="absolute top-5 left-5 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                                        <div class="relative flex items-start space-x-3">
+                                            <div>
+                                                <div class="relative px-1 bg-white">
+                                                    <div class="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center ring-8 ring-white">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="min-w-0 flex-1">
+                                                <div>
+                                                    <p class="text-sm text-gray-500">Quote Accepted</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endif %}
+                            
+                            {% if booking.deposit_paid %}
+                                <li>
+                                    <div class="relative pb-8">
+                                        <span class="absolute top-5 left-5 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                                        <div class="relative flex items-start space-x-3">
+                                            <div>
+                                                <div class="relative px-1 bg-white">
+                                                    <div class="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center ring-8 ring-white">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="min-w-0 flex-1">
+                                                <div>
+                                                    <p class="text-sm text-gray-500">Deposit Paid</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endif %}
+                            
+                            {% if booking.final_payment_received %}
+                                <li>
+                                    <div class="relative pb-8">
+                                        <span class="absolute top-5 left-5 -ml-px h-full w-0.5 bg-gray-200" aria-hidden="true"></span>
+                                        <div class="relative flex items-start space-x-3">
+                                            <div>
+                                                <div class="relative px-1 bg-white">
+                                                    <div class="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center ring-8 ring-white">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="min-w-0 flex-1">
+                                                <div>
+                                                    <p class="text-sm text-gray-500">Final Payment Received</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endif %}
+                            
+                            {% if booking.status == 'cancelled' %}
+                                <li>
+                                    <div class="relative">
+                                        <div class="relative flex items-start space-x-3">
+                                            <div>
+                                                <div class="relative px-1">
+                                                    <div class="h-8 w-8 rounded-full bg-red-100 flex items-center justify-center ring-8 ring-white">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="min-w-0 flex-1">
+                                                <div>
+                                                    <p class="text-sm text-gray-500">Booking Cancelled</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            {% elif booking.status == 'completed' %}
+                                <li>
+                                    <div class="relative">
+                                        <div class="relative flex items-start space-x-3">
+                                            <div>
+                                                <div class="relative px-1">
+                                                    <div class="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center ring-8 ring-white">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="min-w-0 flex-1">
+                                                <div>
+                                                    <p class="text-sm text-gray-500">Event Completed</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            {% else %}
+                                <li>
+                                    <div class="relative">
+                                        <div class="relative flex items-start space-x-3">
+                                            <div>
+                                                <div class="relative px-1">
+                                                    <div class="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center ring-8 ring-white">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="min-w-0 flex-1">
+                                                <div>
+                                                    <p class="text-sm text-gray-500">Event Date</p>
+                                                    <p class="mt-0.5 text-xs text-gray-500">{{ booking.event_date }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
