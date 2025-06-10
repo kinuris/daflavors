@@ -50,14 +50,14 @@
                         
                         <!-- Submit Button -->
                         <div class="pt-4">
-                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md">
+                        <button type="submit" class="w-full bg-transparent border border-white text-white font-medium py-2 px-4 rounded-md hover:bg-white hover:text-black transition-colors tracking-wider">
                             Apply Filters
                         </button>
                     </div>
                     
                     <!-- Reset Button -->
                     <div>
-                        <a href="{% url 'caterers:list' %}" class="block text-center w-full text-indigo-600 hover:text-indigo-800 font-medium py-2 px-4 rounded-md border border-indigo-600">
+                        <a href="{% url 'caterers:list' %}" class="block text-center w-full bg-transparent border border-gray-400 text-gray-400 font-medium py-2 px-4 rounded-md hover:border-white hover:text-white transition-colors tracking-wider">
                             Reset All Filters
                         </a>
                     </div>
@@ -70,7 +70,7 @@
             {% if caterers %}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {% for caterer in caterers %}
-                        <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <div class="bg-gray-900 border border-gray-700 rounded-lg overflow-hidden hover:border-gray-600 transition-colors">
                             <!-- Caterer Image -->
                             <div class="h-48 relative">
                                 {% if caterer.images.all %}
@@ -82,14 +82,14 @@
                                         {% endif %}
                                     {% endwith %}
                                 {% else %}
-                                    <div class="w-full h-full bg-gray-200 flex items-center justify-center">
-                                        <span class="text-gray-500">No Image Available</span>
+                                    <div class="w-full h-full bg-gray-800 flex items-center justify-center">
+                                        <span class="text-gray-400">No Image Available</span>
                                     </div>
                                 {% endif %}
                                 
                                 <!-- Caterer Specialty Badge -->
                                 <div class="absolute top-4 left-4">
-                                    <span class="bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
+                                    <span class="bg-gray-800 border border-gray-600 text-white px-3 py-1 rounded-full text-xs font-semibold">
                                         {{ caterer.specialty }}
                                     </span>
                                 </div>
@@ -97,28 +97,28 @@
                             
                             <!-- Caterer Info -->
                             <div class="p-6">
-                                <h3 class="font-bold text-lg">{{ caterer.provider.business_name }}</h3>
-                                <p class="text-gray-600 text-sm mb-2">{{ caterer.provider.business_address }}</p>
+                                <h3 class="font-bold text-lg text-white">{{ caterer.provider.business_name }}</h3>
+                                <p class="text-gray-400 text-sm mb-2">{{ caterer.provider.business_address }}</p>
                                 
                                 <!-- Service Types -->
                                 <div class="flex flex-wrap gap-2 mb-4">
                                     {% if caterer.offers_buffet %}
-                                        <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-md text-xs">Buffet</span>
+                                        <span class="bg-gray-800 border border-gray-600 text-gray-300 px-2 py-1 rounded-md text-xs">Buffet</span>
                                     {% endif %}
                                     {% if caterer.offers_plated %}
-                                        <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-md text-xs">Plated</span>
+                                        <span class="bg-gray-800 border border-gray-600 text-gray-300 px-2 py-1 rounded-md text-xs">Plated</span>
                                     {% endif %}
                                     {% if caterer.offers_cocktail %}
-                                        <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-md text-xs">Cocktail</span>
+                                        <span class="bg-gray-800 border border-gray-600 text-gray-300 px-2 py-1 rounded-md text-xs">Cocktail</span>
                                     {% endif %}
                                     {% if caterer.offers_food_stalls %}
-                                        <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded-md text-xs">Food Stalls</span>
+                                        <span class="bg-gray-800 border border-gray-600 text-gray-300 px-2 py-1 rounded-md text-xs">Food Stalls</span>
                                     {% endif %}
                                 </div>
                                 
                                 <!-- Guest Range -->
-                                <div class="flex items-center text-sm text-gray-700 mb-4">
-                                    <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <div class="flex items-center text-sm text-gray-300 mb-4">
+                                    <svg class="w-4 h-4 mr-1 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"></path>
                                     </svg>
                                     <span>{{ caterer.min_guests }} - {{ caterer.max_guests }} guests</span>
@@ -126,13 +126,13 @@
                                 
                                 <!-- Menu Packages -->
                                 {% if caterer.menu_packages.exists %}
-                                    <p class="text-sm text-gray-700 mb-4">
+                                    <p class="text-sm text-gray-300 mb-4">
                                         <span class="font-medium">{{ caterer.menu_packages.count }} Menu Packages Available</span>
                                     </p>
                                 {% endif %}
                                 
                                 <!-- View Button -->
-                                <a href="{% url 'caterers:detail' caterer.id %}" class="block w-full text-center bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-200">
+                                <a href="{% url 'caterers:detail' caterer.id %}" class="block w-full text-center bg-transparent border border-white text-white font-medium py-2 px-4 rounded-md hover:bg-white hover:text-black transition-colors">
                                     View Details
                                 </a>
                             </div>
@@ -140,11 +140,12 @@
                     {% endfor %}
                 </div>
                 
-                <!-- Pagination could be added here -->                {% else %}
-                <div class="bg-white p-8 rounded-lg shadow text-center">
-                    <h3 class="text-xl font-semibold text-gray-700 mb-4">No caterers found</h3>
-                    <p class="text-gray-600 mb-6">There are no caterers matching your search criteria.</p>
-                    <a href="{% url 'caterers:list' %}" class="text-indigo-600 hover:text-indigo-800 font-medium">Reset all filters</a>
+                <!-- Pagination could be added here -->
+            {% else %}
+                <div class="bg-gray-900 border border-gray-700 p-8 rounded-lg text-center">
+                    <h3 class="text-xl font-semibold text-white mb-4">No caterers found</h3>
+                    <p class="text-gray-300 mb-6">There are no caterers matching your search criteria.</p>
+                    <a href="{% url 'caterers:list' %}" class="text-white hover:text-gray-300 transition-colors font-medium">Reset all filters</a>
                 </div>
             {% endif %}
         </div>
