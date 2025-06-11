@@ -4,142 +4,146 @@
 {% block title %}Cancel Booking #{{ booking.id }}{% endblock %}
 
 {% block content %}
-<div class="py-6">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="min-h-screen bg-black text-white">
+    <div class="container mx-auto px-4 py-8">
         <!-- Breadcrumb -->
-        <div class="mb-6 flex items-center space-x-2 text-sm text-gray-500">
-            <a href="{% url 'bookings:list' %}" class="hover:text-indigo-600">Bookings</a>
-            <span>&gt;</span>
-            <a href="{% url 'bookings:detail' booking.id %}" class="hover:text-indigo-600">Booking #{{ booking.id }}</a>
-            <span>&gt;</span>
-            <span class="text-gray-900 font-medium">Cancel Booking</span>
-        </div>
+        <nav class="mb-8">
+            <ol class="flex items-center space-x-2 text-sm text-gray-400">
+                <li><a href="{% url 'core:home' %}" class="hover:text-white tracking-wide font-light transition-colors duration-300">Home</a></li>
+                <li><span class="mx-2">/</span></li>
+                <li><a href="{% url 'bookings:list' %}" class="hover:text-white tracking-wide font-light transition-colors duration-300">My Bookings</a></li>
+                <li><span class="mx-2">/</span></li>
+                <li><a href="{% url 'bookings:detail' booking.id %}" class="hover:text-white tracking-wide font-light transition-colors duration-300">Booking #{{ booking.id }}</a></li>
+                <li><span class="mx-2">/</span></li>
+                <li class="text-white tracking-wide font-light">Cancel Booking</li>
+            </ol>
+        </nav>
 
-        <!-- Page Header -->
-        <div class="mb-6">
-            <h1 class="text-2xl font-bold text-gray-900">Cancel Booking #{{ booking.id }}</h1>
-            <p class="mt-1 text-sm text-gray-500">
+        <!-- Header -->
+        <div class="mb-12">
+            <h1 class="text-4xl font-light mb-4" style="letter-spacing: 0.1em;">Cancel Booking #{{ booking.id }}</h1>
+            <p class="text-gray-400 tracking-wide font-light">
                 Please review the booking information before cancellation
             </p>
         </div>
         
         <!-- Warning Card -->
-        <div class="mb-6 bg-red-50 border-l-4 border-red-400 p-4">
-            <div class="flex">
-                <div class="flex-shrink-0">
-                    <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
-                    </svg>
-                </div>
-                <div class="ml-3">
-                    <h3 class="text-sm font-medium text-red-800">
-                        Warning: This action cannot be undone
-                    </h3>
-                    <div class="mt-2 text-sm text-red-700">
-                        <p>
-                            Canceling this booking may incur cancellation fees according to the venue and caterer policies.
-                            {% if booking.deposit_paid %}
-                            <strong>Your deposit may be forfeited depending on the cancellation policy.</strong>
-                            {% endif %}
-                        </p>
+        <div class="mb-12 bg-red-900/20 border border-red-600 rounded-lg overflow-hidden">
+            <div class="px-8 py-6">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <svg class="w-6 h-6 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-4 flex-1">
+                        <h3 class="text-lg font-light text-red-300 tracking-wider mb-3" style="letter-spacing: 0.05em;">
+                            Warning: This action cannot be undone
+                        </h3>
+                        <div class="text-sm text-red-400 tracking-wide font-light leading-relaxed">
+                            <p>
+                                Canceling this booking may incur cancellation fees according to the venue and caterer policies.
+                                {% if booking.deposit_paid %}
+                                <strong class="text-red-300">Your deposit may be forfeited depending on the cancellation policy.</strong>
+                                {% endif %}
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
         
         <!-- Booking Summary -->
-        <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
-            <div class="px-4 py-5 sm:px-6">
-                <h3 class="text-lg leading-6 font-medium text-gray-900">
-                    Booking Details
-                </h3>
+        <div class="bg-gray-900 border border-gray-700 rounded-lg overflow-hidden mb-12">
+            <div class="px-8 py-6 border-b border-gray-700">
+                <h2 class="text-2xl font-light text-white tracking-wider" style="letter-spacing: 0.1em;">
+                    B O O K I N G &nbsp;&nbsp; D E T A I L S
+                </h2>
             </div>
-            <div class="border-t border-gray-200">
-                <dl>
-                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                        <dt class="text-sm font-medium text-gray-500">
+            <div class="px-8 py-8">
+                <dl class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <dt class="text-sm font-light text-gray-400 mb-2 tracking-wide">
                             Event Type
                         </dt>
-                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                            {{ booking.event_type }}
+                        <dd class="text-lg font-light text-white tracking-wide">
+                            {% if booking.event_type.icon %}{{ booking.event_type.icon }} {% endif %}{{ booking.event_type.name }}
                         </dd>
                     </div>
-                    <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                        <dt class="text-sm font-medium text-gray-500">
+                    <div>
+                        <dt class="text-sm font-light text-gray-400 mb-2 tracking-wide">
                             Date & Time
                         </dt>
-                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                            {{ booking.event_date|date:"F j, Y" }} from {{ booking.start_time }} to {{ booking.end_time }}
+                        <dd class="text-lg font-light text-white tracking-wide">
+                            {{ booking.event_date|date:"F j, Y" }}<br>
+                            <span class="text-gray-300 text-base">{{ booking.start_time }} - {{ booking.end_time }}</span>
                         </dd>
                     </div>
-                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                        <dt class="text-sm font-medium text-gray-500">
+                    <div>
+                        <dt class="text-sm font-light text-gray-400 mb-2 tracking-wide">
                             Venue
                         </dt>
-                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        <dd class="text-lg font-light text-white tracking-wide">
                             {% if booking.venue %}
                                 {{ booking.venue.name }}
                             {% else %}
-                                Not selected
+                                <span class="text-gray-500">Not selected</span>
                             {% endif %}
                         </dd>
                     </div>
-                    <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                        <dt class="text-sm font-medium text-gray-500">
+                    <div>
+                        <dt class="text-sm font-light text-gray-400 mb-2 tracking-wide">
                             Caterer
                         </dt>
-                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        <dd class="text-lg font-light text-white tracking-wide">
                             {% if booking.caterer %}
                                 {{ booking.caterer.provider.business_name }}
                             {% else %}
-                                Not selected
+                                <span class="text-gray-500">Not selected</span>
                             {% endif %}
                         </dd>
                     </div>
-                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                        <dt class="text-sm font-medium text-gray-500">
+                    <div>
+                        <dt class="text-sm font-light text-gray-400 mb-2 tracking-wide">
                             Guest Count
                         </dt>
-                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        <dd class="text-lg font-light text-white tracking-wide">
                             {{ booking.guest_count }} guests
                         </dd>
                     </div>
-                    <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                        <dt class="text-sm font-medium text-gray-500">
+                    <div>
+                        <dt class="text-sm font-light text-gray-400 mb-2 tracking-wide">
                             Status
                         </dt>
-                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                            {% if booking.status == 'inquiry' %}
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">Inquiry</span>
-                            {% elif booking.status == 'quote_provided' %}
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">Quote Provided</span>
-                            {% elif booking.status == 'pending_deposit' %}
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">Pending Deposit</span>
-                            {% elif booking.status == 'confirmed' %}
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Confirmed</span>
-                            {% elif booking.status == 'in_progress' %}
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-indigo-100 text-indigo-800">In Progress</span>
-                            {% elif booking.status == 'completed' %}
-                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Completed</span>
-                            {% endif %}
+                        <dd>
+                            <span class="px-3 py-1 rounded-full text-sm font-light tracking-wide border
+                                {% if booking.status == 'inquiry' %}bg-yellow-900/30 text-yellow-300 border-yellow-600
+                                {% elif booking.status == 'quote_provided' %}bg-blue-900/30 text-blue-300 border-blue-600
+                                {% elif booking.status == 'pending_deposit' %}bg-purple-900/30 text-purple-300 border-purple-600
+                                {% elif booking.status == 'confirmed' %}bg-green-900/30 text-green-300 border-green-600
+                                {% elif booking.status == 'in_progress' %}bg-indigo-900/30 text-indigo-300 border-indigo-600
+                                {% elif booking.status == 'completed' %}bg-green-900/30 text-green-300 border-green-600
+                                {% endif %}" style="letter-spacing: 0.05em;">
+                                {{ booking.get_status_display }}
+                            </span>
                         </dd>
                     </div>
                     {% if booking.total_amount %}
-                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                        <dt class="text-sm font-medium text-gray-500">
+                    <div class="md:col-span-2 pt-6 border-t border-gray-700">
+                        <dt class="text-sm font-light text-gray-400 mb-2 tracking-wide">
                             Total Amount
                         </dt>
-                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        <dd class="text-2xl font-light text-white tracking-wider">
                             ₱{{ booking.total_amount }}
                         </dd>
                     </div>
                     {% endif %}
                     {% if booking.special_requests %}
-                    <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                        <dt class="text-sm font-medium text-gray-500">
+                    <div class="md:col-span-2 pt-6 border-t border-gray-700">
+                        <dt class="text-sm font-light text-gray-400 mb-2 tracking-wide">
                             Special Requests
                         </dt>
-                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        <dd class="text-gray-300 tracking-wide font-light leading-relaxed">
                             {{ booking.special_requests|linebreaks }}
                         </dd>
                     </div>
@@ -150,73 +154,88 @@
         
         <!-- Cancellation Policies -->
         {% if booking.venue or booking.caterer %}
-        <div class="bg-white shadow overflow-hidden sm:rounded-lg mb-8">
-            <div class="px-4 py-5 sm:px-6">
-                <h3 class="text-lg leading-6 font-medium text-gray-900">
-                    Cancellation Policies
-                </h3>
+        <div class="bg-gray-900 border border-gray-700 rounded-lg overflow-hidden mb-12">
+            <div class="px-8 py-6 border-b border-gray-700">
+                <h2 class="text-2xl font-light text-white tracking-wider" style="letter-spacing: 0.1em;">
+                    C A N C E L L A T I O N &nbsp;&nbsp; P O L I C I E S
+                </h2>
             </div>
-            <div class="border-t border-gray-200">
-                <dl>
+            <div class="px-8 py-8">
+                <div class="space-y-8">
                     {% if booking.venue and booking.venue.cancellation_policy %}
-                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                        <dt class="text-sm font-medium text-gray-500">
+                    <div>
+                        <h3 class="text-lg font-light text-white tracking-wider mb-4" style="letter-spacing: 0.05em;">
                             {{ booking.venue.name }} Cancellation Policy
-                        </dt>
-                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        </h3>
+                        <div class="text-gray-300 tracking-wide font-light leading-relaxed">
                             {{ booking.venue.cancellation_policy|linebreaks }}
-                        </dd>
+                        </div>
                     </div>
                     {% endif %}
                     {% if booking.caterer and booking.caterer.cancellation_policy %}
-                    <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                        <dt class="text-sm font-medium text-gray-500">
+                    <div {% if booking.venue and booking.venue.cancellation_policy %}class="pt-8 border-t border-gray-700"{% endif %}>
+                        <h3 class="text-lg font-light text-white tracking-wider mb-4" style="letter-spacing: 0.05em;">
                             {{ booking.caterer.provider.business_name }} Cancellation Policy
-                        </dt>
-                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        </h3>
+                        <div class="text-gray-300 tracking-wide font-light leading-relaxed">
                             {{ booking.caterer.cancellation_policy|linebreaks }}
-                        </dd>
+                        </div>
                     </div>
                     {% endif %}
-                </dl>
+                </div>
             </div>
         </div>
         {% endif %}
         
         <!-- Cancellation Form -->
-        <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-            <div class="px-4 py-5 sm:p-6">
-                <h3 class="text-lg leading-6 font-medium text-gray-900">
-                    Confirm Cancellation
-                </h3>
-                <div class="mt-2 max-w-xl text-sm text-gray-500">
+        <div class="bg-gray-900 border border-gray-700 rounded-lg overflow-hidden">
+            <div class="px-8 py-6 border-b border-gray-700">
+                <h2 class="text-2xl font-light text-white tracking-wider" style="letter-spacing: 0.1em;">
+                    C O N F I R M &nbsp;&nbsp; C A N C E L L A T I O N
+                </h2>
+            </div>
+            <div class="px-8 py-8">
+                <div class="mb-8 text-gray-300 tracking-wide font-light leading-relaxed">
                     <p>
                         Please confirm that you want to cancel this booking. This action cannot be undone.
                     </p>
                 </div>
-                <form method="post" class="mt-5">
+                <form method="post" class="space-y-8">
                     {% csrf_token %}
                     <div>
-                        <label for="cancellation_reason" class="block text-sm font-medium text-gray-700">Reason for Cancellation</label>
-                        <div class="mt-1">
-                            <textarea id="cancellation_reason" name="cancellation_reason" rows="4" class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md" placeholder="Please provide a reason for cancellation"></textarea>
+                        <label for="cancellation_reason" class="block text-sm font-light text-gray-400 mb-3 tracking-wide">Reason for Cancellation</label>
+                        <div>
+                            <textarea id="cancellation_reason" name="cancellation_reason" rows="4" 
+                                class="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-500 tracking-wide font-light
+                                       focus:outline-none focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition duration-200"
+                                placeholder="Please provide a reason for cancellation"></textarea>
                         </div>
                     </div>
-                    <div class="mt-5">
+                    <div>
                         <div class="relative flex items-start">
                             <div class="flex items-center h-5">
-                                <input id="confirm_cancellation" name="confirm_cancellation" type="checkbox" required class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded">
+                                <input id="confirm_cancellation" name="confirm_cancellation" type="checkbox" required 
+                                    class="w-4 h-4 text-red-600 bg-gray-800 border border-gray-600 rounded 
+                                           focus:ring-red-500 focus:ring-2">
                             </div>
-                            <div class="ml-3 text-sm">
-                                <label for="confirm_cancellation" class="font-medium text-gray-700">I understand that by cancelling this booking, I may forfeit any deposits already paid</label>
+                            <div class="ml-3">
+                                <label for="confirm_cancellation" class="text-sm font-light text-gray-300 tracking-wide">
+                                    I understand that by cancelling this booking, I may forfeit any deposits already paid
+                                </label>
                             </div>
                         </div>
                     </div>
-                    <div class="mt-5 flex justify-end space-x-4">
-                        <a href="{% url 'bookings:detail' booking.id %}" class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <div class="flex justify-end space-x-4 pt-4">
+                        <a href="{% url 'bookings:detail' booking.id %}" 
+                            class="inline-flex justify-center py-3 px-6 border border-gray-600 text-sm font-light tracking-wide rounded-lg 
+                                   text-gray-300 bg-gray-800 hover:bg-gray-700 hover:border-gray-500 
+                                   focus:outline-none focus:ring-2 focus:ring-gray-500 transition duration-200">
                             Go Back
                         </a>
-                        <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                        <button type="submit" 
+                            class="inline-flex justify-center py-3 px-6 border border-transparent text-sm font-light tracking-wide rounded-lg 
+                                   text-white bg-red-600 hover:bg-red-700 
+                                   focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-200">
                             Cancel Booking
                         </button>
                     </div>
