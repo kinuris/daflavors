@@ -283,8 +283,8 @@ def menu_select(request, booking_id):
             
             menu_selection.save()
             
-            # Redirect to course selection if needed
-            if package.requires_selections:
+            # Redirect to course selection if package has items that require selection
+            if package.package_items.exists():
                 return redirect('bookings:course_select', booking_id=booking_id)
             else:
                 messages.success(request, "Menu package has been selected successfully!")
