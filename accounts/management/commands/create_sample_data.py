@@ -108,26 +108,6 @@ class Command(BaseCommand):
                     'service_area': 'Metro Manila',
                     'verified': True
                 }
-            },
-            {
-                'user': {
-                    'username': 'classic.catering',
-                    'email': 'info@classicatering.com',
-                    'password': 'provider123',
-                    'first_name': 'Classic',
-                    'last_name': 'Catering',
-                    'phone_number': '+63 2 7777 8888',
-                    'address': 'Pasig City'
-                },
-                'profile': {
-                    'business_name': 'Classic Catering Services',
-                    'business_description': 'Premium catering services for all occasions',
-                    'business_email': 'events@classicatering.com',
-                    'business_phone': '+63 2 7777 8888',
-                    'business_address': 'Pasig City',
-                    'service_area': 'Metro Manila, Cavite',
-                    'verified': True
-                }
             }
         ]
         
@@ -154,7 +134,7 @@ class Command(BaseCommand):
             providers.append(provider_profile)
             self.stdout.write(self.style.SUCCESS(f'Created provider: {provider_user.username}'))
         
-        # Create a venue for the first provider
+        # Create a venue for the provider
         venue = Venue.objects.create(
             provider=providers[0],
             name='Grand Palace Main Hall',
@@ -170,9 +150,10 @@ class Command(BaseCommand):
         )
         self.stdout.write(self.style.SUCCESS(f'Created venue: {venue.name}'))
         
-        # Create a caterer for the second provider
+        # Create a caterer for the same provider (Grand Palace also offers catering)
         caterer = Caterer.objects.create(
-            provider=providers[1],
+            provider=providers[0],
+            service_name='Grand Palace Catering',
             specialty='International Cuisine',
             min_guests=50,
             max_guests=1000,
@@ -180,13 +161,13 @@ class Command(BaseCommand):
             offers_plated=True,
             offers_cocktail=True,
             offers_food_stalls=True,
-            service_area='Metro Manila, Cavite',
+            service_area='Metro Manila',
             setup_policy='Setup starts 4 hours before event',
             delivery_policy='Free delivery within Metro Manila',
             payment_policy='50% down payment required',
             cancellation_policy='Full refund if cancelled 30 days before'
         )
-        self.stdout.write(self.style.SUCCESS(f'Created caterer: {caterer.provider.business_name}'))
+        self.stdout.write(self.style.SUCCESS(f'Created caterer: {caterer.service_name}'))
         
         # Create course categories
         categories = [
