@@ -164,7 +164,7 @@
                             {% for caterer in caterers %}
                                 <div class="bg-gray-800 border border-gray-600 rounded-lg overflow-hidden">
                                     {% if caterer.images.first %}
-                                        <img src="{{ caterer.images.first.image.url }}" alt="{{ caterer.name }}" class="w-full h-40 object-cover">
+                                        <img src="{{ caterer.images.first.image.url }}" alt="{{ caterer.service_name|default:caterer.provider.business_name }}" class="w-full h-40 object-cover">
                                     {% else %}
                                         <div class="w-full h-40 bg-gray-700 flex items-center justify-center">
                                             <span class="text-gray-400">No Image</span>
@@ -173,7 +173,7 @@
                                     
                                     <div class="p-4">
                                         <div class="flex items-center justify-between mb-2">
-                                            <h3 class="font-semibold text-lg text-white">{{ caterer.provider.business_name }}</h3>
+                                            <h3 class="font-semibold text-lg text-white">{{ caterer.service_name|default:caterer.provider.business_name }}</h3>
                                             <!-- Status Badge -->
                                             {% if caterer.is_suspended %}
                                                 <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-red-900/20 border border-red-600 text-red-400">
