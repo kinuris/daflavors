@@ -1,13 +1,33 @@
 from django.db import models
 from accounts.models import ProviderProfile
 
+class EventType(models.Model):
+    """Predefined event types that caterers can serve"""
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True, help_text="Description of this event type")
+    icon = models.CharField(max_length=50, blank=True, help_text="CSS icon class or emoji")
+    is_active = models.BooleanField(default=True)
+    display_order = models.PositiveIntegerField(default=0, help_text="Order for displaying event types")
+    
+    class Meta:
+        ordering = ['display_order', 'name']
+        verbose_name = "Event Type"
+        verbose_name_plural = "Event Types"
+    
+    def __str__(self):
+        return self.name
+
 class Caterer(models.Model):
-    provider = models.OneToOneField(ProviderProfile, on_delete=models.CASCADE, related_name='caterer')
+    provider = models.ForeignKey(ProviderProfile, on_delete=models.CASCADE, related_name='caterers')
     
     # Additional caterer-specific fields
     specialty = models.CharField(max_length=255, help_text="Main cuisine specialty")
     min_guests = models.PositiveIntegerField(default=10, help_text="Minimum number of guests for catering")
     max_guests = models.PositiveIntegerField(default=500, help_text="Maximum number of guests for catering")
+    
+    # Event types this caterer serves
+    event_types = models.ManyToManyField(EventType, blank=True, related_name='caterers', 
+                                       help_text="Types of events this caterer specializes in")
     
     # Service types offered
     offers_buffet = models.BooleanField(default=True)
@@ -40,6 +60,10 @@ class Caterer(models.Model):
     def is_available_for_booking(self):
         """Check if caterer is available for new bookings"""
         return self.is_active and not self.is_suspended
+    
+    def get_event_types_display(self):
+        """Get comma-separated list of event types for display"""
+        return ", ".join([event_type.name for event_type in self.event_types.all()])
 
 class CatererImage(models.Model):
     caterer = models.ForeignKey(Caterer, on_delete=models.CASCADE, related_name='images')

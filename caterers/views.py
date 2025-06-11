@@ -5,7 +5,7 @@ from django.forms import inlineformset_factory
 from django.db import transaction
 from django.http import Http404
 from accounts.models import ProviderProfile
-from .models import Caterer, CatererImage, MenuPackage, CourseCategory, MenuItem, PackageItem, CatererAvailability
+from .models import Caterer, CatererImage, MenuPackage, CourseCategory, MenuItem, PackageItem, CatererAvailability, EventType
 from .forms import (CatererForm, CatererImageForm, MenuPackageForm, CourseCategoryForm, 
                     MenuItemForm, PackageItemForm, CatererAvailabilityForm)
 
@@ -32,6 +32,11 @@ def caterer_list(request):
     elif service_type == 'food_stalls':
         caterers = caterers.filter(offers_food_stalls=True)
     
+    # Filter by event type if specified
+    event_type = request.GET.get('event_type')
+    if event_type:
+        caterers = caterers.filter(event_types__id=event_type)
+    
     # Filter by guest count if specified
     min_guests = request.GET.get('min_guests')
     max_guests = request.GET.get('max_guests')
@@ -41,10 +46,16 @@ def caterer_list(request):
     if max_guests:
         caterers = caterers.filter(max_guests__gte=max_guests)
     
+    # Get all active event types for filter dropdown
+    event_types = EventType.objects.filter(is_active=True)
+    
     context = {
         'caterers': caterers,
         'specialty': specialty,
         'service_type': service_type,
+        'event_type': event_type,
+        'selected_event_type': event_type,
+        'event_types': event_types,
         'min_guests': min_guests,
         'max_guests': max_guests
     }
@@ -83,14 +94,6 @@ def caterer_create(request):
     if not hasattr(request.user, 'provider_profile'):
         messages.error(request, "You must be registered as a provider to create a catering service.")
         return redirect('accounts:become_provider')
-    
-    # Check if user already has a caterer profile
-    try:
-        existing_caterer = Caterer.objects.get(provider=request.user.provider_profile)
-        messages.error(request, "You already have a catering service registered.")
-        return redirect('caterers:detail', caterer_id=existing_caterer.id)
-    except Caterer.DoesNotExist:
-        pass
     
     if request.method == 'POST':
         form = CatererForm(request.POST)

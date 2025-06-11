@@ -41,8 +41,12 @@
                         <div>
                             <label for="{{ form.event_type.id_for_label }}" class="block text-sm font-light text-gray-400 mb-2 tracking-wider">{{ form.event_type.label }}</label>
                             <select name="{{ form.event_type.name }}" id="{{ form.event_type.id_for_label }}" class="w-full px-4 py-3 bg-black border border-gray-700 text-white focus:outline-none focus:border-white tracking-wide font-light">
-                                {% for choice in form.event_type.field.choices %}
-                                    <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                                <option value="">Select an event type</option>
+                                {% for event_type in form.event_type.field.queryset %}
+                                    <option value="{{ event_type.id }}" 
+                                        {% if form.event_type.value == event_type.id %}selected{% endif %}>
+                                        {% if event_type.icon %}{{ event_type.icon }} {% endif %}{{ event_type.name }}
+                                    </option>
                                 {% endfor %}
                             </select>
                             {% if form.event_type.errors %}
@@ -121,9 +125,21 @@
                         <label for="{{ form.caterer.id_for_label }}" class="block text-sm font-light text-gray-400 mb-2 tracking-wider">{{ form.caterer.label }}</label>
                         <select name="{{ form.caterer.name }}" id="{{ form.caterer.id_for_label }}" class="w-full px-4 py-3 bg-black border border-gray-700 text-white focus:outline-none focus:border-white tracking-wide font-light">
                             <option value="">Select a caterer</option>
-                            {% for choice in form.caterer.field.queryset %}
-                                <option value="{{ choice.id }}">{{ choice.provider.business_name }}</option>
-                            {% endfor %}
+                            {% if caterers_with_event_types %}
+                                {% for caterer in caterers_with_event_types %}
+                                    <option value="{{ caterer.id }}" 
+                                        {% if form.caterer.value == caterer.id %}selected{% endif %}>
+                                        {{ caterer.provider.business_name }}{% if caterer.event_types.all %} - {% for event_type in caterer.event_types.all|slice:":3" %}{% if event_type.icon %}{{ event_type.icon }} {% endif %}{{ event_type.name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% if caterer.event_types.count > 3 %} (+{{ caterer.event_types.count|add:"-3" }} more){% endif %}{% endif %}
+                                    </option>
+                                {% endfor %}
+                            {% else %}
+                                {% for choice in form.caterer.field.queryset %}
+                                    <option value="{{ choice.id }}" 
+                                        {% if form.caterer.value == choice.id %}selected{% endif %}>
+                                        {{ choice.provider.business_name }}
+                                    </option>
+                                {% endfor %}
+                            {% endif %}
                         </select>
                         {% if form.caterer.errors %}
                             <p class="mt-2 text-sm text-red-400 tracking-wide font-light">{{ form.caterer.errors.0 }}</p>

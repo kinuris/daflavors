@@ -174,11 +174,18 @@ def booking_create(request):
         if caterer_id:
             form.fields['caterer'].initial = caterer_id
     
+    # Get caterers with their event types for the template
+    caterers_with_event_types = Caterer.objects.filter(
+        is_active=True, 
+        is_suspended=False
+    ).prefetch_related('event_types').select_related('provider')
+    
     context = {
         'form': form,
         'venue_id': venue_id,
         'caterer_id': caterer_id,
         'menu_id': menu_id,
+        'caterers_with_event_types': caterers_with_event_types,
     }
     
     return render(request, 'bookings/booking_form.html', context)
@@ -204,9 +211,16 @@ def booking_update(request, booking_id):
     else:
         form = BookingForm(instance=booking)
     
+    # Get caterers with their event types for the template
+    caterers_with_event_types = Caterer.objects.filter(
+        is_active=True, 
+        is_suspended=False
+    ).prefetch_related('event_types').select_related('provider')
+    
     context = {
         'form': form,
         'booking': booking,
+        'caterers_with_event_types': caterers_with_event_types,
     }
     
     return render(request, 'bookings/booking_form.html', context)

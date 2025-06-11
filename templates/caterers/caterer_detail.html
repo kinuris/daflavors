@@ -72,8 +72,54 @@
                     <p class="text-gray-300 leading-relaxed text-lg" style="letter-spacing: 0.05em;">{{ caterer.provider.business_description }}</p>
                 </div>
                 
+                <!-- Event Types Section -->
+                {% if caterer.event_types.all %}
+                <div class="w-full h-px bg-gray-700"></div>
+                
+                <div class="space-y-6">
+                    <h2 class="text-2xl font-light" style="letter-spacing: 0.1em;">E V E N T &nbsp;&nbsp; T Y P E S</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        {% for event_type in caterer.event_types.all %}
+                            <div class="bg-gray-800 border border-gray-600 rounded-lg p-4 text-center hover:border-gray-500 transition-colors duration-300">
+                                {% if event_type.icon %}
+                                    <div class="text-2xl mb-2">{{ event_type.icon }}</div>
+                                {% endif %}
+                                <h4 class="text-white font-light text-sm" style="letter-spacing: 0.05em;">{{ event_type.name }}</h4>
+                                {% if event_type.description %}
+                                    <p class="text-gray-400 text-xs mt-1">{{ event_type.description|truncatechars:50 }}</p>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+                
                 <!-- Thin Divider -->
                 <div class="w-full h-px bg-gray-700"></div>
+                
+                <!-- Event Types Section -->
+                {% if caterer.event_types.all %}
+                <div class="space-y-6">
+                    <h2 class="text-2xl font-light" style="letter-spacing: 0.1em;">E V E N T &nbsp;&nbsp; T Y P E S</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                        {% for event_type in caterer.event_types.all %}
+                        <div class="flex items-center space-x-2 bg-gray-900 border border-gray-700 rounded-lg p-3 hover:border-gray-600 transition-colors duration-300">
+                            {% if event_type.icon %}
+                                <span class="text-lg">{{ event_type.icon }}</span>
+                            {% else %}
+                                <svg class="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                                </svg>
+                            {% endif %}
+                            <span class="text-sm text-gray-300">{{ event_type.name }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <!-- Thin Divider -->
+                <div class="w-full h-px bg-gray-700"></div>
+                {% endif %}
                 
                 <!-- Services Offered -->
                 <div class="space-y-8">

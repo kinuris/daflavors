@@ -1,12 +1,17 @@
 from django import forms
 from .models import Booking, MenuSelection, CourseSelection, Quote, Payment, Message
 from venues.models import Venue
-from caterers.models import Caterer, MenuPackage, CourseCategory, MenuItem
+from caterers.models import Caterer, MenuPackage, CourseCategory, MenuItem, EventType
 
 class BookingForm(forms.ModelForm):
     """
     Form for creating and updating bookings
     """
+    event_type = forms.ModelChoiceField(
+        queryset=EventType.objects.filter(is_active=True).order_by('display_order', 'name'),
+        widget=forms.Select(attrs={'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50'}),
+        help_text="Select the type of event you're planning"
+    )
     event_date = forms.DateField(
         widget=forms.DateInput(attrs={'type': 'date', 'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50'}),
     )
@@ -34,7 +39,6 @@ class BookingForm(forms.ModelForm):
         fields = ['event_type', 'event_date', 'start_time', 'end_time', 'guest_count', 
                   'venue', 'caterer', 'special_requests']
         widgets = {
-            'event_type': forms.TextInput(attrs={'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50'}),
             'guest_count': forms.NumberInput(attrs={'min': 1, 'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50'}),
             'special_requests': forms.Textarea(attrs={'rows': 4, 'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50'}),
         }

@@ -1,7 +1,16 @@
 from django import forms
-from .models import Caterer, CatererImage, MenuPackage, CourseCategory, MenuItem, PackageItem, CatererAvailability
+from .models import Caterer, CatererImage, MenuPackage, CourseCategory, MenuItem, PackageItem, CatererAvailability, EventType
 
 class CatererForm(forms.ModelForm):
+    event_types = forms.ModelMultipleChoiceField(
+        queryset=EventType.objects.filter(is_active=True),
+        widget=forms.CheckboxSelectMultiple(attrs={
+            'class': 'grid grid-cols-2 gap-2'
+        }),
+        required=False,
+        help_text="Select the types of events you cater for"
+    )
+    
     class Meta:
         model = Caterer
         exclude = ['provider', 'created_at', 'updated_at']

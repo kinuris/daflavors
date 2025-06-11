@@ -129,17 +129,24 @@ class ProviderProfileAdmin(admin.ModelAdmin):
     has_venues.short_description = 'Venues'
     
     def has_caterers(self, obj):
-        try:
-            caterer = obj.caterer
-            if caterer.is_active and not caterer.is_suspended:
-                return format_html('<span style="color: green;">✅ Active</span>')
-            elif caterer.is_suspended:
-                return format_html('<span style="color: red;">🚫 Suspended</span>')
+        caterers = obj.caterers.all()
+        if not caterers:
+            return "No caterers"
+        
+        active_count = caterers.filter(is_active=True, is_suspended=False).count()
+        total_count = caterers.count()
+        
+        if active_count == total_count:
+            return format_html('<span style="color: green;">✅ {}/{} Active</span>', active_count, total_count)
+        elif active_count == 0:
+            suspended_count = caterers.filter(is_suspended=True).count()
+            if suspended_count > 0:
+                return format_html('<span style="color: red;">🚫 {}/{} Suspended</span>', suspended_count, total_count)
             else:
-                return format_html('<span style="color: orange;">⏸️ Inactive</span>')
-        except:
-            return "No caterer"
-    has_caterers.short_description = 'Caterer'
+                return format_html('<span style="color: orange;">⏸️ {}/{} Inactive</span>', total_count - active_count, total_count)
+        else:
+            return format_html('<span style="color: orange;">⚠️ {}/{} Active</span>', active_count, total_count)
+    has_caterers.short_description = 'Caterers'
     
     def has_add_permission(self, request):
         """Provider profiles should be created when users register as providers"""

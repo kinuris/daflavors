@@ -1,7 +1,20 @@
 from django.contrib import admin
 from django.utils import timezone
 from django.utils.html import format_html
-from .models import Caterer, CatererImage, MenuPackage, CourseCategory, MenuItem, PackageItem, CatererAvailability
+from .models import Caterer, CatererImage, MenuPackage, CourseCategory, MenuItem, PackageItem, CatererAvailability, EventType
+
+@admin.register(EventType)
+class EventTypeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'icon', 'display_order', 'is_active', 'caterer_count')
+    list_editable = ('display_order', 'is_active')
+    search_fields = ('name', 'description')
+    list_filter = ('is_active',)
+    ordering = ('display_order', 'name')
+    
+    def caterer_count(self, obj):
+        count = obj.caterers.count()
+        return format_html('<span style="color: blue;">{} caterers</span>', count)
+    caterer_count.short_description = 'Usage Count'
 
 @admin.register(Caterer)
 class CatererAdmin(admin.ModelAdmin):
@@ -9,16 +22,26 @@ class CatererAdmin(admin.ModelAdmin):
     Admin interface for monitoring and managing caterer status.
     Focused on suspension/activation rather than full CRUD operations.
     """
-    list_display = ('provider_business_name', 'specialty', 'service_area', 'guest_capacity', 'status_indicator', 'created_at', 'suspension_info')
-    list_filter = ('is_active', 'is_suspended', 'offers_buffet', 'offers_plated', 'offers_cocktail', 'offers_food_stalls', 'created_at', 'suspended_at')
+    list_display = ('provider_business_name', 'specialty', 'event_types_display', 'service_area', 'guest_capacity', 'status_indicator', 'created_at', 'suspension_info')
+    list_filter = ('is_active', 'is_suspended', 'event_types', 'offers_buffet', 'offers_plated', 'offers_cocktail', 'offers_food_stalls', 'created_at', 'suspended_at')
     search_fields = ('provider__business_name', 'provider__user__username', 'specialty', 'service_area')
-    readonly_fields = ('provider', 'specialty', 'min_guests', 'max_guests', 'offers_buffet', 'offers_plated', 
+    readonly_fields = ('provider', 'specialty', 'min_guests', 'max_guests', 'event_types', 'offers_buffet', 'offers_plated', 
                       'offers_cocktail', 'offers_food_stalls', 'service_area', 'setup_policy', 'delivery_policy', 
                       'payment_policy', 'cancellation_policy', 'created_at', 'updated_at')
     
+    def event_types_display(self, obj):
+        event_types = obj.event_types.all()[:3]  # Show first 3
+        if event_types:
+            display = ", ".join([et.name for et in event_types])
+            if obj.event_types.count() > 3:
+                display += f" (+{obj.event_types.count() - 3} more)"
+            return display
+        return "No event types"
+    event_types_display.short_description = 'Event Types'
+    
     fieldsets = (
         ('Caterer Information', {
-            'fields': ('provider', 'specialty', 'service_area', 'min_guests', 'max_guests')
+            'fields': ('provider', 'specialty', 'service_area', 'min_guests', 'max_guests', 'event_types')
         }),
         ('Services Offered', {
             'fields': ('offers_buffet', 'offers_plated', 'offers_cocktail', 'offers_food_stalls'),

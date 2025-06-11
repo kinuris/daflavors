@@ -191,6 +191,25 @@
                                         </div>
                                         <p class="text-sm text-gray-300 mb-3">{{ caterer.specialty }}</p>
                                         
+                                        <!-- Event Types -->
+                                        {% if caterer.event_types.all %}
+                                        <div class="flex flex-wrap gap-1 mb-3">
+                                            {% for event_type in caterer.event_types.all|slice:":3" %}
+                                                <span class="bg-gray-700 border border-gray-600 text-gray-200 px-2 py-1 rounded-md text-xs flex items-center">
+                                                    {% if event_type.icon %}
+                                                        <span class="mr-1">{{ event_type.icon }}</span>
+                                                    {% endif %}
+                                                    {{ event_type.name }}
+                                                </span>
+                                            {% endfor %}
+                                            {% if caterer.event_types.count > 3 %}
+                                                <span class="bg-gray-600 border border-gray-500 text-gray-300 px-2 py-1 rounded-md text-xs">
+                                                    +{{ caterer.event_types.count|add:"-3" }}
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                        {% endif %}
+                                        
                                         {% if caterer.is_suspended %}
                                             <p class="text-xs text-red-400 mb-3">
                                                 {% if caterer.suspension_reason %}

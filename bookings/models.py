@@ -1,7 +1,7 @@
 from django.db import models
 from accounts.models import CustomUser
 from venues.models import Venue
-from caterers.models import Caterer, MenuPackage, MenuItem, CourseCategory
+from caterers.models import Caterer, MenuPackage, MenuItem, CourseCategory, EventType
 
 class Booking(models.Model):
     # Basic booking information
@@ -12,7 +12,7 @@ class Booking(models.Model):
     caterer = models.ForeignKey(Caterer, on_delete=models.SET_NULL, null=True, blank=True, related_name='bookings')
     
     # Event details
-    event_type = models.CharField(max_length=100, help_text="Type of event (Wedding, Corporate, Birthday, etc.)")
+    event_type = models.ForeignKey(EventType, on_delete=models.CASCADE, help_text="Type of event")
     event_date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
@@ -45,7 +45,8 @@ class Booking(models.Model):
     
     def __str__(self):
         event_location = self.venue.name if self.venue else "No venue specified"
-        return f"{self.client.username}'s {self.event_type} at {event_location} on {self.event_date}"
+        event_type_name = self.event_type.name if self.event_type else "Unknown event"
+        return f"{self.client.username}'s {event_type_name} at {event_location} on {self.event_date}"
 
 class MenuSelection(models.Model):
     booking = models.OneToOneField(Booking, on_delete=models.CASCADE, related_name='menu_selection')

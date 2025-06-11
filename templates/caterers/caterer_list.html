@@ -34,6 +34,19 @@
                             </select>
                         </div>
                         
+                        <!-- Event Type Filter -->
+                        <div>
+                            <label for="event_type" class="block text-sm font-light text-gray-400 mb-2 tracking-wider">Event Type</label>
+                            <select name="event_type" id="event_type" class="w-full px-4 py-3 bg-black border border-gray-700 text-white focus:outline-none focus:border-white tracking-wide font-light">
+                                <option value="">All Event Types</option>
+                                {% for event_type in event_types %}
+                                    <option value="{{ event_type.id }}" {% if selected_event_type == event_type.id|stringformat:"s" %}selected{% endif %}>
+                                        {% if event_type.icon %}{{ event_type.icon }} {% endif %}{{ event_type.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
                         <!-- Guest Count Filter -->
                         <div class="grid grid-cols-2 gap-4">
                             <div>
@@ -99,6 +112,25 @@
                             <div class="p-6">
                                 <h3 class="font-bold text-lg text-white">{{ caterer.provider.business_name }}</h3>
                                 <p class="text-gray-400 text-sm mb-2">{{ caterer.provider.business_address }}</p>
+                                
+                                <!-- Event Types -->
+                                {% if caterer.event_types.all %}
+                                <div class="flex flex-wrap gap-1 mb-3">
+                                    {% for event_type in caterer.event_types.all|slice:":4" %}
+                                        <span class="bg-gray-700 border border-gray-600 text-gray-200 px-2 py-1 rounded-md text-xs flex items-center">
+                                            {% if event_type.icon %}
+                                                <span class="mr-1">{{ event_type.icon }}</span>
+                                            {% endif %}
+                                            {{ event_type.name }}
+                                        </span>
+                                    {% endfor %}
+                                    {% if caterer.event_types.count > 4 %}
+                                        <span class="bg-gray-600 border border-gray-500 text-gray-300 px-2 py-1 rounded-md text-xs">
+                                            +{{ caterer.event_types.count|add:"-4" }} more
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
                                 
                                 <!-- Service Types -->
                                 <div class="flex flex-wrap gap-2 mb-4">
