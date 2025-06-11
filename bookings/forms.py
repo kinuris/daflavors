@@ -82,7 +82,7 @@ class MenuSelectionForm(forms.ModelForm):
     """
     menu_package = forms.ModelChoiceField(
         queryset=MenuPackage.objects.none(),
-        widget=forms.Select(attrs={'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50'}),
+        widget=forms.Select(attrs={'class': 'w-full px-4 py-3 bg-black border border-gray-700 text-white focus:outline-none focus:border-white tracking-wide font-light'}),
     )
     
     class Meta:
@@ -90,12 +90,12 @@ class MenuSelectionForm(forms.ModelForm):
         fields = ['menu_package', 'vegetarian_count', 'gluten_free_count', 
                   'nut_free_count', 'halal_count', 'other_dietary_requirements', 'notes']
         widgets = {
-            'vegetarian_count': forms.NumberInput(attrs={'min': 0, 'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50'}),
-            'gluten_free_count': forms.NumberInput(attrs={'min': 0, 'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50'}),
-            'nut_free_count': forms.NumberInput(attrs={'min': 0, 'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50'}),
-            'halal_count': forms.NumberInput(attrs={'min': 0, 'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50'}),
-            'other_dietary_requirements': forms.Textarea(attrs={'rows': 3, 'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50'}),
-            'notes': forms.Textarea(attrs={'rows': 3, 'class': 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50'}),
+            'vegetarian_count': forms.NumberInput(attrs={'min': 0, 'class': 'w-full px-4 py-3 bg-black border border-gray-700 text-white focus:outline-none focus:border-white tracking-wide font-light'}),
+            'gluten_free_count': forms.NumberInput(attrs={'min': 0, 'class': 'w-full px-4 py-3 bg-black border border-gray-700 text-white focus:outline-none focus:border-white tracking-wide font-light'}),
+            'nut_free_count': forms.NumberInput(attrs={'min': 0, 'class': 'w-full px-4 py-3 bg-black border border-gray-700 text-white focus:outline-none focus:border-white tracking-wide font-light'}),
+            'halal_count': forms.NumberInput(attrs={'min': 0, 'class': 'w-full px-4 py-3 bg-black border border-gray-700 text-white focus:outline-none focus:border-white tracking-wide font-light'}),
+            'other_dietary_requirements': forms.Textarea(attrs={'rows': 3, 'class': 'w-full px-4 py-3 bg-black border border-gray-700 text-white focus:outline-none focus:border-white tracking-wide font-light resize-none'}),
+            'notes': forms.Textarea(attrs={'rows': 3, 'class': 'w-full px-4 py-3 bg-black border border-gray-700 text-white focus:outline-none focus:border-white tracking-wide font-light resize-none'}),
         }
     
     def __init__(self, *args, **kwargs):
