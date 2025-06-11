@@ -224,8 +224,8 @@
                 <div class="flex-1">
                     <div class="flex items-start justify-between mb-2">
                         <div>
-                            <h3 class="text-lg font-semibold text-gray-900">{{ caterer.provider.business_name }}</h3>
-                            <p class="text-gray-600">{{ caterer.specialty }}</p>
+                            <h3 class="text-lg font-light text-white tracking-wide">{{ caterer.service_name|default:caterer.provider.business_name }}</h3>
+                            <p class="text-gray-400 font-light tracking-wide">{{ caterer.specialty }}</p>
                         </div>
                         
                         <div class="flex items-center space-x-2">

@@ -234,7 +234,7 @@
                 <div class="recent-item">
                     <div class="flex justify-between items-start">
                         <div>
-                            <h4 class="font-light text-white tracking-wide">{{ caterer.provider.business_name }}</h4>
+                            <h4 class="font-light text-white tracking-wide">{{ caterer.service_name|default:caterer.provider.business_name }}</h4>
                             <p class="text-sm text-gray-300 tracking-wide font-light">{{ caterer.specialty }}</p>
                             <p class="text-xs text-red-400 mt-1 tracking-wide font-light">{{ caterer.suspension_reason|truncatechars:60 }}</p>
                         </div>

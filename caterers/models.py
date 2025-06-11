@@ -20,6 +20,9 @@ class EventType(models.Model):
 class Caterer(models.Model):
     provider = models.ForeignKey(ProviderProfile, on_delete=models.CASCADE, related_name='caterers')
     
+    # Catering service information
+    service_name = models.CharField(max_length=255, blank=True, help_text="Name of the catering service (e.g., 'Delicious Catering Co.'). Leave blank to use business name.")
+    
     # Additional caterer-specific fields
     specialty = models.CharField(max_length=255, help_text="Main cuisine specialty")
     min_guests = models.PositiveIntegerField(default=10, help_text="Minimum number of guests for catering")
@@ -55,7 +58,7 @@ class Caterer(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return self.provider.business_name
+        return self.service_name or self.provider.business_name
     
     def is_available_for_booking(self):
         """Check if caterer is available for new bookings"""

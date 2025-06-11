@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ caterer.provider.business_name }} - DaFlavors{% endblock %}
+{% block title %}{{ caterer.service_name|default:caterer.provider.business_name }} - DaFlavors{% endblock %}
 
 {% block content %}
 <div class="min-h-screen bg-black text-white">
@@ -9,9 +9,9 @@
         {% if caterer.images.all %}
             {% with primary_image=caterer.images.filter.is_primary.first %}
                 {% if primary_image %}
-                    <img src="{{ primary_image.image.url }}" alt="{{ caterer.provider.business_name }}" class="w-full h-full object-cover">
+                    <img src="{{ primary_image.image.url }}" alt="{{ caterer.service_name|default:caterer.provider.business_name }}" class="w-full h-full object-cover">
                 {% else %}
-                    <img src="{{ caterer.images.first.image.url }}" alt="{{ caterer.provider.business_name }}" class="w-full h-full object-cover">
+                    <img src="{{ caterer.images.first.image.url }}" alt="{{ caterer.service_name|default:caterer.provider.business_name }}" class="w-full h-full object-cover">
                 {% endif %}
             {% endwith %}
         {% else %}
@@ -25,7 +25,7 @@
         
         <!-- Content Overlay -->
         <div class="absolute bottom-8 left-8 right-8">
-            <h1 class="text-5xl font-light mb-2" style="letter-spacing: 0.1em;">{{ caterer.provider.business_name }}</h1>
+            <h1 class="text-5xl font-light mb-2" style="letter-spacing: 0.1em;">{{ caterer.service_name|default:caterer.provider.business_name }}</h1>
             <p class="text-xl text-gray-300 mb-4" style="letter-spacing: 0.05em;">Catering Service • {{ caterer.specialty }}</p>
             <div class="flex items-center space-x-6 text-gray-300">
                 <span class="flex items-center">

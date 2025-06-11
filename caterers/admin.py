@@ -22,10 +22,10 @@ class CatererAdmin(admin.ModelAdmin):
     Admin interface for monitoring and managing caterer status.
     Focused on suspension/activation rather than full CRUD operations.
     """
-    list_display = ('provider_business_name', 'specialty', 'event_types_display', 'service_area', 'guest_capacity', 'status_indicator', 'created_at', 'suspension_info')
+    list_display = ('service_name_display', 'provider_business_name', 'specialty', 'event_types_display', 'service_area', 'guest_capacity', 'status_indicator', 'created_at', 'suspension_info')
     list_filter = ('is_active', 'is_suspended', 'event_types', 'offers_buffet', 'offers_plated', 'offers_cocktail', 'offers_food_stalls', 'created_at', 'suspended_at')
-    search_fields = ('provider__business_name', 'provider__user__username', 'specialty', 'service_area')
-    readonly_fields = ('provider', 'specialty', 'min_guests', 'max_guests', 'event_types', 'offers_buffet', 'offers_plated', 
+    search_fields = ('service_name', 'provider__business_name', 'provider__user__username', 'specialty', 'service_area')
+    readonly_fields = ('provider', 'service_name', 'specialty', 'min_guests', 'max_guests', 'event_types', 'offers_buffet', 'offers_plated', 
                       'offers_cocktail', 'offers_food_stalls', 'service_area', 'setup_policy', 'delivery_policy', 
                       'payment_policy', 'cancellation_policy', 'created_at', 'updated_at')
     
@@ -39,9 +39,14 @@ class CatererAdmin(admin.ModelAdmin):
         return "No event types"
     event_types_display.short_description = 'Event Types'
     
+    def service_name_display(self, obj):
+        return obj.service_name or f"[{obj.provider.business_name}]"
+    service_name_display.short_description = 'Service Name'
+    service_name_display.admin_order_field = 'service_name'
+    
     fieldsets = (
         ('Caterer Information', {
-            'fields': ('provider', 'specialty', 'service_area', 'min_guests', 'max_guests', 'event_types')
+            'fields': ('provider', 'service_name', 'specialty', 'service_area', 'min_guests', 'max_guests', 'event_types')
         }),
         ('Services Offered', {
             'fields': ('offers_buffet', 'offers_plated', 'offers_cocktail', 'offers_food_stalls'),

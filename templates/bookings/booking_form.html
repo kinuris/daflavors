@@ -129,7 +129,7 @@
                                 {% for caterer in caterers_with_event_types %}
                                     <option value="{{ caterer.id }}" 
                                         {% if form.caterer.value == caterer.id %}selected{% endif %}>
-                                        {{ caterer.provider.business_name }}{% if caterer.event_types.all %} - {% for event_type in caterer.event_types.all|slice:":3" %}{% if event_type.icon %}{{ event_type.icon }} {% endif %}{{ event_type.name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% if caterer.event_types.count > 3 %} (+{{ caterer.event_types.count|add:"-3" }} more){% endif %}{% endif %}
+                                        {{ caterer.service_name|default:caterer.provider.business_name }}{% if caterer.event_types.all %} - {% for event_type in caterer.event_types.all|slice:":3" %}{% if event_type.icon %}{{ event_type.icon }} {% endif %}{{ event_type.name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% if caterer.event_types.count > 3 %} (+{{ caterer.event_types.count|add:"-3" }} more){% endif %}{% endif %}
                                     </option>
                                 {% endfor %}
                             {% else %}

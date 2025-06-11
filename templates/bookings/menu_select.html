@@ -25,7 +25,7 @@
             
             <div class="mb-12">
                 <h2 class="text-xl font-light text-white tracking-wider border-b border-gray-800 pb-4 mb-8">Available Menu Packages</h2>
-                <p class="text-gray-400 tracking-wide font-light mb-8">Select from the available menu packages offered by {{ booking.caterer.provider.business_name }}.</p>
+                <p class="text-gray-400 tracking-wide font-light mb-8">Select from the available menu packages offered by {{ booking.caterer.service_name|default:booking.caterer.provider.business_name }}.</p>
                 
                 {% if menu_packages %}
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

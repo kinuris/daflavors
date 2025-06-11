@@ -89,9 +89,9 @@
                                 {% if caterer.images.all %}
                                     {% with primary_image=caterer.images.filter.is_primary.first %}
                                         {% if primary_image %}
-                                            <img src="{{ primary_image.image.url }}" alt="{{ caterer.provider.business_name }}" class="w-full h-full object-cover">
+                                            <img src="{{ primary_image.image.url }}" alt="{{ caterer.service_name|default:caterer.provider.business_name }}" class="w-full h-full object-cover">
                                         {% else %}
-                                            <img src="{{ caterer.images.first.image.url }}" alt="{{ caterer.provider.business_name }}" class="w-full h-full object-cover">
+                                            <img src="{{ caterer.images.first.image.url }}" alt="{{ caterer.service_name|default:caterer.provider.business_name }}" class="w-full h-full object-cover">
                                         {% endif %}
                                     {% endwith %}
                                 {% else %}
@@ -110,7 +110,7 @@
                             
                             <!-- Caterer Info -->
                             <div class="p-6">
-                                <h3 class="font-bold text-lg text-white">{{ caterer.provider.business_name }}</h3>
+                                <h3 class="font-bold text-lg text-white">{{ caterer.service_name|default:caterer.provider.business_name }}</h3>
                                 <p class="text-gray-400 text-sm mb-2">{{ caterer.provider.business_address }}</p>
                                 
                                 <!-- Event Types -->
