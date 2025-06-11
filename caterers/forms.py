@@ -13,7 +13,7 @@ class CatererForm(forms.ModelForm):
     
     class Meta:
         model = Caterer
-        exclude = ['provider', 'created_at', 'updated_at']
+        exclude = ['provider', 'created_at', 'updated_at', 'is_active', 'is_suspended', 'suspension_reason', 'suspended_at', 'suspended_by']
         widgets = {
             'service_name': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500'}),
             'specialty': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500'}),
