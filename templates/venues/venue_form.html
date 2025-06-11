@@ -129,122 +129,55 @@
                     </div>
                 </div>
             </div>
-                    <div>
-                        <label for="{{ form.capacity.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Maximum Capacity</label>
-                        {{ form.capacity }}
-                        {% if form.capacity.errors %}
-                            <div class="text-red-600 text-xs mt-1">{{ form.capacity.errors }}</div>
-                        {% endif %}
-                    </div>
-                    
-                    <div>
-                        <label for="{{ form.base_price.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Base Price (₱)</label>
-                        {{ form.base_price }}
-                        {% if form.base_price.errors %}
-                            <div class="text-red-600 text-xs mt-1">{{ form.base_price.errors }}</div>
-                        {% endif %}
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                    <div>
-                        <label for="{{ form.opening_time.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Opening Time</label>
-                        {{ form.opening_time }}
-                        {% if form.opening_time.errors %}
-                            <div class="text-red-600 text-xs mt-1">{{ form.opening_time.errors }}</div>
-                        {% endif %}
-                    </div>
-                    
-                    <div>
-                        <label for="{{ form.closing_time.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Closing Time</label>
-                        {{ form.closing_time }}
-                        {% if form.closing_time.errors %}
-                            <div class="text-red-600 text-xs mt-1">{{ form.closing_time.errors }}</div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Policies Section -->
-            <div>
-                <h2 class="text-xl font-semibold mb-4 pb-2 border-b">Venue Policies</h2>
-                
-                <div class="mt-4">
-                    <label for="{{ form.booking_policy.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Booking Policy</label>
-                    {{ form.booking_policy }}
-                    {% if form.booking_policy.errors %}
-                        <div class="text-red-600 text-xs mt-1">{{ form.booking_policy.errors }}</div>
-                    {% endif %}
-                    <p class="text-sm text-gray-500 mt-1">Explain how clients can book and any requirements.</p>
-                </div>
-                
-                <div class="mt-4">
-                    <label for="{{ form.cancellation_policy.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Cancellation Policy</label>
-                    {{ form.cancellation_policy }}
-                    {% if form.cancellation_policy.errors %}
-                        <div class="text-red-600 text-xs mt-1">{{ form.cancellation_policy.errors }}</div>
-                    {% endif %}
-                    <p class="text-sm text-gray-500 mt-1">Detail your refund policy and cut-off times for cancellations.</p>
-                </div>
-                
-                <div class="mt-4">
-                    <label for="{{ form.corkage_policy.id_for_label }}" class="block text-sm font-medium text-gray-700 mb-1">Corkage Policy</label>
-                    {{ form.corkage_policy }}
-                    {% if form.corkage_policy.errors %}
-                        <div class="text-red-600 text-xs mt-1">{{ form.corkage_policy.errors }}</div>
-                    {% endif %}
-                    <p class="text-sm text-gray-500 mt-1">Explain your policy on outside food and beverages.</p>
-                </div>
-            </div>
             
             <!-- Images Section - Only shown in update mode -->
             {% if not is_create and image_formset %}
-                <div>
-                    <h2 class="text-xl font-semibold mb-4 pb-2 border-b">Venue Images</h2>
+                <div class="bg-gray-900 border border-gray-700 rounded-xl p-8">
+                    <h2 class="text-xl font-light text-white mb-6 pb-3 border-b border-gray-700 tracking-wider">V E N U E   I M A G E S</h2>
                     
                     {{ image_formset.management_form }}
                     
-                    <div class="space-y-4">
+                    <div class="space-y-6">
                         {% for form in image_formset %}
-                            <div class="border rounded-lg p-4 {{ form.DELETE.value|yesno:'bg-red-50,bg-white' }}">
+                            <div class="border border-gray-600 rounded-lg p-6 {{ form.DELETE.value|yesno:'bg-red-900/20,bg-gray-800' }}">
                                 {% if form.instance.pk and form.instance.image %}
-                                    <div class="flex items-center mb-3">
-                                        <img src="{{ form.instance.image.url }}" alt="{{ form.instance.caption }}" class="h-20 w-20 object-cover rounded mr-4">
+                                    <div class="flex items-center mb-4">
+                                        <img src="{{ form.instance.image.url }}" alt="{{ form.instance.caption }}" class="h-20 w-20 object-cover rounded-lg mr-4 border border-gray-600">
                                         <div>
-                                            <p class="font-medium">{{ form.instance.caption|default:"No caption" }}</p>
-                                            <p class="text-sm text-gray-600">{{ form.instance.is_primary|yesno:"Primary image,Secondary image" }}</p>
+                                            <p class="font-light text-white tracking-wide">{{ form.instance.caption|default:"No caption" }}</p>
+                                            <p class="text-sm text-gray-400 font-light tracking-wide">{{ form.instance.is_primary|yesno:"Primary image,Secondary image" }}</p>
                                         </div>
                                     </div>
                                 {% endif %}
                                 
-                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                                     <div class="md:col-span-2">
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Image</label>
+                                        <label class="block text-sm font-light text-gray-300 mb-2 tracking-wide">Image</label>
                                         {{ form.image }}
                                         {% if form.image.errors %}
-                                            <div class="text-red-600 text-xs mt-1">{{ form.image.errors }}</div>
+                                            <div class="text-red-400 text-xs mt-2 tracking-wide font-light">{{ form.image.errors }}</div>
                                         {% endif %}
                                     </div>
                                     
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Caption</label>
+                                        <label class="block text-sm font-light text-gray-300 mb-2 tracking-wide">Caption</label>
                                         {{ form.caption }}
                                         {% if form.caption.errors %}
-                                            <div class="text-red-600 text-xs mt-1">{{ form.caption.errors }}</div>
+                                            <div class="text-red-400 text-xs mt-2 tracking-wide font-light">{{ form.caption.errors }}</div>
                                         {% endif %}
                                     </div>
                                 </div>
                                 
-                                <div class="mt-3 flex items-center">
+                                <div class="mt-4 flex items-center">
                                     <div class="flex-1 flex items-center">
                                         {{ form.is_primary }}
-                                        <label for="{{ form.is_primary.id_for_label }}" class="ml-2 block text-sm font-medium text-gray-700">Set as primary image</label>
+                                        <label for="{{ form.is_primary.id_for_label }}" class="ml-2 block text-sm font-light text-gray-300 tracking-wide">Set as primary image</label>
                                     </div>
                                     
                                     {% if form.instance.pk %}
                                         <div class="flex items-center">
                                             {{ form.DELETE }}
-                                            <label for="{{ form.DELETE.id_for_label }}" class="ml-2 block text-sm font-medium text-red-600">Delete this image</label>
+                                            <label for="{{ form.DELETE.id_for_label }}" class="ml-2 block text-sm font-light text-red-400 tracking-wide">Delete this image</label>
                                         </div>
                                     {% endif %}
                                 </div>
@@ -260,31 +193,31 @@
             
             <!-- Availability Dates Section - Only shown in update mode -->
             {% if not is_create %}
-                <div>
-                    <h2 class="text-xl font-semibold mb-4 pb-2 border-b">Availability Dates</h2>
+                <div class="bg-gray-900 border border-gray-700 rounded-xl p-8">
+                    <h2 class="text-xl font-light text-white mb-6 pb-3 border-b border-gray-700 tracking-wider">A V A I L A B I L I T Y   D A T E S</h2>
                     
                     {% if availability_dates %}
-                        <div class="mb-4">
-                            <h3 class="text-lg font-medium mb-2">Current Availability Dates</h3>
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                        <div class="mb-6">
+                            <h3 class="text-lg font-light text-gray-300 mb-4 tracking-wide">Current Availability Dates</h3>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                                 {% for date in availability_dates %}
-                                    <div class="p-2 border rounded-md {% if date.is_available %}bg-green-50{% else %}bg-red-50{% endif %}">
-                                        <p class="font-medium">{{ date.date|date:"M d, Y" }}</p>
-                                        <p class="text-sm {% if date.is_available %}text-green-700{% else %}text-red-700{% endif %}">
+                                    <div class="p-3 border rounded-lg {% if date.is_available %}bg-green-900/30 border-green-700{% else %}bg-red-900/30 border-red-700{% endif %}">
+                                        <p class="font-light text-white tracking-wide">{{ date.date|date:"M d, Y" }}</p>
+                                        <p class="text-sm font-light tracking-wide {% if date.is_available %}text-green-400{% else %}text-red-400{% endif %}">
                                             {{ date.is_available|yesno:"Available,Unavailable" }}
                                         </p>
                                         
                                         {% if date.morning_available or date.afternoon_available or date.evening_available %}
-                                            <div class="text-xs mt-1">
-                                                <span class="{% if date.morning_available %}text-green-700{% else %}text-red-700{% endif %}">
+                                            <div class="text-xs mt-2 space-y-1">
+                                                <div class="{% if date.morning_available %}text-green-400{% else %}text-red-400{% endif %} font-light tracking-wide">
                                                     Morning: {{ date.morning_available|yesno:"✓,✗" }}
-                                                </span>
-                                                <span class="{% if date.afternoon_available %}text-green-700{% else %}text-red-700{% endif %}">
+                                                </div>
+                                                <div class="{% if date.afternoon_available %}text-green-400{% else %}text-red-400{% endif %} font-light tracking-wide">
                                                     Afternoon: {{ date.afternoon_available|yesno:"✓,✗" }}
-                                                </span>
-                                                <span class="{% if date.evening_available %}text-green-700{% else %}text-red-700{% endif %}">
+                                                </div>
+                                                <div class="{% if date.evening_available %}text-green-400{% else %}text-red-400{% endif %} font-light tracking-wide">
                                                     Evening: {{ date.evening_available|yesno:"✓,✗" }}
-                                                </span>
+                                                </div>
                                             </div>
                                         {% endif %}
                                     </div>
@@ -294,12 +227,12 @@
                     {% endif %}
                     
                     <div>
-                        <h3 class="text-lg font-medium mb-2">Add New Availability Dates</h3>
+                        <h3 class="text-lg font-light text-gray-300 mb-4 tracking-wide">Add New Availability Dates</h3>
                         <div class="grid grid-cols-1 gap-4">
                             <div id="date-inputs">
-                                <div class="flex gap-2 mb-2">
-                                    <input type="date" name="new_availability_date" class="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                                    <button type="button" id="add-date-btn" class="bg-indigo-600 text-white px-3 py-2 rounded-md">
+                                <div class="flex gap-3 mb-3">
+                                    <input type="date" name="new_availability_date" class="flex-1 px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                    <button type="button" id="add-date-btn" class="bg-transparent border border-blue-500 text-blue-400 px-4 py-3 rounded-lg hover:bg-blue-500 hover:text-white transition-all duration-200 font-light tracking-wide">
                                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path>
                                         </svg>
@@ -312,13 +245,13 @@
             {% endif %}
             
             <!-- Form Submit Buttons -->
-            <div class="pt-4 border-t flex justify-end space-x-3">
+            <div class="pt-6 border-t border-gray-700 flex justify-end space-x-4">
                 {% if is_create %}
-                    <a href="{% url 'accounts:provider_dashboard' %}" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">Cancel</a>
-                    <button type="submit" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md">Create Venue</button>
+                    <a href="{% url 'accounts:provider_dashboard' %}" class="px-6 py-3 border border-gray-600 rounded-lg text-gray-300 hover:bg-gray-800 hover:border-gray-500 transition-all duration-200 font-light tracking-wide">Cancel</a>
+                    <button type="submit" class="px-6 py-3 bg-transparent border border-blue-500 text-blue-400 rounded-lg hover:bg-blue-500 hover:text-white transition-all duration-200 font-light tracking-wide">Create Venue</button>
                 {% else %}
-                    <a href="{% url 'venues:detail' venue.id %}" class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">Cancel</a>
-                    <button type="submit" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md">Save Changes</button>
+                    <a href="{% url 'venues:detail' venue.id %}" class="px-6 py-3 border border-gray-600 rounded-lg text-gray-300 hover:bg-gray-800 hover:border-gray-500 transition-all duration-200 font-light tracking-wide">Cancel</a>
+                    <button type="submit" class="px-6 py-3 bg-transparent border border-green-500 text-green-400 rounded-lg hover:bg-green-500 hover:text-white transition-all duration-200 font-light tracking-wide">Save Changes</button>
                 {% endif %}
             </div>
         </form>
@@ -335,10 +268,10 @@
         if (addDateBtn) {
             addDateBtn.addEventListener('click', function() {
                 const newRow = document.createElement('div');
-                newRow.className = 'flex gap-2 mb-2';
+                newRow.className = 'flex gap-3 mb-3';
                 newRow.innerHTML = `
-                    <input type="date" name="new_availability_date" class="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    <button type="button" class="bg-red-600 text-white px-3 py-2 rounded-md remove-date-btn">
+                    <input type="date" name="new_availability_date" class="flex-1 px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <button type="button" class="bg-transparent border border-red-500 text-red-400 px-4 py-3 rounded-lg hover:bg-red-500 hover:text-white transition-all duration-200 font-light tracking-wide remove-date-btn">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                         </svg>
