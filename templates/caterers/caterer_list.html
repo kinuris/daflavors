@@ -111,7 +111,7 @@
                             <!-- Caterer Info -->
                             <div class="p-6">
                                 <h3 class="font-bold text-lg text-white">{{ caterer.service_name|default:caterer.provider.business_name }}</h3>
-                                <p class="text-gray-400 text-sm mb-2">{{ caterer.provider.business_address }}</p>
+                                <p class="text-gray-400 text-sm mb-2">{{ caterer.service_area }}</p>
                                 
                                 <!-- Event Types -->
                                 {% if caterer.event_types.all %}
