@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaFlavors - Entity Relationship Diagram</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #111827;
+        }
+        .mermaid {
+            /* Scale the diagram for better readability on larger screens */
+            transform: scale(1.1);
+            transform-origin: top;
+        }
+        .mermaid svg {
+            max-width: 98%;
+            height: auto;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto text-center mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900">DaFlavors System - Entity Relationship Diagram</h1>
+        <p class="text-gray-600 mt-2">This diagram shows the database schema, including tables, fields, and relationships.</p>
+    </div>
+
+    <!-- 
+      Mermaid ER Diagram Definition 
+      This text-based syntax defines the entities (tables) and their relationships.
+    -->
+    <div class="flex justify-center mt-12">
+        <pre class="mermaid">
+erDiagram
+    %% --- Entities Definition ---
+
+    CustomUser {
+        int id PK "Primary Key"
+        string email "User's email"
+        string user_type "Client, Provider, Admin"
+        bool is_staff
+        bool is_superuser
+    }
+
+    ProviderProfile {
+        int id PK
+        int user_id FK "Links to CustomUser"
+        string business_name
+        string contact_number
+    }
+
+    Venue {
+        int id PK
+        int provider_id FK "Links to CustomUser"
+        string name
+        string description
+        int capacity
+        decimal price
+        bool is_active
+        bool is_suspended
+    }
+
+    VenueImage {
+        int id PK
+        int venue_id FK "Links to Venue"
+        string image_url
+    }
+    
+    Caterer {
+        int id PK
+        int provider_id FK "Links to CustomUser"
+        string service_name
+        string specialty
+        int min_guests
+        int max_guests
+        bool is_active
+        bool is_suspended
+    }
+
+    CatererImage {
+        int id PK
+        int caterer_id FK "Links to Caterer"
+        string image_url
+    }
+
+    EventType {
+        int id PK
+        string name "e.g., Wedding, Corporate"
+    }
+
+    MenuPackage {
+        int id PK
+        int caterer_id FK "Links to Caterer"
+        string name
+        decimal base_price_per_person
+    }
+
+    MenuItem {
+        int id PK
+        int caterer_id FK "Links to Caterer"
+        string name
+        string description
+    }
+    
+    Booking {
+        int id PK
+        int client_id FK "Links to CustomUser"
+        int venue_id FK "(Optional) Links to Venue"
+        int caterer_id FK "(Optional) Links to Caterer"
+        date event_date
+        int number_of_guests
+        string status
+    }
+
+    MenuSelection {
+        int id PK
+        int booking_id FK
+        int menu_package_id FK
+    }
+
+    %% --- Relationships Definition ---
+
+    CustomUser ||--o| ProviderProfile : "has"
+    CustomUser ||--|{ Venue : "manages"
+    CustomUser ||--|{ Caterer : "manages"
+    CustomUser ||--|{ Booking : "creates"
+    
+    Venue ||--|{ VenueImage : "has"
+    Venue }o--|| Booking : "is_booked_for"
+    
+    Caterer ||--|{ CatererImage : "has"
+    Caterer ||--|{ MenuPackage : "offers"
+    Caterer ||--|{ MenuItem : "creates"
+    Caterer }o--o{ EventType : "caters_for"
+    Caterer }o--|| Booking : "is_booked_for"
+    
+    MenuPackage ||--o{ MenuSelection : "is_selected_in"
+    Booking ||--|| MenuSelection : "selects"
+        </pre>
+    </div>
+
+    <!-- Mermaid.js Initialization Script -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ 
+            startOnLoad: true,
+            er: {
+                useMaxWidth: false
+            }
+        });
+    </script>
+
+</body>
+</html>

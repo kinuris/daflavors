@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaFlavors - Data Flow Diagram</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff;
+            color: #111827;
+        }
+        /* Style adjustments for Mermaid diagram */
+        .mermaid svg {
+            max-width: 100%;
+            height: auto;
+            width: 1200px !important;
+            height: 800px !important;
+        }
+        .mermaid {
+            transform: scale(1.2);
+            transform-origin: center;
+            margin: 40px 0;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto text-center mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-900">DaFlavors System - Data Flow Diagram</h1>
+        <p class="text-gray-600 mt-2">This diagram illustrates the data flow between system components, generated using Mermaid.js.</p>
+    </div>
+
+    <!-- Mermaid Diagram Definition -->
+    <div class="flex justify-center overflow-x-auto">
+        <pre class="mermaid">
+            graph TD;
+                %% Define Styles
+                classDef entity fill:#f3f4f6,stroke:#6b7280,stroke-width:2px,color:#111827;
+                classDef process fill:#ecfdf5,stroke:#10b981,stroke-width:2px,color:#111827;
+                classDef datastore fill:#fef2f2,stroke:#ef4444,stroke-width:2px,color:#111827;
+
+                %% External Entities
+                A[Client];
+                B[Provider];
+                C[Administrator];
+
+                %% Processes
+                P1("1.0<br>User Management");
+                P2("2.0<br>Service Management");
+                P3("3.0<br>Booking & Search");
+                P4("4.0<br>Admin Regulation");
+
+                %% Data Stores (Corrected Syntax)
+                DS1[(D1: Users)];
+                DS2[(D2: Venues & Catering)];
+                DS3[(D3: Bookings)];
+                
+                %% Assign Styles
+                class A,B,C entity;
+                class P1,P2,P3,P4 process;
+                class DS1,DS2,DS3 datastore;
+
+                %% Define Flows/Connections
+                subgraph "User & Provider Registration"
+                    A -- "Registration/Login Details" --> P1;
+                    B -- "Registration/Login Details" --> P1;
+                    P1 -- "User Account Data" --> DS1;
+                    DS1 -- "User Profile Info" --> P1;
+                end
+
+                subgraph "Service & Dashboard Management"
+                    B -- "Venue/Catering Details" --> P2;
+                    P2 -- "New/Updated Service Info" --> DS2;
+                    DS2 -- "Service Data for Dashboard" --> P2;
+                    P2 -- "Provider Dashboard" --> B;
+                end
+
+                subgraph "Client Booking & Search"
+                    A -- "Search Query / Booking Request" --> P3;
+                    P3 -- "Read Service Data" --> DS2;
+                    DS2 -- "Service Listings" --> P3;
+                    P3 -- "Search Results / Booking Conf." --> A;
+                    P3 -- "New Booking Data" --> DS3;
+                    DS3 -- "Booking History" --> P3;
+                end
+
+                subgraph "Provider Booking Interaction"
+                    B -- "Quote Response" --> P3;
+                    P3 -- "Updated Quote Status" --> DS3;
+                    DS3 -- "Booking Notifications" --> P3;
+                    P3 -- "Booking Notifications" --> B;
+                end
+                
+                subgraph "Platform Administration"
+                    C -- "Regulation Request (Suspend/Verify)" --> P4;
+                    P4 -- "Update Service Status" --> DS2;
+                    P4 -- "Read/Update User Status" --> DS1;
+                    DS1 -- "User List" --> P4;
+                    DS2 -- "Service List for Review" --> P4;
+                    P4 -- "Admin Dashboard Data" --> C;
+                end
+        </pre>
+    </div>
+
+    <!-- Mermaid.js Initialization -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+
+</body>
+</html>
