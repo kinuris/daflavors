@@ -57,6 +57,30 @@
             background-color: #ffffff;
             border-color: #ffffff;
         }
+        
+        /* Chatbot Responsive Styles */
+        @media (max-width: 640px) {
+            #chatbot-container {
+                width: calc(100vw - 2rem) !important;
+                right: 1rem !important;
+                left: 1rem !important;
+                max-width: none !important;
+            }
+            
+            #chatbot-widget {
+                right: 1rem !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            #chatbot-container {
+                width: calc(100vw - 1rem) !important;
+                right: 0.5rem !important;
+                left: 0.5rem !important;
+                height: 80vh !important;
+                bottom: 5rem !important;
+            }
+        }
     </style>
 </head>
 
@@ -225,6 +249,96 @@
         </div>
     </footer>
     
+    <!-- Chatbot Widget -->
+    <div id="chatbot-widget" class="fixed bottom-4 right-4 z-50">
+        <!-- Chatbot Button -->
+        <button id="chatbot-toggle" class="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-lg transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-blue-300">
+            <svg id="chat-icon" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-3.582 8-8 8a8.955 8.955 0 01-2.427-.349l-4.374 1.458a.5.5 0 01-.637-.637l1.458-4.374A8.955 8.955 0 013 12c0-4.418 3.582-8 8-8s8 3.582 8 8z"></path>
+            </svg>
+            <svg id="close-icon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+        
+        <!-- Chatbot Container -->
+        <div id="chatbot-container" class="hidden absolute bottom-16 right-0 w-96 h-96 bg-white rounded-lg shadow-2xl border border-gray-200 overflow-hidden transform transition-all duration-300 scale-95 opacity-0">
+            <div class="bg-blue-600 text-white p-4 flex justify-between items-center">
+                <h3 class="font-semibold">DaFlavors Assistant</h3>
+                <button id="chatbot-close" class="text-white hover:text-gray-200 focus:outline-none">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            <iframe 
+                id="chatbot-iframe"
+                src="https://cdn.botpress.cloud/webchat/v3.0/shareable.html?configUrl=https://files.bpcontent.cloud/2025/06/12/01/20250612012432-D6QKB5JE.json"
+                width="100%" 
+                height="100%" 
+                frameborder="0"
+                style="height: calc(100% - 64px);">
+            </iframe>
+        </div>
+    </div>
+
+    <!-- Chatbot JavaScript -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const chatbotToggle = document.getElementById('chatbot-toggle');
+            const chatbotContainer = document.getElementById('chatbot-container');
+            const chatbotClose = document.getElementById('chatbot-close');
+            const chatIcon = document.getElementById('chat-icon');
+            const closeIcon = document.getElementById('close-icon');
+            let isOpen = false;
+
+            function toggleChatbot() {
+                if (isOpen) {
+                    closeChatbot();
+                } else {
+                    openChatbot();
+                }
+            }
+
+            function openChatbot() {
+                chatbotContainer.classList.remove('hidden');
+                setTimeout(() => {
+                    chatbotContainer.classList.remove('scale-95', 'opacity-0');
+                    chatbotContainer.classList.add('scale-100', 'opacity-100');
+                }, 10);
+                chatIcon.classList.add('hidden');
+                closeIcon.classList.remove('hidden');
+                isOpen = true;
+            }
+
+            function closeChatbot() {
+                chatbotContainer.classList.add('scale-95', 'opacity-0');
+                chatbotContainer.classList.remove('scale-100', 'opacity-100');
+                setTimeout(() => {
+                    chatbotContainer.classList.add('hidden');
+                }, 300);
+                chatIcon.classList.remove('hidden');
+                closeIcon.classList.add('hidden');
+                isOpen = false;
+            }
+
+            chatbotToggle.addEventListener('click', toggleChatbot);
+            chatbotClose.addEventListener('click', closeChatbot);
+
+            // Close chatbot when clicking outside
+            document.addEventListener('click', function(event) {
+                if (isOpen && !document.getElementById('chatbot-widget').contains(event.target)) {
+                    closeChatbot();
+                }
+            });
+
+            // Prevent chatbot from closing when clicking inside the container
+            chatbotContainer.addEventListener('click', function(event) {
+                event.stopPropagation();
+            });
+        });
+    </script>
+
     <!-- JavaScript -->
     {% block extra_js %}{% endblock %}
 </body>
