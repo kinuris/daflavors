@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DaFlavors System Overview</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; }
+        h1, h2, h3 { color: #333; }
+        .section { margin-bottom: 30px; }
+        .code { background: #f4f4f4; padding: 10px; border-radius: 5px; font-family: monospace; }
+        .feature-list { background: #f9f9f9; padding: 15px; border-left: 4px solid #007cba; }
+        .url-pattern { background: #e7f3ff; padding: 5px; margin: 5px 0; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <h1>DaFlavors System Overview</h1>
+    
+    <div class="section">
+        <h2>What is DaFlavors?</h2>
+        <p>DaFlavors is a comprehensive Django-based event management platform that connects clients with venue and catering service providers. The system facilitates the entire event planning process from venue booking to catering arrangements.</p>
+    </div>
+
+    <div class="section">
+        <h2>System Architecture</h2>
+        <h3>Core Components</h3>
+        <div class="feature-list">
+            <ul>
+                <li><strong>accounts/</strong> - User management and authentication system</li>
+                <li><strong>venues/</strong> - Venue listings and management</li>
+                <li><strong>caterers/</strong> - Catering service management with menu systems</li>
+                <li><strong>bookings/</strong> - Event booking and management workflow</li>
+                <li><strong>core/</strong> - Site-wide functionality, admin interfaces, and settings</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>User Types</h2>
+        <h3>1. Clients</h3>
+        <p>End users who book venues and catering services for their events.</p>
+        
+        <h3>2. Providers</h3>
+        <p>Business owners who offer venues and/or catering services. They can manage multiple venues and caterers under one account.</p>
+        
+        <h3>3. Administrators</h3>
+        <p>Staff members who monitor the platform, manage service quality, and handle suspensions.</p>
+    </div>
+
+    <div class="section">
+        <h2>Key Features</h2>
+        <div class="feature-list">
+            <ul>
+                <li><strong>Venue Management:</strong> Listing, booking, and availability management</li>
+                <li><strong>Catering Services:</strong> Menu packages, dietary accommodations, service types</li>
+                <li><strong>Booking System:</strong> Complete event booking workflow with quotes and payments</li>
+                <li><strong>Admin Monitoring:</strong> Custom admin interface for service regulation</li>
+                <li><strong>Dark Theme UI:</strong> Modern, professional interface design</li>
+                <li><strong>Multiple Services:</strong> Providers can operate multiple venues/caterers</li>
+                <li><strong>Event Types:</strong> Weddings, corporate events, birthdays, etc.</li>
+                <li><strong>Menu Customization:</strong> Flexible menu packages with course selections</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Database Models Hierarchy</h2>
+        <div class="code">
+User (CustomUser)
+├── ProviderProfile (for providers)
+    ├── Venue(s) (multiple venues per provider)
+    │   ├── VenueImages
+    │   └── VenueAvailability
+    └── Caterer(s) (multiple caterers per provider)
+        ├── CatererImages
+        ├── MenuPackages
+        │   └── PackageItems
+        ├── MenuItems
+        └── CatererAvailability
+
+Booking
+├── Client (User)
+├── Venue (optional)
+├── Caterer (optional)
+├── MenuSelection
+├── CourseSelection
+├── Quote
+├── Payment
+└── Messages
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>URL Structure</h2>
+        <h3>Public URLs</h3>
+        <div class="url-pattern">/ - Homepage</div>
+        <div class="url-pattern">/venues/ - Venue listings</div>
+        <div class="url-pattern">/venues/{id}/ - Venue details</div>
+        <div class="url-pattern">/caterers/ - Caterer listings</div>
+        <div class="url-pattern">/caterers/{id}/ - Caterer details</div>
+        <div class="url-pattern">/search/ - Search functionality</div>
+
+        <h3>User Account URLs</h3>
+        <div class="url-pattern">/accounts/login/ - User login</div>
+        <div class="url-pattern">/accounts/register/ - User registration</div>
+        <div class="url-pattern">/accounts/profile/ - User profile management</div>
+        <div class="url-pattern">/accounts/provider/dashboard/ - Provider dashboard</div>
+
+        <h3>Booking URLs</h3>
+        <div class="url-pattern">/bookings/ - Booking list</div>
+        <div class="url-pattern">/bookings/create/ - Create new booking</div>
+        <div class="url-pattern">/bookings/{id}/ - Booking details</div>
+
+        <h3>Admin URLs</h3>
+        <div class="url-pattern">/admin-panel/ - Custom admin dashboard</div>
+        <div class="url-pattern">/admin-panel/venues/ - Venue regulation</div>
+        <div class="url-pattern">/admin-panel/caterers/ - Caterer regulation</div>
+        <div class="url-pattern">/admin/ - Django admin interface</div>
+    </div>
+
+    <div class="section">
+        <h2>Technology Stack</h2>
+        <div class="feature-list">
+            <ul>
+                <li><strong>Backend:</strong> Django 4.x with Python</li>
+                <li><strong>Database:</strong> PostgreSQL/SQLite</li>
+                <li><strong>Frontend:</strong> HTML5, CSS3, JavaScript, Tailwind CSS</li>
+                <li><strong>Authentication:</strong> Django's built-in auth system</li>
+                <li><strong>File Storage:</strong> Django's file handling for images</li>
+                <li><strong>Admin Interface:</strong> Custom admin + Django admin</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Business Logic Flow</h2>
+        <p><strong>1. Provider Registration:</strong> Business owners register as providers</p>
+        <p><strong>2. Service Creation:</strong> Providers create venue and/or caterer profiles</p>
+        <p><strong>3. Client Discovery:</strong> Clients browse and search for services</p>
+        <p><strong>4. Booking Process:</strong> Clients create bookings for events</p>
+        <p><strong>5. Quote Generation:</strong> Providers respond with quotes</p>
+        <p><strong>6. Payment Processing:</strong> Booking confirmation with payments</p>
+        <p><strong>7. Admin Monitoring:</strong> Continuous quality control and regulation</p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management & Authentication</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; }
+        h1, h2, h3 { color: #333; }
+        .section { margin-bottom: 30px; }
+        .code { background: #f4f4f4; padding: 10px; border-radius: 5px; font-family: monospace; }
+        .feature-list { background: #f9f9f9; padding: 15px; border-left: 4px solid #007cba; }
+        .model-field { background: #e7f3ff; padding: 5px; margin: 5px 0; border-radius: 3px; }
+        .view-info { background: #f0f8f0; padding: 10px; border-radius: 5px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>User Management & Authentication System</h1>
+    
+    <div class="section">
+        <h2>Overview</h2>
+        <p>The accounts app manages user authentication, profiles, and provider-specific functionality. It supports three user types: clients, providers, and administrators.</p>
+    </div>
+
+    <div class="section">
+        <h2>Models</h2>
+        
+        <h3>CustomUser Model</h3>
+        <p>Extends Django's AbstractUser with additional fields:</p>
+        <div class="model-field"><strong>user_type:</strong> 'client' or 'provider'</div>
+        <div class="model-field"><strong>profile_picture:</strong> User's profile image</div>
+        <div class="model-field"><strong>phone_number:</strong> Contact information</div>
+        <div class="model-field"><strong>date_of_birth:</strong> Optional birthday</div>
+        <div class="model-field"><strong>bio:</strong> User description</div>
+        
+        <h4>Key Methods:</h4>
+        <div class="code">
+def is_provider(self):
+    return self.user_type == 'provider'
+
+def is_client(self):
+    return self.user_type == 'client'
+        </div>
+
+        <h3>ProviderProfile Model</h3>
+        <p>Extended profile for business providers:</p>
+        <div class="model-field"><strong>user:</strong> OneToOne link to CustomUser</div>
+        <div class="model-field"><strong>business_name:</strong> Official business name</div>
+        <div class="model-field"><strong>business_description:</strong> Business overview</div>
+        <div class="model-field"><strong>business_type:</strong> Type of business</div>
+        <div class="model-field"><strong>business_email:</strong> Business contact email</div>
+        <div class="model-field"><strong>business_phone:</strong> Business phone number</div>
+        <div class="model-field"><strong>business_address:</strong> Physical address</div>
+        <div class="model-field"><strong>service_area:</strong> Areas served</div>
+        <div class="model-field"><strong>website:</strong> Business website URL</div>
+        <div class="model-field"><strong>logo:</strong> Business logo image</div>
+    </div>
+
+    <div class="section">
+        <h2>Authentication Views</h2>
+        
+        <h3>Login View (/accounts/login/)</h3>
+        <div class="view-info">
+            <p><strong>Purpose:</strong> User authentication with remember me functionality</p>
+            <p><strong>Form:</strong> LoginForm (username, password, remember_me)</p>
+            <p><strong>Redirects:</strong> Providers → dashboard, Clients → home</p>
+            <p><strong>Features:</strong> Session management, welcome messages</p>
+        </div>
+
+        <h3>Registration View (/accounts/register/)</h3>
+        <div class="view-info">
+            <p><strong>Purpose:</strong> New user account creation</p>
+            <p><strong>Forms:</strong> RegistrationForm + ProviderProfileForm (for providers)</p>
+            <p><strong>Transaction:</strong> Atomic user and provider profile creation</p>
+            <p><strong>Auto-login:</strong> Users are logged in after successful registration</p>
+        </div>
+
+        <h3>Profile View (/accounts/profile/)</h3>
+        <div class="view-info">
+            <p><strong>Purpose:</strong> User profile management and updates</p>
+            <p><strong>Features:</strong> Profile picture upload, business info updates</p>
+            <p><strong>Forms:</strong> UserProfileUpdateForm + ProviderProfileForm</p>
+            <p><strong>Access:</strong> Login required</p>
+        </div>
+
+        <h3>Provider Dashboard (/accounts/provider/dashboard/)</h3>
+        <div class="view-info">
+            <p><strong>Purpose:</strong> Central hub for provider management</p>
+            <p><strong>Data Displayed:</strong> Venues, caterers, bookings, recent activity</p>
+            <p><strong>Quick Actions:</strong> Create new venues/caterers, manage existing</p>
+            <p><strong>Statistics:</strong> Total services, active bookings, revenue summary</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Forms</h2>
+        
+        <h3>LoginForm</h3>
+        <div class="code">
+Fields: username, password, remember_me
+Validation: Django AuthenticationForm
+Remember Me: Controls session expiry
+        </div>
+
+        <h3>RegistrationForm</h3>
+        <div class="code">
+Fields: username, email, password1, password2, user_type
+User Types: 'client' or 'provider'
+Validation: Email uniqueness, password strength
+        </div>
+
+        <h3>ProviderProfileForm</h3>
+        <div class="code">
+Business Information: name, description, type
+Contact Details: email, phone, address, service_area
+Branding: logo upload, website URL
+Validation: Required fields for business operations
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>URL Patterns</h2>
+        <div class="code">
+accounts/login/ → login_view
+accounts/logout/ → logout_view
+accounts/register/ → register_view
+accounts/profile/ → profile_view
+accounts/provider/dashboard/ → provider_dashboard
+accounts/password_change/ → Django's PasswordChangeView
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Access Control</h2>
+        
+        <h3>Decorators Used:</h3>
+        <div class="feature-list">
+            <ul>
+                <li><strong>@login_required:</strong> Profile and dashboard views</li>
+                <li><strong>@transaction.atomic:</strong> Registration for data consistency</li>
+                <li><strong>Provider checks:</strong> Dashboard restricted to providers only</li>
+            </ul>
+        </div>
+
+        <h3>Permission Logic:</h3>
+        <div class="code">
+- Clients: Can book services, manage profile
+- Providers: Can create/manage venues and caterers
+- Staff: Can access admin interfaces
+- Superusers: Full system access
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Key Features</h2>
+        
+        <h3>Multi-Service Provider Support</h3>
+        <p>Providers can operate multiple venues and caterers under one account.</p>
+        
+        <h3>Profile Picture Management</h3>
+        <p>File upload handling with proper storage and validation.</p>
+        
+        <h3>Business Branding</h3>
+        <p>Logo uploads, business descriptions, and website integration.</p>
+        
+        <h3>Service Area Management</h3>
+        <p>Geographic service coverage for provider businesses.</p>
+    </div>
+
+    <div class="section">
+        <h2>Integration Points</h2>
+        <div class="feature-list">
+            <ul>
+                <li><strong>Venues:</strong> ProviderProfile → Venue (OneToMany)</li>
+                <li><strong>Caterers:</strong> ProviderProfile → Caterer (OneToMany)</li>
+                <li><strong>Bookings:</strong> CustomUser → Booking (client relationship)</li>
+                <li><strong>Admin:</strong> Staff users can access regulation interfaces</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

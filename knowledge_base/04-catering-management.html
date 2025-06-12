@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catering Management System</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; }
+        h1, h2, h3 { color: #333; }
+        .section { margin-bottom: 30px; }
+        .code { background: #f4f4f4; padding: 10px; border-radius: 5px; font-family: monospace; }
+        .feature-list { background: #f9f9f9; padding: 15px; border-left: 4px solid #007cba; }
+        .model-field { background: #e7f3ff; padding: 5px; margin: 5px 0; border-radius: 3px; }
+        .view-info { background: #f0f8f0; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .service-type { background: #fff3e0; padding: 5px; margin: 2px; border-radius: 3px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <h1>Catering Management System</h1>
+    
+    <div class="section">
+        <h2>Overview</h2>
+        <p>The caterers app manages catering services with comprehensive menu systems, dietary accommodations, and multiple service types. Providers can operate multiple catering services under one account, each with distinct specialties and menus.</p>
+    </div>
+
+    <div class="section">
+        <h2>Core Models</h2>
+        
+        <h3>Caterer Model</h3>
+        <div class="model-field"><strong>provider:</strong> ForeignKey to ProviderProfile (multiple caterers per provider)</div>
+        <div class="model-field"><strong>service_name:</strong> Optional custom catering service name</div>
+        <div class="model-field"><strong>specialty:</strong> Cuisine specialty (Filipino, Italian, etc.)</div>
+        <div class="model-field"><strong>min_guests/max_guests:</strong> Guest capacity range</div>
+        <div class="model-field"><strong>service_area:</strong> Geographic coverage area</div>
+        
+        <h4>Service Types Offered:</h4>
+        <div class="service-type">offers_buffet: Buffet service</div>
+        <div class="service-type">offers_plated: Plated dining service</div>
+        <div class="service-type">offers_cocktail: Cocktail reception</div>
+        <div class="service-type">offers_food_stalls: Food stalls/stations</div>
+        
+        <h4>Business Policies:</h4>
+        <div class="model-field"><strong>setup_policy:</strong> Setup and breakdown terms</div>
+        <div class="model-field"><strong>delivery_policy:</strong> Delivery coverage and fees</div>
+        <div class="model-field"><strong>payment_policy:</strong> Payment terms and deposits</div>
+        <div class="model-field"><strong>cancellation_policy:</strong> Cancellation terms</div>
+        
+        <h4>Event Types Integration:</h4>
+        <div class="model-field"><strong>event_types:</strong> ManyToMany relationship with EventType</div>
+
+        <h3>EventType Model</h3>
+        <div class="model-field"><strong>name:</strong> Event type name (Wedding, Corporate, Birthday)</div>
+        <div class="model-field"><strong>description:</strong> Event type description</div>
+        <div class="model-field"><strong>icon:</strong> Unicode emoji for display</div>
+        <div class="model-field"><strong>is_active:</strong> Whether available for new bookings</div>
+
+        <h3>MenuPackage Model</h3>
+        <div class="model-field"><strong>caterer:</strong> ForeignKey to Caterer</div>
+        <div class="model-field"><strong>name:</strong> Package name (e.g., "Premium Wedding Package")</div>
+        <div class="model-field"><strong>description:</strong> Package details</div>
+        <div class="model-field"><strong>package_type:</strong> buffet, plated, cocktail, food_stalls</div>
+        <div class="model-field"><strong>base_price_per_person:</strong> Starting price per guest</div>
+        <div class="model-field"><strong>min_persons:</strong> Minimum order quantity</div>
+        <div class="model-field"><strong>is_customizable:</strong> Whether menu can be modified</div>
+
+        <h3>MenuItem Model</h3>
+        <div class="model-field"><strong>caterer:</strong> ForeignKey to Caterer</div>
+        <div class="model-field"><strong>name:</strong> Dish name</div>
+        <div class="model-field"><strong>description:</strong> Detailed description</div>
+        <div class="model-field"><strong>course_category:</strong> ForeignKey to CourseCategory</div>
+        <div class="model-field"><strong>individual_price:</strong> Price for standalone ordering</div>
+        
+        <h4>Dietary Options:</h4>
+        <div class="service-type">is_vegetarian</div>
+        <div class="service-type">is_gluten_free</div>
+        <div class="service-type">is_nut_free</div>
+        <div class="service-type">is_halal</div>
+
+        <h3>CourseCategory Model</h3>
+        <div class="model-field"><strong>name:</strong> Course name (Appetizer, Main Course, Dessert)</div>
+        <div class="model-field"><strong>order:</strong> Display order in menus</div>
+
+        <h3>PackageItem Model</h3>
+        <div class="model-field"><strong>package:</strong> ForeignKey to MenuPackage</div>
+        <div class="model-field"><strong>menu_item:</strong> ForeignKey to MenuItem</div>
+        <div class="model-field"><strong>quantity:</strong> Number of servings</div>
+        <div class="model-field"><strong>is_default:</strong> Included by default</div>
+        <div class="model-field"><strong>additional_cost:</strong> Extra cost for premium items</div>
+    </div>
+
+    <div class="section">
+        <h2>Views and Functionality</h2>
+        
+        <h3>Public Views</h3>
+        <div class="view-info">
+            <p><strong>caterer_list (/caterers/):</strong> Public caterer listings</p>
+            <p><strong>Filtering:</strong> Specialty, service type, event type, guest count</p>
+            <p><strong>Display:</strong> Service area, guest capacity, service offerings</p>
+        </div>
+        
+        <div class="view-info">
+            <p><strong>caterer_detail (/caterers/{id}/):</strong> Individual caterer profile</p>
+            <p><strong>Content:</strong> Full description, menu packages, gallery</p>
+            <p><strong>Booking:</strong> Direct booking integration</p>
+        </div>
+
+        <h3>Provider Management Views</h3>
+        <div class="view-info">
+            <p><strong>caterer_create (/caterers/create/):</strong> New caterer creation</p>
+            <p><strong>Multi-Service:</strong> Providers can create multiple caterers</p>
+            <p><strong>Event Types:</strong> Checkbox selection for served event types</p>
+        </div>
+        
+        <div class="view-info">
+            <p><strong>caterer_update (/caterers/{id}/update/):</strong> Caterer editing</p>
+            <p><strong>Ownership:</strong> Only caterer owner can edit</p>
+            <p><strong>Service Types:</strong> Enable/disable service offerings</p>
+        </div>
+
+        <h3>Menu Management Views</h3>
+        <div class="view-info">
+            <p><strong>menu_list (/caterers/{id}/menus/):</strong> Menu packages overview</p>
+            <p><strong>menu_create (/caterers/{id}/menus/create/):</strong> New package creation</p>
+            <p><strong>menu_detail (/caterers/{id}/menus/{menu_id}/):</strong> Package details</p>
+            <p><strong>menu_update/delete:</strong> Package management</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Forms</h2>
+        
+        <h3>CatererForm</h3>
+        <div class="code">
+Basic Info: service_name, specialty, guest range, service_area
+Service Types: Boolean fields for buffet, plated, cocktail, food_stalls
+Event Types: ManyToMany checkbox selection
+Policies: TextArea fields for all policy types
+Excluded: provider, admin fields, timestamps
+        </div>
+
+        <h3>MenuPackageForm</h3>
+        <div class="code">
+Package Details: name, description, package_type
+Pricing: base_price_per_person, min_persons
+Customization: is_customizable boolean
+Validation: Price must be positive, min_persons >= 1
+        </div>
+
+        <h3>MenuItemForm</h3>
+        <div class="code">
+Item Info: name, description, course_category
+Pricing: individual_price for standalone orders
+Dietary Flags: vegetarian, gluten_free, nut_free, halal
+Course Category: Dropdown selection
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>URL Patterns</h2>
+        <div class="code">
+# Caterer Management
+caterers/ → caterer_list
+caterers/{id}/ → caterer_detail
+caterers/create/ → caterer_create
+caterers/{id}/update/ → caterer_update
+caterers/{id}/delete/ → caterer_delete
+
+# Menu Management
+caterers/{id}/menus/ → menu_list
+caterers/{id}/menus/create/ → menu_create
+caterers/{id}/menus/{menu_id}/ → menu_detail
+caterers/{id}/menus/{menu_id}/update/ → menu_update
+caterers/{id}/menus/{menu_id}/delete/ → menu_delete
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Admin Integration</h2>
+        
+        <h3>Django Admin (Monitoring Only)</h3>
+        <div class="feature-list">
+            <ul>
+                <li><strong>CatererAdmin:</strong> Read-only caterer monitoring</li>
+                <li><strong>MenuPackageAdmin:</strong> Package oversight</li>
+                <li><strong>MenuItemAdmin:</strong> Menu item tracking</li>
+                <li><strong>EventTypeAdmin:</strong> Event type management</li>
+            </ul>
+        </div>
+
+        <h3>Custom Admin Interface</h3>
+        <div class="view-info">
+            <p><strong>/admin-panel/caterers/:</strong> Caterer regulation page</p>
+            <p><strong>Features:</strong> Status filtering, specialty search, AJAX actions</p>
+            <p><strong>Display:</strong> Service offerings, guest capacity, event types</p>
+            <p><strong>Actions:</strong> Suspend, unsuspend, toggle active status</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Key Features</h2>
+        
+        <h3>Multiple Service Types</h3>
+        <div class="code">
+Buffet: Self-service dining
+Plated: Formal sit-down service
+Cocktail: Reception-style appetizers
+Food Stalls: Interactive stations
+        </div>
+
+        <h3>Comprehensive Menu System</h3>
+        <div class="feature-list">
+            <ul>
+                <li><strong>Menu Packages:</strong> Pre-designed meal combinations</li>
+                <li><strong>Course Categories:</strong> Organized menu structure</li>
+                <li><strong>Dietary Accommodations:</strong> Multiple dietary filters</li>
+                <li><strong>Pricing Flexibility:</strong> Package and individual pricing</li>
+            </ul>
+        </div>
+
+        <h3>Event Type Integration</h3>
+        <div class="feature-list">
+            <ul>
+                <li><strong>Specialized Services:</strong> Caterers specify their event expertise</li>
+                <li><strong>Booking Matching:</strong> Event-appropriate caterer suggestions</li>
+                <li><strong>Display Filtering:</strong> Event-based caterer browsing</li>
+            </ul>
+        </div>
+
+        <h3>Service Name Flexibility</h3>
+        <div class="code">
+service_name: Optional custom branding
+Fallback: Uses provider business_name if empty
+Example: "Delicious Catering Co." vs "ABC Events Ltd."
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Business Logic</h2>
+        
+        <h3>Menu Package System</h3>
+        <div class="code">
+1. Create MenuPackage with base details
+2. Add MenuItem entries to caterer
+3. Link items to package via PackageItem
+4. Set quantities, defaults, and additional costs
+5. Customers select packages during booking
+        </div>
+
+        <h3>Dietary Accommodation Flow</h3>
+        <div class="code">
+1. Menu items tagged with dietary flags
+2. Booking form captures dietary requirements
+3. Caterer receives detailed dietary counts
+4. Special preparation instructions included
+        </div>
+
+        <h3>Pricing Structure</h3>
+        <div class="code">
+Base Package Price: Per-person starting rate
+Individual Items: Standalone ordering option
+Additional Costs: Premium item upgrades
+Final Quote: Calculated in booking system
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Integration Points</h2>
+        
+        <h3>Booking System</h3>
+        <div class="feature-list">
+            <ul>
+                <li><strong>Caterer Selection:</strong> Event-appropriate caterers in booking form</li>
+                <li><strong>Menu Selection:</strong> Package selection during booking</li>
+                <li><strong>Dietary Requirements:</strong> Guest count breakdown by dietary needs</li>
+                <li><strong>Quote Generation:</strong> Menu-based pricing calculations</li>
+            </ul>
+        </div>
+
+        <h3>Search and Discovery</h3>
+        <div class="feature-list">
+            <ul>
+                <li><strong>Global Search:</strong> Caterers included in site-wide search</li>
+                <li><strong>Specialty Filtering:</strong> Cuisine-based filtering</li>
+                <li><strong>Service Type Filtering:</strong> Buffet, plated, cocktail options</li>
+                <li><strong>Guest Capacity Matching:</strong> Appropriate caterers for event size</li>
+            </ul>
+        </div>
+
+        <h3>Provider Dashboard Integration</h3>
+        <div class="feature-list">
+            <ul>
+                <li><strong>Multiple Caterers:</strong> List all provider's catering services</li>
+                <li><strong>Menu Management:</strong> Quick access to menu editing</li>
+                <li><strong>Booking Analytics:</strong> Caterer-specific booking statistics</li>
+                <li><strong>Status Monitoring:</strong> Active/inactive status management</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

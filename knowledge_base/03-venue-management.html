@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Venue Management System</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; }
+        h1, h2, h3 { color: #333; }
+        .section { margin-bottom: 30px; }
+        .code { background: #f4f4f4; padding: 10px; border-radius: 5px; font-family: monospace; }
+        .feature-list { background: #f9f9f9; padding: 15px; border-left: 4px solid #007cba; }
+        .model-field { background: #e7f3ff; padding: 5px; margin: 5px 0; border-radius: 3px; }
+        .view-info { background: #f0f8f0; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .warning { background: #fff3cd; padding: 10px; border-radius: 5px; border-left: 4px solid #ffc107; }
+    </style>
+</head>
+<body>
+    <h1>Venue Management System</h1>
+    
+    <div class="section">
+        <h2>Overview</h2>
+        <p>The venues app manages event venue listings, availability, and bookings. Providers can create and manage multiple venues under their account, each with unique features, pricing, and availability.</p>
+    </div>
+
+    <div class="section">
+        <h2>Models</h2>
+        
+        <h3>Venue Model</h3>
+        <div class="model-field"><strong>provider:</strong> ForeignKey to ProviderProfile (multiple venues per provider)</div>
+        <div class="model-field"><strong>name:</strong> Venue name/title</div>
+        <div class="model-field"><strong>description:</strong> Detailed venue description</div>
+        <div class="model-field"><strong>address:</strong> Physical location</div>
+        <div class="model-field"><strong>capacity:</strong> Maximum guest capacity</div>
+        <div class="model-field"><strong>venue_type:</strong> Type (hotel, restaurant, outdoor, etc.)</div>
+        <div class="model-field"><strong>base_price:</strong> Starting price for venue rental</div>
+        <div class="model-field"><strong>opening_time/closing_time:</strong> Operating hours</div>
+        <div class="model-field"><strong>booking_policy:</strong> Venue booking rules</div>
+        <div class="model-field"><strong>cancellation_policy:</strong> Cancellation terms</div>
+        <div class="model-field"><strong>corkage_policy:</strong> Outside beverage policies</div>
+        
+        <h4>Admin Status Fields:</h4>
+        <div class="model-field"><strong>is_active:</strong> Whether venue accepts bookings</div>
+        <div class="model-field"><strong>is_suspended:</strong> Admin suspension status</div>
+        <div class="model-field"><strong>suspension_reason:</strong> Admin-provided suspension reason</div>
+        <div class="model-field"><strong>suspended_at/suspended_by:</strong> Suspension metadata</div>
+
+        <h3>VenueImage Model</h3>
+        <div class="model-field"><strong>venue:</strong> ForeignKey to Venue</div>
+        <div class="model-field"><strong>image:</strong> Image file upload</div>
+        <div class="model-field"><strong>caption:</strong> Image description</div>
+        <div class="model-field"><strong>is_primary:</strong> Main venue image flag</div>
+
+        <h3>VenueAvailability Model</h3>
+        <div class="model-field"><strong>venue:</strong> ForeignKey to Venue</div>
+        <div class="model-field"><strong>date:</strong> Specific availability date</div>
+        <div class="model-field"><strong>is_available:</strong> Overall availability</div>
+        <div class="model-field"><strong>morning/afternoon/evening_available:</strong> Time-specific availability</div>
+        <div class="model-field"><strong>max_bookings_per_day:</strong> Booking limits</div>
+        <div class="model-field"><strong>notes:</strong> Availability notes</div>
+    </div>
+
+    <div class="section">
+        <h2>Views and Functionality</h2>
+        
+        <h3>Public Views</h3>
+        <div class="view-info">
+            <p><strong>venue_list (/venues/):</strong> Public venue listings with filtering</p>
+            <p><strong>Features:</strong> Search, type filtering, capacity filtering</p>
+            <p><strong>Filtering:</strong> Only active, non-suspended venues shown</p>
+        </div>
+        
+        <div class="view-info">
+            <p><strong>venue_detail (/venues/{id}/):</strong> Individual venue details</p>
+            <p><strong>Content:</strong> Full description, images, availability, pricing</p>
+            <p><strong>Actions:</strong> Booking button for authenticated users</p>
+        </div>
+
+        <h3>Provider Management Views</h3>
+        <div class="view-info">
+            <p><strong>venue_create (/venues/create/):</strong> New venue creation</p>
+            <p><strong>Access:</strong> Login required, providers only</p>
+            <p><strong>Forms:</strong> VenueForm + VenueImageForm formset</p>
+            <p><strong>Features:</strong> Image upload, availability settings</p>
+        </div>
+        
+        <div class="view-info">
+            <p><strong>venue_update (/venues/{id}/update/):</strong> Venue editing</p>
+            <p><strong>Ownership:</strong> Only venue owner can edit</p>
+            <p><strong>Formsets:</strong> Image management, availability updates</p>
+        </div>
+        
+        <div class="view-info">
+            <p><strong>venue_delete (/venues/{id}/delete/):</strong> Venue removal</p>
+            <p><strong>Confirmation:</strong> Requires explicit confirmation</p>
+            <p><strong>Impact:</strong> Affects existing bookings</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Forms</h2>
+        
+        <h3>VenueForm</h3>
+        <div class="code">
+Excludes: provider, created_at, updated_at
+Key Fields: name, description, address, capacity, venue_type
+Pricing: base_price with decimal validation
+Policies: booking, cancellation, corkage policies
+Time Fields: opening_time, closing_time (TimeInput)
+        </div>
+
+        <h3>VenueImageForm</h3>
+        <div class="code">
+Image Upload: Handles file validation
+Caption: Optional image description
+Primary Flag: Designates main venue image
+Formset Usage: Multiple images per venue
+        </div>
+
+        <h3>VenueAvailabilityForm</h3>
+        <div class="code">
+Date Selection: DateInput widget
+Availability Toggles: Overall and time-specific
+Booking Limits: max_bookings_per_day
+Notes: Additional availability information
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>URL Patterns</h2>
+        <div class="code">
+venues/ → venue_list (public listing)
+venues/{id}/ → venue_detail (public details)
+venues/create/ → venue_create (provider only)
+venues/{id}/update/ → venue_update (owner only)
+venues/{id}/delete/ → venue_delete (owner only)
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Admin Integration</h2>
+        
+        <h3>Django Admin (Read-Only)</h3>
+        <div class="feature-list">
+            <ul>
+                <li><strong>VenueAdmin:</strong> Monitoring and suspension management</li>
+                <li><strong>No Add/Delete:</strong> Venues managed through main app</li>
+                <li><strong>Status Control:</strong> is_active, is_suspended fields</li>
+                <li><strong>Audit Trail:</strong> Suspension tracking with timestamps</li>
+            </ul>
+        </div>
+
+        <h3>Custom Admin Interface</h3>
+        <div class="view-info">
+            <p><strong>/admin-panel/venues/:</strong> Venue regulation page</p>
+            <p><strong>Features:</strong> Status filtering, search, AJAX actions</p>
+            <p><strong>Actions:</strong> Suspend, unsuspend, toggle active status</p>
+            <p><strong>Details:</strong> Individual venue admin views</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Business Logic</h2>
+        
+        <h3>Availability System</h3>
+        <div class="code">
+Default: Venues are available unless specifically blocked
+Time Slots: Morning, afternoon, evening availability
+Booking Limits: Configurable per-day booking limits
+Conflict Prevention: Date/time overlap validation
+        </div>
+
+        <h3>Pricing Model</h3>
+        <div class="code">
+Base Price: Starting venue rental cost
+Flexible Quotes: Providers can adjust pricing per booking
+Additional Fees: Handled in booking quote system
+        </div>
+
+        <h3>Status Management</h3>
+        <div class="warning">
+            <strong>Important:</strong> Suspended venues are hidden from public views but existing bookings remain valid. Providers receive notifications about suspension status.
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Integration Points</h2>
+        
+        <h3>Booking System</h3>
+        <div class="feature-list">
+            <ul>
+                <li><strong>Venue Selection:</strong> Available venues in booking form</li>
+                <li><strong>Availability Check:</strong> Real-time availability validation</li>
+                <li><strong>Quote Generation:</strong> Base pricing for quote calculations</li>
+            </ul>
+        </div>
+
+        <h3>Search Functionality</h3>
+        <div class="feature-list">
+            <ul>
+                <li><strong>Global Search:</strong> Venues included in site-wide search</li>
+                <li><strong>Filtering:</strong> Type, capacity, location-based filtering</li>
+                <li><strong>Results:</strong> Active venues only in search results</li>
+            </ul>
+        </div>
+
+        <h3>Provider Dashboard</h3>
+        <div class="feature-list">
+            <ul>
+                <li><strong>Venue List:</strong> Provider's venues with status indicators</li>
+                <li><strong>Quick Actions:</strong> Create, edit, manage availability</li>
+                <li><strong>Booking Overview:</strong> Venue-specific booking statistics</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>File Management</h2>
+        <div class="code">
+Image Storage: Django's FileField with media handling
+Upload Validation: File type and size restrictions
+Image Display: Template integration with fallback handling
+Primary Image: Logic for main venue image selection
+        </div>
+    </div>
+</body>
+</html>

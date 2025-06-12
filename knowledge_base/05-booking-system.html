@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking System</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 20px; }
+        h1, h2, h3 { color: #333; }
+        .section { margin-bottom: 30px; }
+        .code { background: #f4f4f4; padding: 10px; border-radius: 5px; font-family: monospace; }
+        .feature-list { background: #f9f9f9; padding: 15px; border-left: 4px solid #007cba; }
+        .model-field { background: #e7f3ff; padding: 5px; margin: 5px 0; border-radius: 3px; }
+        .view-info { background: #f0f8f0; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .workflow-step { background: #fff9e6; padding: 10px; margin: 5px 0; border-radius: 5px; border-left: 4px solid #ffb84d; }
+    </style>
+</head>
+<body>
+    <h1>Booking System</h1>
+    
+    <div class="section">
+        <h2>Overview</h2>
+        <p>The booking system manages the complete event booking workflow from initial request to payment completion. It handles venue and catering bookings with menu selection, quote generation, and payment processing.</p>
+    </div>
+
+    <div class="section">
+        <h2>Core Models</h2>
+        
+        <h3>Booking Model</h3>
+        <div class="model-field"><strong>client:</strong> ForeignKey to CustomUser (the person booking)</div>
+        <div class="model-field"><strong>venue:</strong> ForeignKey to Venue (optional)</div>
+        <div class="model-field"><strong>caterer:</strong> ForeignKey to Caterer (optional)</div>
+        <div class="model-field"><strong>event_type:</strong> ForeignKey to EventType</div>
+        <div class="model-field"><strong>event_date:</strong> Date of the event</div>
+        <div class="model-field"><strong>start_time/end_time:</strong> Event duration</div>
+        <div class="model-field"><strong>guest_count:</strong> Expected number of guests</div>
+        <div class="model-field"><strong>special_requests:</strong> Additional requirements</div>
+        <div class="model-field"><strong>status:</strong> pending, confirmed, completed, cancelled</div>
+        
+        <h4>Financial Fields:</h4>
+        <div class="model-field"><strong>total_amount:</strong> Final booking cost</div>
+        <div class="model-field"><strong>deposit_amount:</strong> Required deposit</div>
+        <div class="model-field"><strong>deposit_paid:</strong> Deposit payment status</div>
+        <div class="model-field"><strong>final_payment_received:</strong> Full payment status</div>
+
+        <h3>MenuSelection Model</h3>
+        <div class="model-field"><strong>booking:</strong> OneToOne to Booking</div>
+        <div class="model-field"><strong>menu_package:</strong> ForeignKey to MenuPackage</div>
+        <div class="model-field"><strong>vegetarian_count:</strong> Number of vegetarian guests</div>
+        <div class="model-field"><strong>gluten_free_count:</strong> Number of gluten-free guests</div>
+        <div class="model-field"><strong>nut_free_count:</strong> Number of nut-free guests</div>
+        <div class="model-field"><strong>halal_count:</strong> Number of halal guests</div>
+        <div class="model-field"><strong>other_dietary_requirements:</strong> Additional dietary notes</div>
+        <div class="model-field"><strong>menu_total_price:</strong> Calculated menu cost</div>
+
+        <h3>CourseSelection Model</h3>
+        <div class="model-field"><strong>menu_selection:</strong> ForeignKey to MenuSelection</div>
+        <div class="model-field"><strong>course_category:</strong> ForeignKey to CourseCategory</div>
+        <div class="model-field"><strong>selected_items:</strong> ManyToMany to MenuItem</div>
+        <div class="model-field"><strong>quantity:</strong> Number of servings</div>
+
+        <h3>Quote Model</h3>
+        <div class="model-field"><strong>booking:</strong> ForeignKey to Booking</div>
+        <div class="model-field"><strong>venue_cost:</strong> Venue rental cost</div>
+        <div class="model-field"><strong>catering_cost:</strong> Catering service cost</div>
+        <div class="model-field"><strong>additional_fees:</strong> Extra charges</div>
+        <div class="model-field"><strong>total_cost:</strong> Complete quote amount</div>
+        <div class="model-field"><strong>quote_details:</strong> Itemized breakdown</div>
+        <div class="model-field"><strong>valid_until:</strong> Quote expiration date</div>
+        <div class="model-field"><strong>is_accepted:</strong> Client acceptance status</div>
+
+        <h3>Payment Model</h3>
+        <div class="model-field"><strong>booking:</strong> ForeignKey to Booking</div>
+        <div class="model-field"><strong>amount:</strong> Payment amount</div>
+        <div class="model-field"><strong>payment_type:</strong> deposit or final_payment</div>
+        <div class="model-field"><strong>payment_method:</strong> Payment processing method</div>
+        <div class="model-field"><strong>transaction_id:</strong> External payment reference</div>
+        <div class="model-field"><strong>payment_date:</strong> When payment was processed</div>
+        <div class="model-field"><strong>is_successful:</strong> Payment success status</div>
+
+        <h3>Message Model</h3>
+        <div class="model-field"><strong>booking:</strong> ForeignKey to Booking</div>
+        <div class="model-field"><strong>sender:</strong> ForeignKey to CustomUser</div>
+        <div class="model-field"><strong>recipient:</strong> ForeignKey to CustomUser</div>
+        <div class="model-field"><strong>subject:</strong> Message subject</div>
+        <div class="model-field"><strong>message:</strong> Message content</div>
+        <div class="model-field"><strong>is_read:</strong> Read status</div>
+    </div>
+
+    <div class="section">
+        <h2>Booking Workflow</h2>
+        
+        <div class="workflow-step">
+            <strong>Step 1: Initial Booking Creation</strong>
+            <p>Client fills out booking form with event details, venue/caterer selection, and guest count.</p>
+        </div>
+        
+        <div class="workflow-step">
+            <strong>Step 2: Menu Selection (if catering)</strong>
+            <p>If caterer selected, client chooses menu package and specifies dietary requirements.</p>
+        </div>
+        
+        <div class="workflow-step">
+            <strong>Step 3: Quote Generation</strong>
+            <p>Provider(s) review booking and generate detailed quotes with pricing breakdown.</p>
+        </div>
+        
+        <div class="workflow-step">
+            <strong>Step 4: Quote Review</strong>
+            <p>Client reviews quote, can negotiate or request modifications.</p>
+        </div>
+        
+        <div class="workflow-step">
+            <strong>Step 5: Quote Acceptance</strong>
+            <p>Client accepts quote, booking status changes to confirmed.</p>
+        </div>
+        
+        <div class="workflow-step">
+            <strong>Step 6: Deposit Payment</strong>
+            <p>Client pays required deposit to secure booking.</p>
+        </div>
+        
+        <div class="workflow-step">
+            <strong>Step 7: Final Payment</strong>
+            <p>Remaining balance paid before event date.</p>
+        </div>
+        
+        <div class="workflow-step">
+            <strong>Step 8: Event Completion</strong>
+            <p>Booking marked as completed after successful event.</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Views and Functionality</h2>
+        
+        <h3>Client Views</h3>
+        <div class="view-info">
+            <p><strong>booking_create (/bookings/create/):</strong> New booking form</p>
+            <p><strong>Features:</strong> Venue/caterer selection, event details, guest count</p>
+            <p><strong>Validation:</strong> Date availability, service availability</p>
+        </div>
+        
+        <div class="view-info">
+            <p><strong>booking_list (/bookings/):</strong> User's booking history</p>
+            <p><strong>Filtering:</strong> Status-based filtering, date sorting</p>
+            <p><strong>Actions:</strong> View details, cancel bookings</p>
+        </div>
+        
+        <div class="view-info">
+            <p><strong>booking_detail (/bookings/{id}/):</strong> Individual booking details</p>
+            <p><strong>Content:</strong> Full booking info, messages, payment status</p>
+            <p><strong>Actions:</strong> Message provider, view quotes, make payments</p>
+        </div>
+
+        <h3>Menu Selection Views</h3>
+        <div class="view-info">
+            <p><strong>menu_select (/bookings/{id}/menu-select/):</strong> Menu package selection</p>
+            <p><strong>Packages:</strong> Available packages for selected caterer</p>
+            <p><strong>Dietary:</strong> Guest count breakdown by dietary needs</p>
+        </div>
+        
+        <div class="view-info">
+            <p><strong>course_select (/bookings/{id}/course-select/):</strong> Individual course selection</p>
+            <p><strong>Customization:</strong> Item-by-item menu customization</p>
+            <p><strong>Quantities:</strong> Specify servings per course</p>
+        </div>
+
+        <h3>Provider Views</h3>
+        <div class="view-info">
+            <p><strong>quote_create (/bookings/{id}/quote/create/):</strong> Generate quotes</p>
+            <p><strong>Pricing:</strong> Itemized cost breakdown</p>
+            <p><strong>Validity:</strong> Set quote expiration dates</p>
+        </div>
+        
+        <div class="view-info">
+            <p><strong>quote_update (/bookings/{id}/quote/{quote_id}/update/):</strong> Modify quotes</p>
+            <p><strong>Negotiation:</strong> Adjust pricing based on client feedback</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Forms</h2>
+        
+        <h3>BookingForm</h3>
+        <div class="code">
+Event Details: event_type, event_date, start_time, end_time
+Service Selection: venue, caterer (both optional)
+Guest Information: guest_count, special_requests
+Validation: Date not in past, services are active
+Dynamic Filtering: Available services based on date/capacity
+        </div>
+
+        <h3>MenuSelectionForm</h3>
+        <div class="code">
+Package Selection: menu_package from caterer's offerings
+Dietary Counts: vegetarian, gluten_free, nut_free, halal
+Total Validation: Dietary counts don't exceed guest_count
+Additional Notes: other_dietary_requirements text field
+        </div>
+
+        <h3>QuoteForm</h3>
+        <div class="code">
+Cost Breakdown: venue_cost, catering_cost, additional_fees
+Quote Details: Itemized description of charges
+Validity Period: valid_until date field
+Terms: Additional terms and conditions
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>URL Patterns</h2>
+        <div class="code">
+# Core Booking URLs
+bookings/ → booking_list
+bookings/create/ → booking_create
+bookings/{id}/ → booking_detail
+bookings/{id}/update/ → booking_update
+bookings/{id}/cancel/ → booking_cancel
+
+# Menu Selection URLs
+bookings/{id}/menu-select/ → menu_select
+bookings/{id}/course-select/ → course_select
+
+# Quote Management URLs
+bookings/{id}/quote/create/ → quote_create
+bookings/{id}/quote/{quote_id}/ → quote_detail
+bookings/{id}/quote/{quote_id}/update/ → quote_update
+bookings/{id}/quote/{quote_id}/send/ → quote_send
+bookings/{id}/quote/{quote_id}/respond/ → quote_respond
+
+# Payment URLs
+bookings/{id}/payment/create/ → payment_create
+bookings/{id}/payment/{payment_id}/confirm/ → payment_confirm
+
+# AJAX Endpoints
+bookings/ajax/menu-packages/ → get_menu_packages
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Key Features</h2>
+        
+        <h3>Flexible Service Selection</h3>
+        <div class="feature-list">
+            <ul>
+                <li><strong>Venue Only:</strong> Just venue rental without catering</li>
+                <li><strong>Catering Only:</strong> Catering service at client's venue</li>
+                <li><strong>Combined:</strong> Both venue and catering services</li>
+                <li><strong>Multiple Providers:</strong> Venue and caterer from different providers</li>
+            </ul>
+        </div>
+
+        <h3>Comprehensive Menu System</h3>
+        <div class="feature-list">
+            <ul>
+                <li><strong>Package Selection:</strong> Pre-designed menu packages</li>
+                <li><strong>Course Customization:</strong> Individual item selection</li>
+                <li><strong>Dietary Tracking:</strong> Detailed dietary requirement management</li>
+                <li><strong>Quantity Management:</strong> Precise serving counts</li>
+            </ul>
+        </div>
+
+        <h3>Quote and Payment System</h3>
+        <div class="feature-list">
+            <ul>
+                <li><strong>Detailed Quotes:</strong> Itemized cost breakdowns</li>
+                <li><strong>Quote Validity:</strong> Time-limited quote offers</li>
+                <li><strong>Payment Tracking:</strong> Deposit and final payment management</li>
+                <li><strong>Transaction Records:</strong> Complete payment audit trail</li>
+            </ul>
+        </div>
+
+        <h3>Communication System</h3>
+        <div class="feature-list">
+            <ul>
+                <li><strong>In-App Messaging:</strong> Direct communication between parties</li>
+                <li><strong>Quote Notifications:</strong> Automated quote status updates</li>
+                <li><strong>Payment Confirmations:</strong> Payment receipt notifications</li>
+                <li><strong>Event Reminders:</strong> Automated event date reminders</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Business Logic</h2>
+        
+        <h3>Availability Validation</h3>
+        <div class="code">
+1. Check venue availability for requested date/time
+2. Verify caterer availability and capacity
+3. Validate against existing bookings
+4. Confirm service status (active, not suspended)
+        </div>
+
+        <h3>Pricing Calculation</h3>
+        <div class="code">
+Base Costs:
+  - Venue: base_price + time-based adjustments
+  - Catering: package_price * guest_count + dietary premiums
+
+Additional Fees:
+  - Service charges
+  - Equipment rental
+  - Delivery fees
+  - Overtime charges
+
+Total = Base Costs + Additional Fees + Taxes
+        </div>
+
+        <h3>Status Management</h3>
+        <div class="code">
+pending → Quote generation phase
+confirmed → Quote accepted, deposit required
+paid_deposit → Deposit received, final payment pending
+completed → Event finished successfully
+cancelled → Booking cancelled (with cancellation policies)
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Integration Points</h2>
+        
+        <h3>Venue Integration</h3>
+        <div class="feature-list">
+            <ul>
+                <li><strong>Availability:</strong> Real-time venue availability checking</li>
+                <li><strong>Capacity:</strong> Guest count validation against venue capacity</li>
+                <li><strong>Pricing:</strong> Venue base pricing in quote calculations</li>
+            </ul>
+        </div>
+
+        <h3>Caterer Integration</h3>
+        <div class="feature-list">
+            <ul>
+                <li><strong>Menu Packages:</strong> Dynamic package loading based on caterer</li>
+                <li><strong>Service Types:</strong> Available service type filtering</li>
+                <li><strong>Dietary Options:</strong> Menu item dietary flag integration</li>
+            </ul>
+        </div>
+
+        <h3>User Dashboard Integration</h3>
+        <div class="feature-list">
+            <ul>
+                <li><strong>Client Dashboard:</strong> Booking history and status tracking</li>
+                <li><strong>Provider Dashboard:</strong> Incoming booking notifications</li>
+                <li><strong>Admin Monitoring:</strong> Booking oversight and problem resolution</li>
+            </ul>
+        </div>
+
+        <h3>Payment Gateway Integration</h3>
+        <div class="feature-list">
+            <ul>
+                <li><strong>External Processors:</strong> Ready for payment gateway integration</li>
+                <li><strong>Transaction Tracking:</strong> Payment reference storage</li>
+                <li><strong>Refund Handling:</strong> Cancellation and refund processing</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>AJAX Functionality</h2>
+        <div class="code">
+get_menu_packages():
+  - Returns available packages for selected caterer
+  - Used in booking form for dynamic menu loading
+  - Filters by caterer and package availability
+
+Real-time Updates:
+  - Dynamic venue/caterer availability checking
+  - Live pricing calculations
+  - Instant menu package loading
+        </div>
+    </div>
+</body>
+</html>
