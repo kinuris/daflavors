@@ -45,12 +45,12 @@ class MenuPackageForm(forms.ModelForm):
         model = MenuPackage
         exclude = ['caterer', 'created_at', 'updated_at']
         widgets = {
-            'name': forms.TextInput(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500'}),
-            'description': forms.Textarea(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500', 'rows': 4}),
-            'package_type': forms.Select(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500'}),
-            'base_price_per_person': forms.NumberInput(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500'}),
-            'min_persons': forms.NumberInput(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500'}),
-            'is_customizable': forms.CheckboxInput(attrs={'class': 'h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded'}),
+            'name': forms.TextInput(attrs={'class': 'w-full px-4 py-2 bg-gray-800 border border-gray-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-white focus:border-white placeholder-gray-400'}),
+            'description': forms.Textarea(attrs={'class': 'w-full px-4 py-2 bg-gray-800 border border-gray-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-white focus:border-white placeholder-gray-400', 'rows': 4}),
+            'package_type': forms.Select(attrs={'class': 'w-full px-4 py-2 bg-gray-800 border border-gray-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-white focus:border-white'}),
+            'base_price_per_person': forms.NumberInput(attrs={'class': 'w-full px-4 py-2 pl-8 bg-gray-800 border border-gray-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-white focus:border-white placeholder-gray-400'}),
+            'min_persons': forms.NumberInput(attrs={'class': 'w-full px-4 py-2 bg-gray-800 border border-gray-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-white focus:border-white placeholder-gray-400'}),
+            'is_customizable': forms.CheckboxInput(attrs={'class': 'h-4 w-4 text-blue-400 bg-gray-800 border-gray-600 rounded focus:ring-blue-400 focus:ring-2'}),
         }
 
 class CourseCategoryForm(forms.ModelForm):
@@ -83,11 +83,11 @@ class PackageItemForm(forms.ModelForm):
         model = PackageItem
         exclude = ['package']
         widgets = {
-            'course_category': forms.Select(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500'}),
-            'items': forms.SelectMultiple(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500'}),
-            'selection_limit': forms.NumberInput(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500'}),
-            'is_required': forms.CheckboxInput(attrs={'class': 'h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded'}),
-            'additional_price': forms.NumberInput(attrs={'class': 'w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500'}),
+            'course_category': forms.Select(attrs={'class': 'w-full px-4 py-2 bg-gray-800 border border-gray-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-white focus:border-white'}),
+            'items': forms.SelectMultiple(attrs={'class': 'w-full px-4 py-2 bg-gray-800 border border-gray-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-white focus:border-white', 'size': '6'}),
+            'selection_limit': forms.NumberInput(attrs={'class': 'w-full px-4 py-2 bg-gray-800 border border-gray-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-white focus:border-white placeholder-gray-400'}),
+            'is_required': forms.CheckboxInput(attrs={'class': 'h-4 w-4 text-blue-400 bg-gray-800 border-gray-600 rounded focus:ring-blue-400 focus:ring-2'}),
+            'additional_price': forms.NumberInput(attrs={'class': 'w-full px-4 py-2 pl-8 bg-gray-800 border border-gray-600 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-white focus:border-white placeholder-gray-400'}),
         }
 
 class CatererAvailabilityForm(forms.ModelForm):

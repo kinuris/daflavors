@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{{ menu_package.name }} - {{ caterer.name }}{% endblock %}
+{% block title %}{{ menu_package.name }} - {{ caterer.service_name|default:caterer.provider.business_name }}{% endblock %}
 
 {% block content %}
 <div class="bg-black text-white min-h-screen">
@@ -13,7 +13,7 @@
                 <li><span class="mx-2">/</span></li>
                 <li><a href="{% url 'caterers:list' %}" class="hover:text-white transition-colors">Caterers</a></li>
                 <li><span class="mx-2">/</span></li>
-                <li><a href="{% url 'caterers:detail' caterer.id %}" class="hover:text-white transition-colors">{{ caterer.name }}</a></li>
+                <li><a href="{% url 'caterers:detail' caterer.id %}" class="hover:text-white transition-colors">{{ caterer.service_name|default:caterer.provider.business_name }}</a></li>
                 <li><span class="mx-2">/</span></li>
                 <li><a href="{% url 'caterers:menus' caterer.id %}" class="hover:text-white transition-colors">Menu Packages</a></li>
                 <li><span class="mx-2">/</span></li>
@@ -27,7 +27,7 @@
             <div class="flex items-center justify-between flex-wrap">
                 <div>
                     <h1 class="text-3xl font-bold text-white" style="letter-spacing: 0.1em;">{{ menu_package.name }}</h1>
-                    <p class="mt-2 text-sm text-gray-300">{{ caterer.name }}</p>
+                    <p class="mt-2 text-sm text-gray-300">{{ caterer.service_name|default:caterer.provider.business_name }}</p>
                 </div>
 
                 <div class="flex items-center space-x-4 mt-4 sm:mt-0">

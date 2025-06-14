@@ -3,7 +3,7 @@
 {% block title %}Provider Dashboard - DaFlavors{% endblock %}
 
 {% block page_title %}Provider Dashboard{% endblock %}
-{% block page_subtitle %}Manage your venues, caterers, and bookings{% endblock %}
+{% block page_subtitle %}Manage your venues and catering services{% endblock %}
 
 {% block content %}
 <div class="bg-black text-white min-h-screen">
@@ -49,17 +49,17 @@
                     </div>
                     
                     <div class="bg-gray-800 border border-gray-600 p-4 rounded-lg">
-                        <p class="text-sm text-gray-400">Caterers</p>
+                        <p class="text-sm text-gray-400">Catering Services</p>
                         <p class="text-2xl font-bold text-white">{{ caterers|length }}</p>
                     </div>
                     
                     <div class="bg-gray-800 border border-gray-600 p-4 rounded-lg">
-                        <p class="text-sm text-gray-400">Venue Bookings</p>
+                        <p class="text-sm text-gray-400">Venue Requests</p>
                         <p class="text-2xl font-bold text-white">{{ venue_bookings|length }}</p>
                     </div>
                     
                     <div class="bg-gray-800 border border-gray-600 p-4 rounded-lg">
-                        <p class="text-sm text-gray-400">Catering Bookings</p>
+                        <p class="text-sm text-gray-400">Catering Requests</p>
                         <p class="text-2xl font-bold text-white">{{ catering_bookings|length }}</p>
                     </div>
                 </div>
@@ -70,7 +70,7 @@
                 
                 <div class="space-y-2">
                     <a href="{% url 'venues:create' %}" class="block w-full border border-white text-white text-center py-2 px-4 rounded-md hover:bg-white hover:text-black transition-colors" style="letter-spacing: 0.05em;">Add New Venue</a>
-                    <a href="{% url 'caterers:create' %}" class="block w-full border border-white text-white text-center py-2 px-4 rounded-md hover:bg-white hover:text-black transition-colors" style="letter-spacing: 0.05em;">Add New Caterer</a>
+                    <a href="{% url 'caterers:create' %}" class="block w-full border border-white text-white text-center py-2 px-4 rounded-md hover:bg-white hover:text-black transition-colors" style="letter-spacing: 0.05em;">Add Catering Service</a>
                 </div>
             </div>
         </div>
@@ -85,10 +85,10 @@
                         Your Venues
                     </button>
                     <button class="px-6 py-3 text-gray-400 hover:text-gray-300 font-medium" id="caterers-tab" style="letter-spacing: 0.05em;">
-                        Your Caterers
+                        Your Catering Services
                     </button>
                     <button class="px-6 py-3 text-gray-400 hover:text-gray-300 font-medium" id="bookings-tab" style="letter-spacing: 0.05em;">
-                        Bookings
+                        Service Requests
                     </button>
                 </div>
             </div>
@@ -233,16 +233,16 @@
                         </div>
                     {% else %}
                         <div class="text-center py-8">
-                            <p class="text-gray-300 mb-4">You haven't added any caterers yet.</p>
-                            <a href="{% url 'caterers:create' %}" class="border border-white text-white px-4 py-2 rounded-md hover:bg-white hover:text-black transition-colors" style="letter-spacing: 0.05em;">Add Your First Caterer</a>
+                            <p class="text-gray-300 mb-4">You haven't added any catering services yet.</p>
+                            <a href="{% url 'caterers:create' %}" class="border border-white text-white px-4 py-2 rounded-md hover:bg-white hover:text-black transition-colors" style="letter-spacing: 0.05em;">Add Your First Catering Service</a>
                         </div>
                     {% endif %}
                 </div>
                 
-                <!-- Bookings Tab Content -->
+                <!-- Service Requests Tab Content -->
                 <div id="bookings-content" class="tab-content hidden">
                     <div class="mb-6">
-                        <h3 class="font-semibold text-lg mb-3 text-white" style="letter-spacing: 0.05em;">Venue Bookings</h3>
+                        <h3 class="font-semibold text-lg mb-3 text-white" style="letter-spacing: 0.05em;">Venue Requests</h3>
                         
                         {% if venue_bookings %}
                             <div class="overflow-x-auto">
@@ -276,12 +276,12 @@
                                 </table>
                             </div>
                         {% else %}
-                            <p class="text-gray-300">No venue bookings yet.</p>
+                            <p class="text-gray-300">No venue requests yet.</p>
                         {% endif %}
                     </div>
                     
                     <div>
-                        <h3 class="font-semibold text-lg mb-3 text-white" style="letter-spacing: 0.05em;">Catering Bookings</h3>
+                        <h3 class="font-semibold text-lg mb-3 text-white" style="letter-spacing: 0.05em;">Catering Requests</h3>
                         
                         {% if catering_bookings %}
                             <div class="overflow-x-auto">
@@ -315,7 +315,7 @@
                                 </table>
                             </div>
                         {% else %}
-                            <p class="text-gray-300">No catering bookings yet.</p>
+                            <p class="text-gray-300">No catering requests yet.</p>
                         {% endif %}
                     </div>
                 </div>

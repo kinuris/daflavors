@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Menu Packages - {{ caterer.name }}{% endblock %}
+{% block title %}Menu Packages - {{ caterer.service_name|default:caterer.provider.business_name }}{% endblock %}
 
 {% block content %}
 <div class="bg-black text-white min-h-screen">
@@ -13,7 +13,7 @@
                 <li><span class="mx-2">/</span></li>
                 <li><a href="{% url 'caterers:list' %}" class="hover:text-white transition-colors">Caterers</a></li>
                 <li><span class="mx-2">/</span></li>
-                <li><a href="{% url 'caterers:detail' caterer.id %}" class="hover:text-white transition-colors">{{ caterer.name }}</a></li>
+                <li><a href="{% url 'caterers:detail' caterer.id %}" class="hover:text-white transition-colors">{{ caterer.service_name|default:caterer.provider.business_name }}</a></li>
                 <li><span class="mx-2">/</span></li>
                 <li class="font-medium text-white">Menu Packages</li>
             </ol>
@@ -21,7 +21,7 @@
 
         <!-- Header -->
         <div class="flex items-center justify-between mb-6">
-            <h1 class="text-3xl font-bold text-white" style="letter-spacing: 0.1em;">Menu Packages by {{ caterer.name }}</h1>
+            <h1 class="text-3xl font-bold text-white" style="letter-spacing: 0.1em;">Menu Packages by {{ caterer.service_name|default:caterer.provider.business_name }}</h1>
             {% if is_owner %}
             <a href="{% url 'caterers:menu_add' caterer.id %}" class="inline-flex items-center px-4 py-2 border border-white rounded-md shadow-sm text-sm font-medium text-white bg-transparent hover:bg-white hover:text-black transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white">
                 <svg xmlns="http://www.w3.org/2000/svg" class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

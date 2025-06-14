@@ -234,7 +234,9 @@ def menu_create(request, caterer_id):
         'form': form,
         'item_formset': item_formset,
         'caterer': caterer,
-        'action': 'Create'
+        'action': 'Create',
+        'is_create': True,
+        'form_title': 'Create Menu Package'
     }
     return render(request, 'caterers/menu_form.html', context)
 
@@ -244,12 +246,12 @@ def menu_detail(request, caterer_id, menu_id):
     """
     caterer = get_object_or_404(Caterer, id=caterer_id)
     menu_package = get_object_or_404(MenuPackage, id=menu_id, caterer=caterer)
-    items = menu_package.items.all().order_by('course_category__display_order')
+    package_items = menu_package.package_items.all().order_by('course_category__display_order')
     
     context = {
         'caterer': caterer,
         'menu_package': menu_package,
-        'items': items
+        'package_items': package_items
     }
     return render(request, 'caterers/menu_detail.html', context)
 
@@ -288,7 +290,9 @@ def menu_update(request, caterer_id, menu_id):
         'item_formset': item_formset,
         'caterer': caterer,
         'menu_package': menu_package,
-        'action': 'Update'
+        'action': 'Update',
+        'is_create': False,
+        'form_title': 'Update Menu Package'
     }
     return render(request, 'caterers/menu_form.html', context)
 

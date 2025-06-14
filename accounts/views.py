@@ -156,7 +156,7 @@ def provider_dashboard(request):
     venues = Venue.objects.filter(provider=provider_profile)
     caterers = Caterer.objects.filter(provider=provider_profile)
     
-    # Get bookings for this provider's venues and caterers
+    # Get service requests for this provider's venues and caterers
     venue_bookings = Booking.objects.filter(venue__in=venues)
     catering_bookings = Booking.objects.filter(caterer__in=caterers)
     
