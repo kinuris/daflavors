@@ -99,6 +99,15 @@
                     <!-- Navigation Links -->
                     <nav class="hidden md:block">
                         <ul class="flex space-x-8">
+                            <!-- Dashboard - Only for providers -->
+                            {% if user.is_provider %}
+                            <li>
+                                <a href="{% url 'accounts:provider_dashboard' %}" class="hover:text-gray-300 transition-colors duration-200 tracking-wide font-light">
+                                    Dashboard
+                                </a>
+                            </li>
+                            {% endif %}
+                            
                             <!-- Home - Hidden for providers -->
                             {% if not user.is_provider %}
                             <li>
@@ -115,7 +124,7 @@
                             </li>
                             
                             <!-- Caterers - Hidden for providers -->
-                    <li>
+                            <li>
                                 <a href="{% url 'caterers:caterer_list' %}" class="hover:text-gray-300 transition-colors duration-200 tracking-wide font-light">
                                     Caterers
                                 </a>
@@ -164,9 +173,6 @@
                             <div class="absolute right-0 mt-2 w-48 bg-black border border-gray-800 rounded shadow-xl hidden group-hover:block z-40">
                                 <div class="py-1">
                                     <a href="{% url 'accounts:profile' %}" class="block px-4 py-2 text-sm hover:bg-gray-900">Profile</a>
-                                    {% if user.is_provider %}
-                                    <a href="{% url 'accounts:provider_dashboard' %}" class="block px-4 py-2 text-sm hover:bg-gray-900">Dashboard</a>
-                                    {% endif %}
                                     {% if user.is_staff %}
                                     <a href="{% url 'core:admin_dashboard' %}" class="block px-4 py-2 text-sm hover:bg-gray-900">Admin Panel</a>
                                     {% endif %}
