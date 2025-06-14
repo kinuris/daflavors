@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.forms import inlineformset_factory
 from django.db import transaction
 from django.http import Http404
+from django.forms import inlineformset_factory
 from accounts.models import ProviderProfile
 from .models import Caterer, CatererImage, MenuPackage, CourseCategory, MenuItem, PackageItem, CatererAvailability, EventType
 from .forms import (CatererForm, CatererImageForm, MenuPackageForm, CourseCategoryForm, 
@@ -209,30 +209,21 @@ def menu_create(request, caterer_id):
         messages.error(request, "You don't have permission to add menus to this catering service.")
         return redirect('caterers:detail', caterer_id=caterer.id)
     
-    PackageItemFormSet = inlineformset_factory(MenuPackage, PackageItem, form=PackageItemForm, extra=5)
-    
     if request.method == 'POST':
         form = MenuPackageForm(request.POST)
-        item_formset = PackageItemFormSet(request.POST)
         
-        if form.is_valid() and item_formset.is_valid():
-            with transaction.atomic():
-                menu_package = form.save(commit=False)
-                menu_package.caterer = caterer
-                menu_package.save()
-                
-                item_formset.instance = menu_package
-                item_formset.save()
+        if form.is_valid():
+            menu_package = form.save(commit=False)
+            menu_package.caterer = caterer
+            menu_package.save()
             
             messages.success(request, "Menu package created successfully!")
             return redirect('caterers:menu', caterer_id=caterer.id, menu_id=menu_package.id)
     else:
         form = MenuPackageForm()
-        item_formset = PackageItemFormSet()
     
     context = {
         'form': form,
-        'item_formset': item_formset,
         'caterer': caterer,
         'action': 'Create',
         'is_create': True,
@@ -248,10 +239,14 @@ def menu_detail(request, caterer_id, menu_id):
     menu_package = get_object_or_404(MenuPackage, id=menu_id, caterer=caterer)
     package_items = menu_package.package_items.all().order_by('course_category__display_order')
     
+    # Check if the current user is the owner of this caterer
+    is_owner = request.user.is_authenticated and hasattr(request.user, 'provider_profile') and request.user.provider_profile == caterer.provider
+    
     context = {
         'caterer': caterer,
         'menu_package': menu_package,
-        'package_items': package_items
+        'package_items': package_items,
+        'is_owner': is_owner
     }
     return render(request, 'caterers/menu_detail.html', context)
 
@@ -268,26 +263,18 @@ def menu_update(request, caterer_id, menu_id):
         messages.error(request, "You don't have permission to edit this menu package.")
         return redirect('caterers:menu', caterer_id=caterer.id, menu_id=menu_id)
     
-    PackageItemFormSet = inlineformset_factory(MenuPackage, PackageItem, form=PackageItemForm, extra=1)
-    
     if request.method == 'POST':
         form = MenuPackageForm(request.POST, instance=menu_package)
-        item_formset = PackageItemFormSet(request.POST, instance=menu_package)
         
-        if form.is_valid() and item_formset.is_valid():
-            with transaction.atomic():
-                menu_package = form.save()
-                item_formset.save()
-            
+        if form.is_valid():
+            menu_package = form.save()
             messages.success(request, "Menu package updated successfully!")
             return redirect('caterers:menu', caterer_id=caterer.id, menu_id=menu_package.id)
     else:
         form = MenuPackageForm(instance=menu_package)
-        item_formset = PackageItemFormSet(instance=menu_package)
     
     context = {
         'form': form,
-        'item_formset': item_formset,
         'caterer': caterer,
         'menu_package': menu_package,
         'action': 'Update',
