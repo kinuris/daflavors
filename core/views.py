@@ -34,7 +34,48 @@ def home(request):
 
 def about(request):
     """About page view"""
-    context = {}
+    # Define creators with their information
+    creators = [
+        {
+            'first_name': 'Christian',
+            'last_name': 'Gabriel',
+            'image': 'creators/christian_gabriel.png',
+            'position': 'Founder & CEO',
+            'description': 'Visionary leader driving innovation in hospitality technology'
+        },
+        {
+            'first_name': 'Jhon',
+            'last_name': 'Steven',
+            'image': 'creators/jhon_steven.png',
+            'position': 'Head of Operations',
+            'description': 'Strategic operations expert ensuring seamless service delivery'
+        },
+        {
+            'first_name': 'Kier',
+            'last_name': 'Vioner',
+            'image': 'creators/kier_vioner.png',
+            'position': 'Technical Lead',
+            'description': 'Full-stack developer architecting robust platform solutions'
+        },
+        {
+            'first_name': 'Rainbie',
+            'last_name': 'Ferman',
+            'image': 'creators/rainbie_ferman.png',
+            'position': 'Customer Relations',
+            'description': 'Dedicated to creating exceptional client experiences and satisfaction'
+        },
+        {
+            'first_name': 'Ven',
+            'last_name': 'Daverick',
+            'image': 'creators/ven_daverick.png',
+            'position': 'Marketing Director',
+            'description': 'Creative strategist building meaningful connections with our community'
+        }
+    ]
+    
+    context = {
+        'creators': creators
+    }
     
     return render(request, 'core/about.html', context)
 
